@@ -40,7 +40,7 @@ namespace GrassRun
 
                 int index = i;
                 anyAvailable |= checks[i].available;
-                cards[i].Setup(e.options[i], checks[i].available, () => onChoose?.Invoke(index));
+                cards[i].Setup(e.options[i], checks[i], () => onChoose?.Invoke(index));
             }
 
             deadEndButton.gameObject.SetActive(!anyAvailable);

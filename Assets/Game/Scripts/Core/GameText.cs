@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
@@ -39,6 +40,26 @@ namespace GrassRun
 
             string relation = check.requirement.comparison == Comparison.AtLeast ? "至少" : "至多";
             return $"需要{StatName(check.requirement.stat)}{relation} {check.requirement.threshold}（目前 {check.actual}）";
+        }
+
+        /// <summary>選項卡上的條件提示，例如「速度>=10」；有多個條件時全部列出。</summary>
+        public static string RequirementTip(EventOption option, OptionCheck check)
+        {
+            if (check.lockKind == LockKind.InvalidData) return LockReason(check);
+
+            var requirements = new List<Requirement>();
+            if (!RunRules.TryParseRequirements(option.requirement, requirements, out _) || requirements.Count == 0)
+                return LockReason(check);
+
+            var sb = new StringBuilder();
+            foreach (var requirement in requirements)
+            {
+                if (sb.Length > 0) sb.Append('　');
+                sb.Append(StatName(requirement.stat))
+                    .Append(requirement.comparison == Comparison.AtLeast ? ">=" : "<=")
+                    .Append(requirement.threshold);
+            }
+            return sb.ToString();
         }
 
         public static string RequirementDebug(Requirement requirement) =>
