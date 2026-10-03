@@ -6,20 +6,16 @@ using UnityEngine.UI;
 namespace GrassRun
 {
     /// <summary>
-    /// 一張選項卡。不可選的選項照樣顯示，只是不能點，並說明原因。
+    /// 一張選項卡。不可選的選項照樣顯示，只是變灰、不能點。
     /// </summary>
     public class OptionCardView : MonoBehaviour
     {
         [SerializeField] Button button;
-        [SerializeField] TMP_Text keyLabel;
         [SerializeField] TMP_Text titleLabel;
-        [SerializeField] TMP_Text descriptionLabel;
-        [SerializeField] TMP_Text lockLabel;
         [SerializeField] TMP_Text designerLabel;
 
         [Header("顏色")]
         [SerializeField] Color titleColor = new Color(0.93f, 0.94f, 0.89f);
-        [SerializeField] Color bodyColor = new Color(0.78f, 0.80f, 0.73f);
         [SerializeField] Color lockedTextColor = new Color(0.50f, 0.52f, 0.47f);
 
         Action onClick;
@@ -29,23 +25,14 @@ namespace GrassRun
             button.onClick.AddListener(() => onClick?.Invoke());
         }
 
-        public void Setup(int index, EventOption option, bool available, string lockText, string designerText,
-            bool designer, Action onClick)
+        public void Setup(EventOption option, bool available, string designerText, bool designer, Action onClick)
         {
             this.onClick = onClick;
 
-            keyLabel.text = (index + 1).ToString();
             titleLabel.text = option.description;
-            descriptionLabel.text = string.Empty;
-            descriptionLabel.gameObject.SetActive(false);
 
             button.interactable = available;
             titleLabel.color = available ? titleColor : lockedTextColor;
-            descriptionLabel.color = available ? bodyColor : lockedTextColor;
-            keyLabel.color = available ? titleColor : lockedTextColor;
-
-            lockLabel.gameObject.SetActive(!available);
-            lockLabel.text = lockText;
 
             designerLabel.text = designerText;
             SetDesigner(designer);

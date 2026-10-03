@@ -136,13 +136,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: GrassRun::GrassRun.OptionCardView
   button: {fileID: 1740029061519222715}
-  keyLabel: {fileID: 0}
   titleLabel: {fileID: 3188950655108700}
-  descriptionLabel: {fileID: 0}
-  lockLabel: {fileID: 0}
   designerLabel: {fileID: 4847264293925423170}
   titleColor: {r: 0.93, g: 0.94, b: 0.89, a: 1}
-  bodyColor: {r: 0.78, g: 0.8, b: 0.73, a: 1}
   lockedTextColor: {r: 0.5, g: 0.52, b: 0.47, a: 1}
 --- !u!1 &1779513347739329930
 GameObject:
@@ -417,13 +413,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: GrassRun::GrassRun.OptionCardView
   button: {fileID: 72734090331955710}
-  keyLabel: {fileID: 0}
   titleLabel: {fileID: 218736304848753301}
-  descriptionLabel: {fileID: 0}
-  lockLabel: {fileID: 0}
   designerLabel: {fileID: 8287741864454438738}
   titleColor: {r: 0.93, g: 0.94, b: 0.89, a: 1}
-  bodyColor: {r: 0.78, g: 0.8, b: 0.73, a: 1}
   lockedTextColor: {r: 0.5, g: 0.52, b: 0.47, a: 1}
 --- !u!1 &2875237975012617980
 GameObject:
@@ -516,8 +508,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: GrassRun::GrassRun.EventPanelView
   root: {fileID: 2875237975012617980}
-  kindTag: {fileID: 0}
-  kindLabel: {fileID: 0}
   titleLabel: {fileID: 924198415237289310}
   descriptionLabel: {fileID: 1617504496498049907}
   cards:
@@ -525,8 +515,6 @@ MonoBehaviour:
   - {fileID: 2819077361638897210}
   - {fileID: 1163891854405770218}
   deadEndButton: {fileID: 3901491416816657817}
-  randomColor: {r: 0.56, g: 0.69, b: 0.48, a: 1}
-  checkpointColor: {r: 0.9, g: 0.65, b: 0.27, a: 1}
 --- !u!1 &3246258292893662008
 GameObject:
   m_ObjectHideFlags: 0
@@ -1644,13 +1632,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: GrassRun::GrassRun.OptionCardView
   button: {fileID: 7383797510784155924}
-  keyLabel: {fileID: 0}
   titleLabel: {fileID: 2412057602429710792}
-  descriptionLabel: {fileID: 0}
-  lockLabel: {fileID: 0}
   designerLabel: {fileID: 6065758779907852212}
   titleColor: {r: 0.93, g: 0.94, b: 0.89, a: 1}
-  bodyColor: {r: 0.78, g: 0.8, b: 0.73, a: 1}
   lockedTextColor: {r: 0.5, g: 0.52, b: 0.47, a: 1}
 --- !u!1 &8571698878766513086
 GameObject:

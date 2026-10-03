@@ -140,16 +140,14 @@ namespace GrassRun
         {
             var e = engine.CurrentEvent;
             var checks = engine.CurrentChecks;
-            var lockTexts = new string[checks.Length];
             var designerTexts = new string[checks.Length];
 
             for (int i = 0; i < checks.Length; i++)
             {
-                lockTexts[i] = checks[i].available ? string.Empty : GameText.LockReason(checks[i]);
                 designerTexts[i] = DesignerText(e.options[i]);
             }
 
-            eventPanel.Show(e, checks, lockTexts, designerTexts, designerMode, Choose, ConfirmDeadEnd);
+            eventPanel.Show(e, checks, designerTexts, designerMode, Choose, ConfirmDeadEnd);
             ClearSelection();
         }
 
@@ -173,8 +171,7 @@ namespace GrassRun
             AddJournal(result.option.resultText);
 
             phase = Phase.Result;
-            resultPanel.Show(result.option.description, result.option.resultText, string.Empty,
-                GameText.ChangeSummary(result.applied), Continue);
+            resultPanel.Show(result.option.resultText, GameText.ChangeSummary(result.applied));
             ClearSelection();
         }
 
