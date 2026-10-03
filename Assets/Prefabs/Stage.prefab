@@ -54,8 +54,6 @@ MonoBehaviour:
   backgrounds:
   - image: {fileID: 7941358970343478624}
     factor: 1
-  - image: {fileID: 6621809437968637838}
-    factor: 1
   baseScrollSpeed: 260
   scrollPerSpeed: 14
   maxScrollSpeed: 900
