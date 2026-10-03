@@ -76,7 +76,7 @@ Running --計時到 eventInterval--> Choosing --Choose(i)--> Result
 
 這些規則已有測試或被內容資料依賴；需求沒有明確要求時不要順手改掉：
 
-- 固定四項屬性：善惡 `mor`、濕度 `hmd`、速度 `spd`、韌性 `tgh`；事件固定三個選項（`EventDefinition.OptionCount == 3`）。初始值固定為 `mor=0;hmd=50;spd=0;tgh=0`。
+- 固定四項屬性：善良 `mor`、濕度 `hmd`、速度 `spd`、韌性 `tgh`；事件固定三個選項（`EventDefinition.OptionCount == 3`）。初始值固定為 `mor=0;hmd=50;spd=0;tgh=0`。
 - `hmd` 套用變化後限制在 0–100；`spd`、`tgh` 最低為 0；`mor` 可為負數，沒有上下限。不要把舊版容量、overflow 或 tier 規則加回來。
 - requirement 採字串解析，支援 `>=`、`<=`，多條以分號串接且必須全部成立，例如 `mor>=10;hmd<=40`。空字串代表沒有門檻。
 - offset 採字串解析，格式為 `stat:+/-整數`，多條以分號串接，例如 `mor:-15;tgh:+10`。不得含空白、不得重複屬性；多屬性順序固定為 `mor;hmd;spd;tgh` 的相對順序。

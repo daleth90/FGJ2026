@@ -15,7 +15,7 @@ namespace GrassRun
         {
             switch (stat)
             {
-                case StatType.Morality: return "善惡";
+                case StatType.Morality: return "善良";
                 case StatType.Moisture: return "溼度";
                 case StatType.Speed: return "速度";
                 default: return "韌度";

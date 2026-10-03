@@ -95,7 +95,7 @@ namespace GrassRun
         }
 
         /// <summary>
-        /// 套用選項變動。善惡可為負數；溼度限制在 0～上限；速度與韌度最低為 0。
+        /// 套用選項變動。善良可為負數；溼度限制在 0～上限；速度與韌度最低為 0。
         /// 回傳經過邊界裁切後真正套用的變動。
         /// </summary>
         public static StatBlock Apply(EventOption option, ref StatBlock stats, int maxMoisture)

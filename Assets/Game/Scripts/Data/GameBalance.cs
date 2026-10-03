@@ -16,7 +16,7 @@ namespace GrassRun
         [Header("起始")]
         public StatBlock startStats = new StatBlock(0, 50, 0, 0);
 
-        [Tooltip("溼度上限；溼度與其他非善惡屬性的下限都是 0。")]
+        [Tooltip("溼度上限；溼度與其他非善良屬性的下限都是 0。")]
         [Min(1)]
         public int maxMoisture = 100;
 

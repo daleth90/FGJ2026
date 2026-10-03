@@ -20,7 +20,7 @@ namespace GrassRun
             this.toughness = toughness;
         }
 
-        /// <summary>世界表現沿用的三項身體數值總和；善惡不屬於身體能力。</summary>
+        /// <summary>世界表現沿用的三項身體數值總和；善良不屬於身體能力。</summary>
         public int Total => moisture + speed + toughness;
 
         public int this[StatType stat]
