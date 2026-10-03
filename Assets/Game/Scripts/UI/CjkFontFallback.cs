@@ -8,16 +8,21 @@ using Object = UnityEngine.Object;
 namespace GrassRun
 {
     /// <summary>
-    /// 專案沒有內嵌中文字型，所以從作業系統載入一套，掛到 TextMeshPro 的全域 fallback。
-    /// 字型資產只存在記憶體裡，不會寫進專案。
-    /// WebGL 沒有系統字型，要出 WebGL 版必須改成內嵌字型資產。
+    /// 把專案內嵌的中文字型掛到 TextMeshPro 的全域 fallback。
+    /// 字型資產（圖集）只存在記憶體裡，不會寫進專案；進 build 的只有字型檔本身。
+    /// WebGL 沒有系統字型，所以一定要靠內嵌字型；系統字型只在內嵌字型載不到時當備援。
     /// </summary>
     public static class CjkFontFallback
     {
+        /// <summary>內嵌中文字型在 Resources 底下的路徑（不含副檔名）。</summary>
+        public const string EmbeddedFontPath = "Fonts/NotoSansTC-Regular";
+
         const string AssetName = "CJK OS Fallback (runtime)";
         const int SamplingPointSize = 48;
+        const int AtlasPadding = 9;
+        const int AtlasSize = 1024;
 
-        // 依序嘗試。本機的 Noto Sans TC 是可變字型，系統只回報 Thin 一種字重，所以排在最後。
+        // 內嵌字型載不到時依序嘗試。本機的 Noto Sans TC 是可變字型，系統只回報 Thin 一種字重，所以排在最後。
         static readonly string[][] Candidates =
         {
             new[] { "Microsoft JhengHei", "Regular" },
@@ -48,13 +53,16 @@ namespace GrassRun
             }
             fallbacks.RemoveAll(font => font == null);
 
-            // 編輯器裡這個字型會跨 Play 留著。留下來的如果已經壞了（圖集被回收），整個丟掉重建。
+            var embedded = Resources.Load<Font>(EmbeddedFontPath);
+
+            // 編輯器裡這個字型會跨 Play 留著。留下來的如果已經壞了（圖集被回收），
+            // 或來源不是現在該用的字型（例如先前用系統字型建的），整個丟掉重建。
             TMP_FontAsset healthy = null;
             bool discarded = false;
             foreach (var font in Resources.FindObjectsOfTypeAll<TMP_FontAsset>())
             {
                 if (font.name != AssetName) continue;
-                if (healthy == null && IsHealthy(font))
+                if (healthy == null && font.sourceFontFile == embedded && IsHealthy(font))
                 {
                     healthy = font;
                     continue;
@@ -67,10 +75,10 @@ namespace GrassRun
             bool created = false;
             if (healthy == null)
             {
-                healthy = CreateFromSystemFont();
+                healthy = Create(embedded);
                 if (healthy == null)
                 {
-                    Debug.LogWarning("找不到可用的中文系統字型，中文會顯示成方塊。");
+                    Debug.LogWarning($"載不到內嵌中文字型 Resources/{EmbeddedFontPath}，也沒有可用的系統字型，中文會顯示成方塊。");
                     return false;
                 }
                 created = true;
@@ -146,6 +154,27 @@ namespace GrassRun
                 if (text != null && text.gameObject.scene.IsValid()) text.ForceMeshUpdate(true, true);
         }
 
+        static TMP_FontAsset Create(Font embedded)
+        {
+            TMP_FontAsset font = null;
+            if (embedded != null)
+                font = TMP_FontAsset.CreateFontAsset(embedded, SamplingPointSize, AtlasPadding,
+                    GlyphRenderMode.SDFAA, AtlasSize, AtlasSize);
+
+            if (font == null)
+            {
+                font = CreateFromSystemFont();
+                if (font == null) return null;
+                Debug.LogWarning($"載不到內嵌中文字型 Resources/{EmbeddedFontPath}，暫時改用系統字型。" +
+                                 "WebGL 沒有系統字型，這樣 build 出來中文會是方塊。");
+            }
+
+            font.name = AssetName;
+            font.hideFlags = HideFlags.HideAndDontSave;
+            if (font.material != null) font.material.hideFlags = HideFlags.HideAndDontSave;
+            return font;
+        }
+
         static TMP_FontAsset CreateFromSystemFont()
         {
             string[] installed = FontEngine.GetSystemFontNames();
@@ -156,12 +185,7 @@ namespace GrassRun
                 if (Array.IndexOf(installed, candidate[0] + " - " + candidate[1]) < 0) continue;
 
                 var font = TMP_FontAsset.CreateFontAsset(candidate[0], candidate[1], SamplingPointSize);
-                if (font == null) continue;
-
-                font.name = AssetName;
-                font.hideFlags = HideFlags.HideAndDontSave;
-                if (font.material != null) font.material.hideFlags = HideFlags.HideAndDontSave;
-                return font;
+                if (font != null) return font;
             }
             return null;
         }

@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Text;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.TextCore.LowLevel;
 
 namespace GrassRun.Tests
 {
@@ -132,6 +134,40 @@ namespace GrassRun.Tests
                 Assert.IsFalse(string.IsNullOrWhiteSpace(title.titleName));
                 Assert.AreEqual($"title_{expectedIds[i]}", title.imageId);
             }
+        }
+
+        [Test]
+        public void EmbeddedCjkFontCoversEventAndTitleText()
+        {
+            // WebGL 沒有系統字型：內嵌字型不在或缺字，build 出來就是方塊。
+            var font = Resources.Load<Font>(CjkFontFallback.EmbeddedFontPath);
+            Assert.IsNotNull(font, $"找不到內嵌中文字型 Resources/{CjkFontFallback.EmbeddedFontPath}");
+            Assert.AreEqual(FontEngineError.Success, FontEngine.LoadFontFace(font), "內嵌中文字型無法載入");
+
+            var text = new StringBuilder();
+            foreach (var e in library)
+            {
+                text.Append(e.title).Append(e.description);
+                foreach (var option in e.options)
+                    text.Append(option.description).Append(option.resultText);
+            }
+            foreach (var title in titleTable.titles) text.Append(title.titleName);
+            foreach (var title in titleTable.specialEndingTitles) text.Append(title.titleName);
+
+            var missing = new SortedSet<string>();
+            string all = text.ToString();
+            for (int i = 0; i < all.Length; i++)
+            {
+                int codePoint = all[i];
+                if (char.IsSurrogatePair(all, i)) codePoint = char.ConvertToUtf32(all, i++);
+
+                // ASCII 由主字型顯示，其餘都靠內嵌中文字型。
+                if (codePoint < 0x80) continue;
+                if (!FontEngine.TryGetGlyphIndex((uint)codePoint, out _))
+                    missing.Add(char.ConvertFromUtf32(codePoint));
+            }
+
+            Assert.IsEmpty(missing, "內嵌中文字型缺這些字：" + string.Join("", missing));
         }
     }
 }
