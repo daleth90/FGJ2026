@@ -11,9 +11,9 @@ namespace GrassRun
         [Header("節奏")]
         [Tooltip("每隔幾秒出現一個事件。")]
         [Min(0.5f)]
-        public float eventInterval = 10f;
+        public float eventInterval = 3f;
 
-        [Tooltip("一個週期有幾個事件，最後一個是檢驗點。6 × 10 秒 = 每 60 秒一個檢驗點。")]
+        [Tooltip("一個週期有幾個事件，最後一個是檢驗點。")]
         [Min(2)]
         public int eventsPerCycle = 6;
 
@@ -27,7 +27,7 @@ namespace GrassRun
         [Tooltip("每升一級，預期值增加多少。")]
         public float expectedPerLevel = 3f;
 
-        [Tooltip("嚴苛度爬升：每升一級，門檻額外提高的比例。大於 0 時門檻成長會快過容量，遊戲才保證會結束。")]
+        [Tooltip("嚴苛度爬升：每升一級，門檻額外提高的比例。大於 0 時門檻成長會越來越快，遊戲才保證會結束。")]
         [Min(0f)]
         public float harshnessPerLevel = 0.04f;
 
@@ -36,22 +36,12 @@ namespace GrassRun
         public float midTier = 0.9f;
         public float highTier = 1.4f;
 
-        [Header("總容量（論點 B：非線性取捨）")]
-        [Tooltip("開啟時三數值總和有上限，滿了之後的成長會溢出。關閉就是「越多越好」。")]
-        public bool useCapacity = true;
-
-        [Tooltip("容量 = 3 × 下一級預期值 × 這個倍率。調高會讓取捨變鬆。")]
-        [Min(0.1f)]
-        public float capacityFactor = 1f;
-
         [Header("回饋")]
         [Tooltip("差距超過門檻的這個比例時，鎖定原因會從「還不夠」變成「遠遠不夠」。")]
         [Range(0f, 1f)]
         public float farGapRatio = 0.3f;
 
-        public float CheckpointInterval => eventInterval * eventsPerCycle;
-
-        /// <summary>一項數值在該等級的預期值（平均配點的小草大概會長到這裡）。</summary>
+        /// <summary>一項數值在該等級的預期值。</summary>
         public float Expected(int level) => expectedBase + expectedPerLevel * level;
 
         /// <summary>該等級的需求值：預期值再乘上嚴苛度爬升。</summary>
@@ -68,13 +58,6 @@ namespace GrassRun
         }
 
         public int Threshold(Tier tier, int level) => RoundHalfUp(Demand(level) * TierFactor(tier));
-
-        /// <summary>該週期的總容量。容量對齊的是「這一區檢驗點」的預期值，所以週期內有成長空間。</summary>
-        public int Capacity(int cycle)
-        {
-            if (!useCapacity) return int.MaxValue;
-            return RoundHalfUp(StatBlock.StatCount * Expected(cycle + 1) * capacityFactor);
-        }
 
         public bool IsFarGap(int gap, int threshold) => gap > Mathf.Max(1f, threshold * farGapRatio);
 

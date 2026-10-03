@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: CP_Meadow_FirstGale
   m_EditorClassIdentifier: GrassRun::GrassRun.EventDefinition
   kind: 1
-  zones: 1
   weight: 1
   title: "\u7B2C\u4E00\u9053\u5927\u98A8"
   description: "\u8349\u539F\u7684\u76E1\u982D\uFF0C\u98A8\u5FFD\u7136\u6709\u4E86\u91CD\u91CF\u3002\u5B83\u5F9E\u5730\u5E73\u7DDA\u90A3\u7AEF\u58D3\u904E\u4F86\uFF0C\u50CF\u4E00\u96BB\u6C92\u6709\u60E1\u610F\u7684\u5927\u624B\u3002"

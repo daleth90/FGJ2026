@@ -5,7 +5,7 @@ using UnityEngine;
 namespace GrassRun.Tests
 {
     /// <summary>
-    /// 一局的流程：事件節奏、檢驗點、區域輪替，以及「沒有選項可選」的兩種結局。
+    /// 一局的流程：事件節奏、檢驗點，以及「沒有選項可選」的兩種結局。
     /// </summary>
     public class EngineTests
     {
@@ -26,12 +26,11 @@ namespace GrassRun.Tests
             created.Clear();
         }
 
-        EventDefinition MakeEvent(string name, EventKind kind, ZoneMask zones, params EventOption[] options)
+        EventDefinition MakeEvent(string name, EventKind kind, params EventOption[] options)
         {
             var e = ScriptableObject.CreateInstance<EventDefinition>();
             e.name = name;
             e.kind = kind;
-            e.zones = zones;
             e.title = name;
             e.description = name;
             e.options = options;
@@ -56,8 +55,8 @@ namespace GrassRun.Tests
         [Test]
         public void EverySixthEvent_IsACheckpoint()
         {
-            var random = MakeEvent("random", EventKind.Random, ZoneMask.All, Free(), Free(), Free());
-            var checkpoint = MakeEvent("checkpoint", EventKind.Checkpoint, ZoneMask.All,
+            var random = MakeEvent("random", EventKind.Random, Free(), Free(), Free());
+            var checkpoint = MakeEvent("checkpoint", EventKind.Checkpoint,
                 Gated(StatType.Speed, Comparison.AtLeast, Tier.Low), Free(), Free());
             var engine = NewEngine(random, checkpoint);
 
@@ -75,56 +74,31 @@ namespace GrassRun.Tests
         }
 
         [Test]
-        public void PassingACheckpoint_EntersTheForecastZone_AndRaisesCapacity()
+        public void PassingACheckpoint_RaisesTheThresholds()
         {
-            var random = MakeEvent("random", EventKind.Random, ZoneMask.All, Free(), Free(), Free());
-            var checkpoint = MakeEvent("checkpoint", EventKind.Checkpoint, ZoneMask.All, Free(), Free(), Free());
+            var random = MakeEvent("random", EventKind.Random, Free(), Free(), Free());
+            var checkpoint = MakeEvent("checkpoint", EventKind.Checkpoint, Free(), Free(), Free());
             var engine = NewEngine(random, checkpoint);
 
-            Assert.AreEqual(ZoneType.Meadow, engine.Zone);
-            var forecast = engine.NextZone;
-            int capacityBefore = engine.Capacity;
-
-            ChoiceResult last = default;
-            for (int i = 0; i < 6; i++)
+            engine.BeginNextEvent();
+            int levelBefore = engine.CurrentLevel;
+            engine.Choose(0);
+            for (int i = 0; i < 5; i++)
             {
                 engine.BeginNextEvent();
-                last = engine.Choose(0);
+                engine.Choose(0);
             }
-
-            Assert.IsTrue(last.enteredNewZone);
-            Assert.AreEqual(forecast, engine.Zone);
-            Assert.AreNotEqual(ZoneType.Meadow, engine.Zone);
-            Assert.Greater(engine.Capacity, capacityBefore);
-            Assert.AreEqual(0, engine.EventIndexInCycle);
-        }
-
-        [Test]
-        public void CheckpointGrowth_CountsAgainstTheNextZonesCapacity()
-        {
-            balance.eventsPerCycle = 2;
-            int room = balance.Capacity(0) - balance.startStats.Total;
-            var fill = MakeEvent("fill", EventKind.Random, ZoneMask.All,
-                Free(new StatChange(StatType.Speed, room)), Free(), Free());
-            var checkpoint = MakeEvent("checkpoint", EventKind.Checkpoint, ZoneMask.All,
-                Free(new StatChange(StatType.Toughness, 2)), Free(), Free());
-            var engine = NewEngine(fill, checkpoint);
-
             engine.BeginNextEvent();
-            engine.Choose(0);
-            Assert.AreEqual(engine.Capacity, engine.Stats.Total, "先把這一區的容量填滿");
 
-            engine.BeginNextEvent();
-            var result = engine.Choose(0);
-
-            Assert.AreEqual(0, result.overflow);
-            Assert.AreEqual(balance.startStats.toughness + 2, engine.Stats.toughness);
+            Assert.AreEqual(1, engine.Cycle);
+            Assert.AreEqual(EventKind.Random, engine.CurrentEvent.kind);
+            Assert.AreEqual(levelBefore + 1, engine.CurrentLevel);
         }
 
         [Test]
         public void NoSelectableOption_OnARandomEvent_IsWithered()
         {
-            var random = MakeEvent("random", EventKind.Random, ZoneMask.All, Impossible(), Impossible(), Impossible());
+            var random = MakeEvent("random", EventKind.Random, Impossible(), Impossible(), Impossible());
             var engine = NewEngine(random);
 
             Assert.IsTrue(engine.BeginNextEvent());
@@ -138,8 +112,8 @@ namespace GrassRun.Tests
         public void NoSelectableOption_OnACheckpoint_IsDeath()
         {
             balance.eventsPerCycle = 2;
-            var random = MakeEvent("random", EventKind.Random, ZoneMask.All, Free(), Free(), Free());
-            var checkpoint = MakeEvent("checkpoint", EventKind.Checkpoint, ZoneMask.All,
+            var random = MakeEvent("random", EventKind.Random, Free(), Free(), Free());
+            var checkpoint = MakeEvent("checkpoint", EventKind.Checkpoint,
                 Gated(StatType.Speed, Comparison.AtLeast, Tier.High),
                 Gated(StatType.Moisture, Comparison.AtLeast, Tier.High),
                 Gated(StatType.Toughness, Comparison.AtLeast, Tier.High));
@@ -157,7 +131,7 @@ namespace GrassRun.Tests
         public void SelectableOptions_NeverEndTheRun()
         {
             // 風險只以代價呈現：就算選了代價最重的選項，只要付得起就不會結束。
-            var random = MakeEvent("random", EventKind.Random, ZoneMask.All,
+            var random = MakeEvent("random", EventKind.Random,
                 Free(new StatChange(StatType.Toughness, -4)), Impossible(), Impossible());
             var engine = NewEngine(random);
 
@@ -172,7 +146,7 @@ namespace GrassRun.Tests
         [Test]
         public void LockedOption_CannotBeChosen()
         {
-            var random = MakeEvent("random", EventKind.Random, ZoneMask.All, Impossible(), Free(), Free());
+            var random = MakeEvent("random", EventKind.Random, Impossible(), Free(), Free());
             var engine = NewEngine(random);
 
             engine.BeginNextEvent();
@@ -182,17 +156,19 @@ namespace GrassRun.Tests
         }
 
         [Test]
-        public void Deck_OnlyDrawsEventsOfTheCurrentZone()
+        public void NewEngine_StartsFromTheStartingStats()
         {
-            var meadow = MakeEvent("meadow", EventKind.Random, ZoneMask.Meadow, Free(), Free(), Free());
-            var dry = MakeEvent("dry", EventKind.Random, ZoneMask.Dry, Free(), Free(), Free());
-            var deck = new EventDeck(new[] { meadow, dry }, new System.Random(3));
+            // 重新開始就是建一個新的引擎：數值和進度都要回到起點。
+            var random = MakeEvent("random", EventKind.Random, Free(new StatChange(StatType.Speed, 5)), Free(), Free());
+            var first = NewEngine(random);
+            first.BeginNextEvent();
+            first.Choose(0);
 
-            for (int i = 0; i < 20; i++)
-            {
-                Assert.AreSame(meadow, deck.Draw(EventKind.Random, ZoneType.Meadow));
-                Assert.AreSame(dry, deck.Draw(EventKind.Random, ZoneType.Dry));
-            }
+            var second = NewEngine(random);
+
+            Assert.AreEqual(balance.startStats.ToString(), second.Stats.ToString());
+            Assert.AreEqual(0, second.EventsResolved);
+            Assert.AreEqual(0, second.Cycle);
         }
 
         [Test]
@@ -200,39 +176,14 @@ namespace GrassRun.Tests
         {
             var library = new List<EventDefinition>();
             for (int i = 0; i < 6; i++)
-                library.Add(MakeEvent("e" + i, EventKind.Random, ZoneMask.All, Free(), Free(), Free()));
+                library.Add(MakeEvent("e" + i, EventKind.Random, Free(), Free(), Free()));
             var deck = new EventDeck(library, new System.Random(11));
 
             for (int round = 0; round < 50; round++)
             {
                 var seen = new HashSet<EventDefinition>();
                 for (int i = 0; i < 5; i++)
-                    Assert.IsTrue(seen.Add(deck.Draw(EventKind.Random, ZoneType.Meadow)), "同一個週期抽到重複的事件");
-            }
-        }
-
-        [Test]
-        public void ZoneRotation_StartsInMeadow_ThenNeverRepeatsMoreThanTwice()
-        {
-            balance.eventsPerCycle = 2;
-            var random = MakeEvent("random", EventKind.Random, ZoneMask.All, Free(), Free(), Free());
-            var checkpoint = MakeEvent("checkpoint", EventKind.Checkpoint, ZoneMask.All, Free(), Free(), Free());
-
-            for (int seed = 1; seed <= 20; seed++)
-            {
-                var engine = new RunEngine(balance, new[] { random, checkpoint }, new System.Random(seed));
-                Assert.AreEqual(ZoneType.Meadow, engine.Zone);
-
-                var zones = new List<ZoneType>();
-                for (int i = 0; i < 80; i++)
-                {
-                    engine.BeginNextEvent();
-                    if (engine.Choose(0).enteredNewZone) zones.Add(engine.Zone);
-                }
-
-                Assert.IsFalse(zones.Contains(ZoneType.Meadow), "草原只當開場");
-                for (int i = 2; i < zones.Count; i++)
-                    Assert.IsFalse(zones[i] == zones[i - 1] && zones[i] == zones[i - 2], "同一種區域連續三次");
+                    Assert.IsTrue(seen.Add(deck.Draw(EventKind.Random)), "同一個週期抽到重複的事件");
             }
         }
     }

@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: G06_Hail
   m_EditorClassIdentifier: GrassRun::GrassRun.EventDefinition
   kind: 0
-  zones: 7
   weight: 1
   title: "\u5FFD\u7136\u7684\u51B0\u96F9"
   description: "\u5929\u8272\u4E00\u6697\uFF0C\u51B0\u7C92\u5F9E\u96F2\u88E1\u7838\u4E0B\u4F86\u3002\u5B83\u5011\u4E0D\u5927\uFF0C\u4F46\u6BCF\u4E00\u9846\u90FD\u662F\u786C\u7684\u3002"

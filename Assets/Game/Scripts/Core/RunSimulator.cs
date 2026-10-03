@@ -75,7 +75,7 @@ namespace GrassRun
         }
 
         /// <summary>
-        /// 規劃：看得懂預告的玩家。挑能讓「這一區檢驗點」過關選項最多、差距最小的選項。
+        /// 規劃：為下一個檢驗點做準備的玩家。挑能讓檢驗點過關選項最多、差距最小的選項。
         /// </summary>
         public static Policy PlannerPolicy()
         {
@@ -87,7 +87,7 @@ namespace GrassRun
 
                 foreach (var e in engine.Library)
                 {
-                    if (e.kind != EventKind.Checkpoint || !e.AppearsIn(engine.Zone)) continue;
+                    if (e.kind != EventKind.Checkpoint) continue;
                     foreach (var option in e.options)
                     {
                         var check = RunRules.Check(option, after, engine.Balance, level);
@@ -117,7 +117,7 @@ namespace GrassRun
             for (int i = 0; i < engine.CurrentChecks.Length; i++)
             {
                 if (!engine.CurrentChecks[i].available) continue;
-                var after = RunRules.Preview(engine.CurrentEvent.options[i], before, engine.CapacityForCurrentEvent);
+                var after = RunRules.Preview(engine.CurrentEvent.options[i], before);
                 float s = score(after, before);
                 if (s > bestScore)
                 {

@@ -11,6 +11,9 @@ namespace GrassRun
         public const string MoistureColor = "#5DB4EC";
         public const string ToughnessColor = "#E08A58";
 
+        /// <summary>結算畫面的稱號。判定規則還沒做，先固定顯示這個。</summary>
+        public const string PlaceholderTitle = "無名小草";
+
         public static string StatName(StatType stat)
         {
             switch (stat)
@@ -38,26 +41,6 @@ namespace GrassRun
                 case Tier.Low: return "低";
                 case Tier.Mid: return "中";
                 default: return "高";
-            }
-        }
-
-        public static string ZoneName(ZoneType zone)
-        {
-            switch (zone)
-            {
-                case ZoneType.Meadow: return "草原";
-                case ZoneType.Dry: return "乾裂帶";
-                default: return "溼地";
-            }
-        }
-
-        public static string ZoneIntro(ZoneType zone)
-        {
-            switch (zone)
-            {
-                case ZoneType.Meadow: return "風很輕，土很軟。這裡什麼都還沒開始。";
-                case ZoneType.Dry: return "土地裂開了。水在這裡，是會被奪走的東西。";
-                default: return "到處都是水。跑得快的，在這裡反而走不遠。";
             }
         }
 
@@ -108,27 +91,6 @@ namespace GrassRun
                 sb.Append("</color>");
             }
             return sb.Length > 0 ? sb.ToString() : "什麼也沒有改變。";
-        }
-
-        public const string OverflowNote = "養分已經到頂，多出來的成長沒能留下。";
-
-        public static string NewZoneNote(ZoneType zone) => $"你離開了這片土地，前方是{ZoneName(zone)}。";
-
-        public static string EndTitle(RunEndReason reason) => reason == RunEndReason.Death ? "你停在了這裡" : "你枯竭了";
-
-        public static string EndBody(RunEndReason reason, EventDefinition lastEvent)
-        {
-            string title = lastEvent != null ? lastEvent.title : "這個世界";
-            if (reason == RunEndReason.Death)
-                return $"「{title}」沒有為你留一條路。\n你不夠快、不夠韌，也不夠溼潤——至少，不是它要的那一種。";
-
-            return $"在「{title}」面前，沒有哪一條路是你走得了的。\n你把自己長成了某一種草，而這裡剛好不需要那一種。";
-        }
-
-        public static string FormatTime(float seconds)
-        {
-            int total = seconds > 0f ? (int)seconds : 0;
-            return $"{total / 60}:{total % 60:00}";
         }
 
         public static string RequirementDebug(Requirement requirement, int threshold) =>

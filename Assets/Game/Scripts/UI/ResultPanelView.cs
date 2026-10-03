@@ -15,7 +15,6 @@ namespace GrassRun
         [SerializeField] TMP_Text resultLabel;
         [SerializeField] TMP_Text hintLabel;
         [SerializeField] TMP_Text changeLabel;
-        [SerializeField] TMP_Text noteLabel;
         [SerializeField] Button continueButton;
 
         Action onContinue;
@@ -25,7 +24,7 @@ namespace GrassRun
             continueButton.onClick.AddListener(() => onContinue?.Invoke());
         }
 
-        public void Show(string heading, string result, string hint, string changes, string note, Action onContinue)
+        public void Show(string heading, string result, string hint, string changes, Action onContinue)
         {
             this.onContinue = onContinue;
             root.SetActive(true);
@@ -34,7 +33,6 @@ namespace GrassRun
             resultLabel.text = result;
             hintLabel.text = hint;
             changeLabel.text = changes;
-            noteLabel.text = note;
         }
 
         public void Hide() => root.SetActive(false);

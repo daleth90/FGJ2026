@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 namespace GrassRun
 {
     /// <summary>
-    /// 一局的主流程：奔跑計時 → 事件 → 結果敘事 → 繼續，直到沒有選項可選。
+    /// 一局的主流程：奔跑 → 事件 → 結果敘事 → 繼續，直到沒有選項可選。
     /// 規則本身都在 <see cref="RunEngine"/>，這裡只負責時間、輸入和畫面。
     /// </summary>
     public class RunController : MonoBehaviour
@@ -30,12 +30,12 @@ namespace GrassRun
         [SerializeField] EventPanelView eventPanel;
         [SerializeField] ResultPanelView resultPanel;
         [SerializeField] GameOverView gameOver;
-        [SerializeField] RunnerView runner;
+        [SerializeField] StageView stage;
 
         [Header("除錯")]
         [Tooltip("亂數種子。0 代表每次都不同。")]
         [SerializeField] int seed;
-        [Tooltip("按住 Tab 時，奔跑計時加速的倍率。")]
+        [Tooltip("按住 Tab 時，奔跑加速的倍率。")]
         [SerializeField] float fastForwardScale = 8f;
         [Tooltip("設計師模式：顯示實際門檻與數值變化。執行時按 F1 切換。")]
         [SerializeField] bool designerMode;
@@ -47,10 +47,7 @@ namespace GrassRun
         RunEngine engine;
         Phase phase;
         float eventTimer;
-        float runTime;
         bool fastForward;
-        bool pendingZoneBanner;
-        EventDefinition lastEvent;
 
         public string PhaseName => phase.ToString();
         public RunEngine Engine => engine;
@@ -71,6 +68,7 @@ namespace GrassRun
             StartRun();
         }
 
+        /// <summary>開始新的一局。結算畫面的重新開始按鈕也是呼叫這裡。</summary>
         public void StartRun()
         {
             var rng = seed != 0 ? new System.Random(seed) : new System.Random();
@@ -78,9 +76,6 @@ namespace GrassRun
 
             phase = Phase.Running;
             eventTimer = 0f;
-            runTime = 0f;
-            pendingZoneBanner = false;
-            lastEvent = null;
             journal.Clear();
 
             eventPanel.Hide();
@@ -88,7 +83,6 @@ namespace GrassRun
             gameOver.Hide();
             hud.ResetState();
             hud.SetJournal(journal);
-            hud.ShowZoneBanner(engine.Zone);
             ClearSelection();
         }
 
@@ -98,9 +92,7 @@ namespace GrassRun
 
             if (phase == Phase.Running)
             {
-                float dt = Time.deltaTime * (fastForward ? fastForwardScale : 1f);
-                runTime += dt;
-                eventTimer += dt;
+                eventTimer += Time.deltaTime * (fastForward ? fastForwardScale : 1f);
                 if (eventTimer >= balance.eventInterval)
                 {
                     eventTimer = 0f;
@@ -108,8 +100,11 @@ namespace GrassRun
                 }
             }
 
-            RefreshHud();
-            runner.SetState(engine.Stats, engine.Zone, phase == Phase.Running, fastForward ? fastForwardScale : 1f);
+            hud.Render(engine.Stats);
+            hud.SetRunningVisible(phase == Phase.Running);
+            hud.SetDesigner(designerMode, designerMode ? DesignerOverlay() : null);
+            if (stage != null)
+                stage.SetState(engine.Stats.speed, phase == Phase.Running, fastForward ? fastForwardScale : 1f);
         }
 
         void HandleKeys()
@@ -146,11 +141,10 @@ namespace GrassRun
         {
             if (!engine.BeginNextEvent())
             {
-                Debug.LogWarning($"{GameText.ZoneName(engine.Zone)}沒有可抽的事件，這個時段直接跳過。");
+                Debug.LogWarning("事件池裡沒有可抽的事件，這個時段直接跳過。");
                 return;
             }
 
-            lastEvent = engine.CurrentEvent;
             phase = engine.IsEnded ? Phase.DeadEnd : Phase.Choosing;
             ShowEventPanel();
         }
@@ -226,18 +220,9 @@ namespace GrassRun
             string hint = result.option.hintText;
             AddJournal(string.IsNullOrWhiteSpace(hint) ? result.option.resultText : hint);
 
-            var note = new StringBuilder();
-            if (result.overflow > 0) note.Append(GameText.OverflowNote);
-            if (result.enteredNewZone)
-            {
-                if (note.Length > 0) note.Append('\n');
-                note.Append(GameText.NewZoneNote(result.zone));
-            }
-
-            pendingZoneBanner = result.enteredNewZone;
             phase = Phase.Result;
             resultPanel.Show(result.option.title, result.option.resultText, hint,
-                GameText.ChangeSummary(result.applied), note.ToString(), Continue);
+                GameText.ChangeSummary(result.applied), Continue);
             ClearSelection();
         }
 
@@ -246,8 +231,6 @@ namespace GrassRun
             if (phase != Phase.Result) return;
 
             resultPanel.Hide();
-            if (pendingZoneBanner) hud.ShowZoneBanner(engine.Zone);
-            pendingZoneBanner = false;
             phase = Phase.Running;
             ClearSelection();
         }
@@ -258,14 +241,7 @@ namespace GrassRun
 
             eventPanel.Hide();
             phase = Phase.Ended;
-
-            var stats = engine.Stats;
-            string summary =
-                $"奔跑了 {GameText.FormatTime(runTime)}　｜　通過 {engine.Cycle} 個檢驗點\n" +
-                $"速度 {stats.speed}　溼度 {stats.moisture}　韌度 {stats.toughness}";
-
-            gameOver.Show(GameText.EndTitle(engine.EndReason), GameText.EndBody(engine.EndReason, lastEvent),
-                summary, StartRun);
+            gameOver.Show(GameText.PlaceholderTitle, StartRun);
             ClearSelection();
         }
 
@@ -277,29 +253,16 @@ namespace GrassRun
             hud.SetJournal(journal);
         }
 
-        void RefreshHud()
-        {
-            // 事件開著的時候，這一個事件的時間已經走完，但引擎要等選完才推進。
-            int eventsLeft = engine.EventsUntilCheckpoint - (engine.CurrentEvent != null ? 1 : 0);
-            float secondsToCheckpoint = eventsLeft * balance.eventInterval - (phase == Phase.Running ? eventTimer : 0f);
-
-            hud.Render(engine.Stats, engine.Capacity, balance.useCapacity, engine.Zone, engine.NextZone,
-                secondsToCheckpoint, runTime);
-            hud.SetRunningVisible(phase == Phase.Running);
-            hud.SetDesigner(designerMode, designerMode ? DesignerOverlay() : null);
-        }
-
         string DesignerOverlay()
         {
             int cycle = engine.Cycle;
             var stats = engine.Stats;
             var sb = new StringBuilder();
             sb.Append("設計師模式（F1）\n");
-            sb.Append($"第 {cycle + 1} 區　事件 {engine.EventIndexInCycle + 1}/{balance.eventsPerCycle}　狀態 {phase}\n");
+            sb.Append($"第 {cycle + 1} 週期　事件 {engine.EventIndexInCycle + 1}/{balance.eventsPerCycle}　狀態 {phase}\n");
             sb.Append($"隨機事件門檻 L{cycle}：低 {balance.Threshold(Tier.Low, cycle)}　中 {balance.Threshold(Tier.Mid, cycle)}　高 {balance.Threshold(Tier.High, cycle)}\n");
             sb.Append($"檢驗點門檻 L{cycle + 1}：低 {balance.Threshold(Tier.Low, cycle + 1)}　中 {balance.Threshold(Tier.Mid, cycle + 1)}　高 {balance.Threshold(Tier.High, cycle + 1)}\n");
-            sb.Append($"數值 {stats.speed}/{stats.moisture}/{stats.toughness}　總和 {stats.Total}");
-            if (balance.useCapacity) sb.Append($" / 容量 {engine.Capacity}");
+            sb.Append($"數值 {stats.speed}/{stats.moisture}/{stats.toughness}");
             if (engine.CurrentEvent != null) sb.Append($"\n目前事件：{engine.CurrentEvent.name}");
             return sb.ToString();
         }

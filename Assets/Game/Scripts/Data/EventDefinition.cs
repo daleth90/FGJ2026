@@ -10,13 +10,10 @@ namespace GrassRun
     {
         public const int OptionCount = 3;
 
-        [Tooltip("隨機事件每隔一段時間出現；檢驗點在每個區域的最後出現，門檻比同區的隨機事件高一級。")]
+        [Tooltip("隨機事件每隔一段時間出現；檢驗點每個週期的最後出現，門檻比隨機事件高一級。")]
         public EventKind kind = EventKind.Random;
 
-        [Tooltip("這個事件會出現在哪些區域。")]
-        public ZoneMask zones = ZoneMask.All;
-
-        [Tooltip("抽中的權重。區域專屬事件可以調高，讓它在該區更常出現。")]
+        [Tooltip("抽中的權重。調高會更常出現。")]
         [Min(0f)]
         public float weight = 1f;
 
@@ -27,7 +24,5 @@ namespace GrassRun
 
         [Tooltip("固定三個選項。")]
         public EventOption[] options = { new EventOption(), new EventOption(), new EventOption() };
-
-        public bool AppearsIn(ZoneType zone) => (zones & zone.ToMask()) != 0;
     }
 }

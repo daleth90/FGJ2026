@@ -5,12 +5,14 @@ using UnityEngine.UI;
 
 namespace GrassRun
 {
+    /// <summary>
+    /// 結算畫面：稱號和重新開始。
+    /// </summary>
     public class GameOverView : MonoBehaviour
     {
         [SerializeField] GameObject root;
+        [Tooltip("顯示稱號的文字。")]
         [SerializeField] TMP_Text titleLabel;
-        [SerializeField] TMP_Text bodyLabel;
-        [SerializeField] TMP_Text summaryLabel;
         [SerializeField] Button restartButton;
 
         Action onRestart;
@@ -20,14 +22,11 @@ namespace GrassRun
             restartButton.onClick.AddListener(() => onRestart?.Invoke());
         }
 
-        public void Show(string title, string body, string summary, Action onRestart)
+        public void Show(string title, Action onRestart)
         {
             this.onRestart = onRestart;
             root.SetActive(true);
-
             titleLabel.text = title;
-            bodyLabel.text = body;
-            summaryLabel.text = summary;
         }
 
         public void Hide() => root.SetActive(false);
