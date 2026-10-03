@@ -276,16 +276,20 @@ namespace GrassRun
             {
                 filterMode = FilterMode.Point,
                 wrapMode = TextureWrapMode.Clamp,
-                hideFlags = HideFlags.HideAndDontSave,
             };
             var pixels = new Color32[16];
             for (int i = 0; i < pixels.Length; i++) pixels[i] = new Color32(255, 255, 255, 255);
             texture.SetPixels32(pixels);
             texture.Apply();
 
-            var sprite = Sprite.Create(texture, new Rect(0f, 0f, 4f, 4f), new Vector2(0.5f, 0f), 4f);
-            sprite.hideFlags = HideFlags.HideAndDontSave;
-            return sprite;
+            return Sprite.Create(texture, new Rect(0f, 0f, 4f, 4f), new Vector2(0.5f, 0f), 4f);
+        }
+
+        void OnDestroy()
+        {
+            if (pixel == null) return;
+            Destroy(pixel.texture);
+            Destroy(pixel);
         }
     }
 }
