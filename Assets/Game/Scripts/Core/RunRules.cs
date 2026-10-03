@@ -33,8 +33,13 @@ namespace GrassRun
 
         public static OptionCheck Check(EventOption option, StatBlock stats)
         {
+            return CheckRequirements(option.requirement, stats);
+        }
+
+        public static OptionCheck CheckRequirements(string expression, StatBlock stats)
+        {
             var requirements = new List<Requirement>();
-            if (!TryParseRequirements(option.requirement, requirements, out string error))
+            if (!TryParseRequirements(expression, requirements, out string error))
                 return new OptionCheck { lockKind = LockKind.InvalidData, error = error };
 
             foreach (var requirement in requirements)
@@ -50,6 +55,33 @@ namespace GrassRun
             }
 
             return new OptionCheck { available = true };
+        }
+
+        public static TitleDefinition ResolveTitle(IReadOnlyList<TitleDefinition> titles, StatBlock stats)
+        {
+            if (titles == null) return null;
+
+            for (int i = titles.Count - 1; i >= 0; i--)
+            {
+                var title = titles[i];
+                if (title != null && CheckRequirements(title.requirement, stats).available)
+                    return title;
+            }
+
+            return null;
+        }
+
+        public static TitleDefinition FindTitleById(IReadOnlyList<TitleDefinition> titles, int titleId)
+        {
+            if (titles == null || titleId == 0) return null;
+
+            for (int i = 0; i < titles.Count; i++)
+            {
+                var title = titles[i];
+                if (title != null && title.titleId == titleId) return title;
+            }
+
+            return null;
         }
 
         public static StatBlock NetChange(EventOption option)

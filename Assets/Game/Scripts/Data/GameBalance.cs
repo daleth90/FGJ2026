@@ -19,5 +19,8 @@ namespace GrassRun
         [Tooltip("溼度上限；溼度與其他非善惡屬性的下限都是 0。")]
         [Min(1)]
         public int maxMoisture = 100;
+
+        [Header("內容")]
+        public TitleTable titleTable;
     }
 }

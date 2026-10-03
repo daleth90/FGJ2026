@@ -13,7 +13,7 @@ namespace GrassRun
 
     /// <summary>
     /// 一局的事件狀態。每次依已經歷事件數抽目前階段的事件，再判定三個選項。
-    /// 特殊結局 ID 只隨結果回傳；稱號與結局流程不在這一層處理。
+    /// 特殊結局 ID 只隨結果回傳；濕度抵達邊界時結束本局。
     /// </summary>
     public sealed class RunEngine
     {
@@ -34,6 +34,7 @@ namespace GrassRun
         public EventDefinition CurrentEvent { get; private set; }
         public OptionCheck[] CurrentChecks { get; private set; }
         public RunEndReason EndReason { get; private set; }
+        public int EndingTitleId { get; private set; }
         public bool IsEnded => EndReason != RunEndReason.None;
 
         public bool BeginNextEvent()
@@ -72,6 +73,14 @@ namespace GrassRun
             var source = CurrentEvent;
             var option = source.options[optionIndex];
             var applied = RunRules.Apply(option, ref stats, Balance.maxMoisture);
+
+            if (option.endingTitleId != 0)
+            {
+                EndingTitleId = option.endingTitleId;
+                EndReason = RunEndReason.SpecialEnding;
+            }
+            else if (stats.moisture <= 0) EndReason = RunEndReason.MoistureDepleted;
+            else if (stats.moisture >= Balance.maxMoisture) EndReason = RunEndReason.MoistureSaturated;
 
             CurrentEvent = null;
             CurrentChecks = null;

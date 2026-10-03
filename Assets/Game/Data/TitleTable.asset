@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6e4da7a75c94e246a05de44dec548ff, type: 3}
+  m_Name: TitleTable
+  m_EditorClassIdentifier: GrassRun::GrassRun.TitleTable
+  titles:
+  - titleId: 0
+    titleName: "\u7121\u70BA\u7684\u8349"
+    imageId: title_0
+    requirement: 
+  - titleId: 1
+    titleName: "\u9583\u8EAB\u6B65\u5927\u5E2B"
+    imageId: title_1
+    requirement: spd>=20
+  - titleId: 2
+    titleName: "\u8DDF\u77F3\u982D\u4E00\u6A23\u786C"
+    imageId: title_2
+    requirement: tgh>=20
+  - titleId: 3
+    titleName: "\u5F37\u97CC\u7684\u5C0F\u8349"
+    imageId: title_3
+    requirement: spd>=20;tgh>=20
+  - titleId: 4
+    titleName: "\u6211\u5F88\u5584\u826F"
+    imageId: title_4
+    requirement: mor>=10
+  - titleId: 5
+    titleName: "\u71B1\u5FC3\u5FEB\u905E"
+    imageId: title_5
+    requirement: mor>=10;spd>=20
+  - titleId: 6
+    titleName: "\u5B88\u8B77\u5927\u5BB6"
+    imageId: title_6
+    requirement: mor>=10;tgh>=20
+  - titleId: 7
+    titleName: "\u5927\u5929\u4F7F"
+    imageId: title_7
+    requirement: mor>=10;spd>=20;tgh>=20
+  - titleId: 8
+    titleName: "\u6211\u5F88\u90AA\u60E1"
+    imageId: title_8
+    requirement: mor<=-10
+  - titleId: 9
+    titleName: "\u5077\u4E86\u5C31\u8DD1"
+    imageId: title_9
+    requirement: mor<=-10;spd>=20
+  - titleId: 10
+    titleName: "\u6A6B\u884C\u9738\u9053"
+    imageId: title_10
+    requirement: mor<=-10;tgh>=20
+  - titleId: 11
+    titleName: "\u5927\u9B54\u738B"
+    imageId: title_11
+    requirement: mor<=-10;spd>=20;tgh>=20
+  specialEndingTitles:
+  - titleId: 2008
+    titleName: "\u6C38\u751F\u4E0D\u673D"
+    imageId: title_2008
+    requirement: 
+  - titleId: 2009
+    titleName: "\u5154\u5B50\u7684\u665A\u9910"
+    imageId: title_2009
+    requirement: 
+  - titleId: 2010
+    titleName: "\u82B1\u74F6\u88E1\u7684\u8349"
+    imageId: title_2010
+    requirement: 
+  - titleId: 3015
+    titleName: "\u9A0E\u80E1\u863F\u8514\u4E0A\u6708\u4EAE"
+    imageId: title_3015
+    requirement: 
+  - titleId: 3016
+    titleName: "\u67CF\u6CB9\u7E2B\u88E1\u7684\u8349"
+    imageId: title_3016
+    requirement: 
+  - titleId: 3017
+    titleName: "\u958B\u82B1\u7D50\u679C"
+    imageId: title_3017
+    requirement: 
+  - titleId: 3018
+    titleName: "\u723A\u723A\u6CE1\u7684\u8336"
+    imageId: title_3018
+    requirement: 
+  - titleId: 3019
+    titleName: "\u624B\u4E2D\u7684\u8349\u8722"
+    imageId: title_3019
+    requirement: 
+  - titleId: 3020
+    titleName: "\u6E38\u5411\u5927\u6D77"
+    imageId: title_3020
+    requirement: 

@@ -51,7 +51,7 @@ namespace GrassRun
         [Tooltip("選完此選項後顯示的圖片 ID，不含副檔名。")]
         public string resultImageId;
 
-        [Tooltip("特殊結局對應的稱號 ID。0 代表沒有；目前只保存資料，不處理結局流程。")]
+        [Tooltip("特殊結局對應的稱號 ID。0 代表沒有；非 0 時會在數值結算後結束遊戲。")]
         [Min(0)]
         public int endingTitleId;
     }

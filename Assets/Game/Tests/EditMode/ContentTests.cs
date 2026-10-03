@@ -8,16 +8,21 @@ namespace GrassRun.Tests
     public class ContentTests
     {
         const string BalancePath = "Assets/Game/Data/Balance.asset";
+        const string TitleTablePath = "Assets/Game/Data/TitleTable.asset";
 
         GameBalance balance;
+        TitleTable titleTable;
         EventDefinition[] library;
 
         [SetUp]
         public void SetUp()
         {
             balance = AssetDatabase.LoadAssetAtPath<GameBalance>(BalancePath);
+            titleTable = AssetDatabase.LoadAssetAtPath<TitleTable>(TitleTablePath);
             library = Resources.LoadAll<EventDefinition>("Events");
             Assert.IsNotNull(balance, $"找不到 {BalancePath}");
+            Assert.IsNotNull(titleTable, $"找不到 {TitleTablePath}");
+            Assert.AreSame(titleTable, balance.titleTable, "Balance 應引用獨立的稱號 Table");
             Assert.IsNotEmpty(library, "Resources/Events 底下沒有事件");
         }
 
@@ -82,6 +87,51 @@ namespace GrassRun.Tests
             Assert.AreEqual(0, balance.startStats.speed);
             Assert.AreEqual(0, balance.startStats.toughness);
             Assert.AreEqual(100, balance.maxMoisture);
+        }
+
+        [Test]
+        public void GeneralTitlesMatchTheV2TableOrder()
+        {
+            Assert.IsNotNull(titleTable.titles);
+            Assert.AreEqual(12, titleTable.titles.Length);
+            for (int i = 0; i < titleTable.titles.Length; i++)
+            {
+                Assert.AreEqual(i, titleTable.titles[i].titleId);
+                Assert.IsFalse(string.IsNullOrWhiteSpace(titleTable.titles[i].titleName));
+                Assert.AreEqual($"title_{i}", titleTable.titles[i].imageId);
+                Assert.IsTrue(RunRules.TryParseRequirements(titleTable.titles[i].requirement,
+                    new List<Requirement>(), out string error), $"稱號 {i}：{error}");
+            }
+        }
+
+        [TestCase(10, 20, 20, 7)]
+        [TestCase(-10, 20, 20, 11)]
+        [TestCase(0, 20, 20, 3)]
+        [TestCase(0, 0, 0, 0)]
+        public void GeneralTitles_SelectTheLastMatchingTableRow(
+            int morality, int speed, int toughness, int expectedTitleId)
+        {
+            var title = RunRules.ResolveTitle(titleTable.titles,
+                new StatBlock(morality, 50, speed, toughness));
+
+            Assert.IsNotNull(title);
+            Assert.AreEqual(expectedTitleId, title.titleId);
+        }
+
+        [Test]
+        public void SpecialEndingTitlesMatchTheV2Table()
+        {
+            int[] expectedIds = { 2008, 2009, 2010, 3015, 3016, 3017, 3018, 3019, 3020 };
+            Assert.IsNotNull(titleTable.specialEndingTitles);
+            Assert.AreEqual(expectedIds.Length, titleTable.specialEndingTitles.Length);
+
+            for (int i = 0; i < expectedIds.Length; i++)
+            {
+                var title = titleTable.specialEndingTitles[i];
+                Assert.AreEqual(expectedIds[i], title.titleId);
+                Assert.IsFalse(string.IsNullOrWhiteSpace(title.titleName));
+                Assert.AreEqual($"title_{expectedIds[i]}", title.imageId);
+            }
         }
     }
 }

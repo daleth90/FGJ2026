@@ -19,3 +19,4 @@ MonoBehaviour:
     speed: 0
     toughness: 0
   maxMoisture: 100
+  titleTable: {fileID: 11400000, guid: e74011271b3c6da4683b402ebef0691f, type: 2}
