@@ -45,6 +45,14 @@ namespace GrassRun
         public string PhaseName => phase.ToString();
         public RunEngine Engine => engine;
 
+        // 流程訊號：給音訊這類被動 consumer 訂閱。訂閱者只做表現，不要反過來改遊戲狀態。
+        public event System.Action RunStarted;
+        /// <summary>事件面板打開；參數為 true 代表三個選項全鎖定（無路可走）。</summary>
+        public event System.Action<bool> EventOpened;
+        public event System.Action<ChoiceResult> OptionChosen;
+        public event System.Action ResultClosed;
+        public event System.Action<RunEndReason> RunEnded;
+
         void Start()
         {
             if (balance == null)
@@ -75,6 +83,7 @@ namespace GrassRun
             ClearSelection();
             characterAppearance = CharacterAppearance.Default;
             if (stage != null) stage.SetCharacterAppearance(characterAppearance);
+            RunStarted?.Invoke();
         }
 
         void Update()
@@ -144,6 +153,7 @@ namespace GrassRun
 
             phase = engine.IsEnded ? Phase.DeadEnd : Phase.Choosing;
             ShowEventPanel();
+            EventOpened?.Invoke(phase == Phase.DeadEnd);
         }
 
         void ShowEventPanel()
@@ -171,12 +181,14 @@ namespace GrassRun
             resultShownFrame = Time.frameCount;
             resultPanel.Show(result.option.resultText, GameText.ChangeSummary(result.applied));
             ClearSelection();
+            OptionChosen?.Invoke(result);
         }
 
         public void Continue()
         {
             if (phase != Phase.Result) return;
             resultPanel.Hide();
+            ResultClosed?.Invoke();
             if (engine.IsEnded) ShowGameOver();
             else phase = Phase.Running;
             ClearSelection();
@@ -198,6 +210,7 @@ namespace GrassRun
                 ? RunRules.FindTitleById(titleTable.specialEndingTitles, engine.EndingTitleId)
                 : RunRules.ResolveTitle(titleTable.titles, engine.Stats);
             gameOver.Show(title != null ? title.titleName : GameText.EndTitle(engine.EndReason), StartRun);
+            RunEnded?.Invoke(engine.EndReason);
         }
 
         void AddJournal(string line)
