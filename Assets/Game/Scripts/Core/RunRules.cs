@@ -124,6 +124,40 @@ namespace GrassRun
             return stats;
         }
 
+        /// <summary>
+        /// 只在條件由未達成變成達成時切換外觀，否則保留最後觸發的狀態。
+        /// 同一次結算若同時觸發多個條件，依企劃列出的順序判定，後面的狀態為準。
+        /// </summary>
+        public static CharacterAppearance ResolveCharacterAppearance(
+            CharacterAppearance current,
+            StatBlock before,
+            StatBlock after)
+        {
+            var result = current;
+
+            if (!IsToughnessAppearance(before) && IsToughnessAppearance(after))
+                result = CharacterAppearance.Toughness;
+            if (!IsSpeedAppearance(before) && IsSpeedAppearance(after))
+                result = CharacterAppearance.Speed;
+            if (!IsWetAppearance(before) && IsWetAppearance(after))
+                result = CharacterAppearance.Wet;
+            if (!IsDryAppearance(before) && IsDryAppearance(after))
+                result = CharacterAppearance.Dry;
+
+            return result;
+        }
+
+        static bool IsToughnessAppearance(StatBlock stats) =>
+            stats.moisture > 25 && stats.toughness >= 8;
+
+        static bool IsSpeedAppearance(StatBlock stats) =>
+            stats.moisture > 25 && stats.speed >= 8;
+
+        static bool IsWetAppearance(StatBlock stats) =>
+            stats.moisture > 60 && stats.speed < 8 && stats.toughness < 8;
+
+        static bool IsDryAppearance(StatBlock stats) => stats.moisture <= 25;
+
         public static bool TryParseRequirements(string expression, List<Requirement> output, out string error)
         {
             output.Clear();

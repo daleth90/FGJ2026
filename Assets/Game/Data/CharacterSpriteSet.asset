@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1378eafa456876841b677a3a435024d4, type: 3}
+  m_Name: CharacterSpriteSet
+  m_EditorClassIdentifier: GrassRun::GrassRun.CharacterSpriteSet
+  defaultFrames:
+  - {fileID: 21300000, guid: 8d22bc9f4b64b8544a04331dc4ed976d, type: 3}
+  - {fileID: 21300000, guid: a907fdb298f60f94aa2f9e526a2d8e08, type: 3}
+  - {fileID: 21300000, guid: 226cd4e0082c49b4f837aac19a19fd3d, type: 3}
+  - {fileID: 21300000, guid: 7bc89221ee7cf034897f832817ceb788, type: 3}
+  toughnessFrames:
+  - {fileID: 21300000, guid: 9e7edfdbca9ab844bb1637a1e2166526, type: 3}
+  - {fileID: 21300000, guid: 5448d690c80f4a34aaf41e197ee3566b, type: 3}
+  - {fileID: 21300000, guid: 31a218e334a3c7d4ba7e657fe3f40621, type: 3}
+  - {fileID: 21300000, guid: 1043524aa77b96c4582d87ace2063fe1, type: 3}
+  speedFrames:
+  - {fileID: 21300000, guid: 1837328b20dea2f4db8a6adbc8f59220, type: 3}
+  - {fileID: 21300000, guid: 1dd948ab74f86bd44a18149e5b774afb, type: 3}
+  - {fileID: 21300000, guid: b301e0884534a2247a51326476a2a8fe, type: 3}
+  - {fileID: 21300000, guid: bde00bd6b92c8034ea9196510563e19f, type: 3}
+  wetFrames:
+  - {fileID: 21300000, guid: 68cd5486be0720841be18c6c1fd14854, type: 3}
+  - {fileID: 21300000, guid: edb17ef0374c96144bad56ec682a4278, type: 3}
+  - {fileID: 21300000, guid: f6c623a2b506ae546a2bc8eb5482f09a, type: 3}
+  - {fileID: 21300000, guid: 98dfd9ecf0ed3944eaf7454e92cde650, type: 3}
+  dryFrames:
+  - {fileID: 21300000, guid: b0154e4ec8d797e44b15c709326087a9, type: 3}
+  - {fileID: 21300000, guid: 87f4192d42209864b9a7b9feb15e6a9f, type: 3}
+  - {fileID: 21300000, guid: 50657f6029da943438d39b21b5e4c4fd, type: 3}
+  - {fileID: 21300000, guid: 5237d48ea83552242842ff7c65d44d0b, type: 3}

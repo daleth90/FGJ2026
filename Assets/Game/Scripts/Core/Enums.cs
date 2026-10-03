@@ -23,6 +23,15 @@ namespace GrassRun
         Wet = 2,
     }
 
+    public enum CharacterAppearance
+    {
+        Default = 0,
+        Toughness = 1,
+        Speed = 2,
+        Wet = 3,
+        Dry = 4,
+    }
+
     public enum RunEndReason
     {
         None = 0,

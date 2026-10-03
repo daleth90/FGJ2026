@@ -82,6 +82,43 @@ namespace GrassRun.Tests
         }
 
         [Test]
+        public void CharacterAppearance_SwitchesWhenEachConditionIsReached()
+        {
+            var appearance = CharacterAppearance.Default;
+            var stats = new StatBlock(0, 50, 0, 0);
+
+            var next = new StatBlock(0, 50, 0, 8);
+            appearance = RunRules.ResolveCharacterAppearance(appearance, stats, next);
+            Assert.AreEqual(CharacterAppearance.Toughness, appearance);
+
+            stats = next;
+            next = new StatBlock(0, 50, 8, 8);
+            appearance = RunRules.ResolveCharacterAppearance(appearance, stats, next);
+            Assert.AreEqual(CharacterAppearance.Speed, appearance);
+
+            stats = next;
+            next = new StatBlock(0, 25, 8, 8);
+            appearance = RunRules.ResolveCharacterAppearance(appearance, stats, next);
+            Assert.AreEqual(CharacterAppearance.Dry, appearance);
+
+            stats = new StatBlock(0, 60, 0, 0);
+            next = new StatBlock(0, 61, 0, 0);
+            appearance = RunRules.ResolveCharacterAppearance(appearance, stats, next);
+            Assert.AreEqual(CharacterAppearance.Wet, appearance);
+        }
+
+        [Test]
+        public void CharacterAppearance_KeepsLastTriggeredStateWithoutANewMatch()
+        {
+            var before = new StatBlock(0, 50, 0, 8);
+            var after = new StatBlock(10, 55, 0, 9);
+
+            var appearance = RunRules.ResolveCharacterAppearance(CharacterAppearance.Toughness, before, after);
+
+            Assert.AreEqual(CharacterAppearance.Toughness, appearance);
+        }
+
+        [Test]
         public void ResolveTitle_ChecksFromTheEndAndReturnsFirstMatch()
         {
             var titles = new[]

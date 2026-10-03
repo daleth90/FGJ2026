@@ -61,11 +61,7 @@ MonoBehaviour:
   character: {fileID: 7662383211074561286}
   hopHeight: 22
   hopsPerSecond: 2.4
-  characterFrames:
-  - {fileID: 21300000, guid: 8d22bc9f4b64b8544a04331dc4ed976d, type: 3}
-  - {fileID: 21300000, guid: a907fdb298f60f94aa2f9e526a2d8e08, type: 3}
-  - {fileID: 21300000, guid: 226cd4e0082c49b4f837aac19a19fd3d, type: 3}
-  - {fileID: 21300000, guid: 7bc89221ee7cf034897f832817ceb788, type: 3}
+  characterSprites: {fileID: 11400000, guid: a6e4ce20b0ae6fc428cb99fcfe0a5c92, type: 2}
   framesPerSecond: 8
 --- !u!1 &3357919302769133022
 GameObject:

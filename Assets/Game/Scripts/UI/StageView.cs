@@ -41,8 +41,8 @@ namespace GrassRun
         [SerializeField] RectTransform character;
         [SerializeField] float hopHeight = 22f;
         [SerializeField] float hopsPerSecond = 2.4f;
-        [Tooltip("走路動畫的圖，依播放順序排。第一張同時是停下時顯示的圖。")]
-        [SerializeField] Sprite[] characterFrames;
+        [Tooltip("五種角色狀態的走路動畫集合。每組第一張同時是停下時顯示的圖。")]
+        [SerializeField] CharacterSpriteSet characterSprites;
         [SerializeField] float framesPerSecond = 8f;
 
         int speedStat;
@@ -55,12 +55,14 @@ namespace GrassRun
         float characterBaseY;
         Image characterImage;
         float frameTime;
+        Sprite[] activeCharacterFrames;
 
         void Awake()
         {
             if (character == null) return;
             characterBaseY = character.anchoredPosition.y;
             characterImage = character.GetComponent<Image>();
+            activeCharacterFrames = GetCharacterFrames(CharacterAppearance.Default);
         }
 
         /// <summary>每幀由 RunController 餵入目前狀態。</summary>
@@ -70,6 +72,22 @@ namespace GrassRun
             this.moving = moving;
             this.timeScale = timeScale;
         }
+
+        public void SetCharacterAppearance(CharacterAppearance appearance)
+        {
+            Sprite[] nextFrames = GetCharacterFrames(appearance);
+            if ((nextFrames == null || nextFrames.Length == 0) && appearance != CharacterAppearance.Default)
+                nextFrames = GetCharacterFrames(CharacterAppearance.Default);
+            if (ReferenceEquals(activeCharacterFrames, nextFrames)) return;
+
+            activeCharacterFrames = nextFrames;
+            frameTime = 0f;
+            if (characterImage != null && activeCharacterFrames != null && activeCharacterFrames.Length > 0)
+                characterImage.sprite = activeCharacterFrames[0];
+        }
+
+        Sprite[] GetCharacterFrames(CharacterAppearance appearance) =>
+            characterSprites != null ? characterSprites.GetFrames(appearance) : null;
 
         void Update()
         {
@@ -88,11 +106,11 @@ namespace GrassRun
                 position.y = characterBaseY + Mathf.Abs(Mathf.Sin(stride)) * hopHeight * motion;
                 character.anchoredPosition = position;
 
-                if (characterImage != null && characterFrames != null && characterFrames.Length > 0)
+                if (characterImage != null && activeCharacterFrames != null && activeCharacterFrames.Length > 0)
                 {
                     // 停下時回到第一張，再起跑時從頭播。
                     frameTime = motion > 0f ? frameTime + dt * motion * Mathf.Min(timeScale, 3f) * framesPerSecond : 0f;
-                    characterImage.sprite = characterFrames[(int)frameTime % characterFrames.Length];
+                    characterImage.sprite = activeCharacterFrames[(int)frameTime % activeCharacterFrames.Length];
                 }
             }
         }

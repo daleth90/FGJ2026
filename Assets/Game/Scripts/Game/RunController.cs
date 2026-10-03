@@ -41,6 +41,7 @@ namespace GrassRun
         Phase phase;
         float eventTimer;
         bool fastForward;
+        CharacterAppearance characterAppearance;
 
         public string PhaseName => phase.ToString();
         public RunEngine Engine => engine;
@@ -73,6 +74,8 @@ namespace GrassRun
             hud.ResetState();
             hud.SetJournal(journal);
             ClearSelection();
+            characterAppearance = CharacterAppearance.Default;
+            if (stage != null) stage.SetCharacterAppearance(characterAppearance);
         }
 
         void Update()
@@ -166,7 +169,10 @@ namespace GrassRun
             var checks = engine.CurrentChecks;
             if (index < 0 || index >= checks.Length || !checks[index].available) return;
 
+            var before = engine.Stats;
             var result = engine.Choose(index);
+            characterAppearance = RunRules.ResolveCharacterAppearance(characterAppearance, before, engine.Stats);
+            if (stage != null) stage.SetCharacterAppearance(characterAppearance);
             eventPanel.Hide();
             AddJournal(result.option.resultText);
 
