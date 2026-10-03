@@ -12,7 +12,7 @@ namespace GrassRun
 
     /// <summary>
     /// 背景音樂：兩個 AudioSource 輪流用，換曲時交叉淡入淡出。
-    /// 被動元件，只提供 Play(cue)；不讀遊戲狀態，也不判斷結局種類。
+    /// 被動元件，只提供 Play(cue) 和 SetDucked；不讀遊戲狀態，也不判斷結局種類。
     /// </summary>
     public class MusicPlayer : MonoBehaviour
     {
@@ -27,6 +27,12 @@ namespace GrassRun
         [SerializeField, Range(0f, 1f)] float volume = 0.55f;
         [Tooltip("換曲時交叉淡入淡出的秒數。")]
         [SerializeField] float crossfadeSeconds = 0.4f;
+
+        [Header("事件壓低")]
+        [Tooltip("事件進行中，音樂壓低到原本音量的幾成。")]
+        [SerializeField, Range(0f, 1f)] float duckedVolume = 0.4f;
+        [Tooltip("壓低和恢復各花幾秒。")]
+        [SerializeField] float duckSeconds = 1.5f;
 
         [Header("音檔尾巴")]
         [Tooltip("循環曲的音檔不是無縫的：結尾前這麼多秒就從頭疊播下一輪，上一輪的尾巴照原樣播完。")]
@@ -44,12 +50,14 @@ namespace GrassRun
             public float target;
             public float fadeOut;   // 大於 0：播到最後這麼多秒時淡出（單次曲）
             public float tail;      // 尾巴淡出的增益，只會往下走
+            public float ducking;   // 0 = 原音量，1 = 完全壓低；每幀往目前的壓低狀態移動
         }
 
         readonly Voice[] voices = new Voice[2];
         int active;
         MusicCue? current;
         float loopOverlap;          // 目前曲目的疊播秒數；單次曲為 0
+        bool ducked;
 
         void Awake()
         {
@@ -102,8 +110,12 @@ namespace GrassRun
             }
 
             loopOverlap = loop ? Mathf.Min(tailSeconds, clip.length * 0.5f) : 0f;
-            Begin(next, clip, loop, 0f, loop ? 0f : tailSeconds);
+            // 新曲直接從目前的壓低狀態開始，不跟著上一首慢慢變。
+            Begin(next, clip, loop, 0f, loop ? 0f : tailSeconds, ducked ? 1f : 0f);
         }
+
+        /// <summary>壓低或恢復音樂音量（例如事件進行中），會慢慢變化而不是直接跳。</summary>
+        public void SetDucked(bool value) => ducked = value;
 
         void Update()
         {
@@ -112,6 +124,7 @@ namespace GrassRun
             // unscaled：不受 Time.timeScale 影響。卡頓的那一幀最多只算 0.05 秒，免得淡入淡出直接跳完。
             float dt = Mathf.Min(Time.unscaledDeltaTime, 0.05f);
             float step = crossfadeSeconds > 0f ? dt / crossfadeSeconds : 1f;
+            float duckStep = duckSeconds > 0f ? dt / duckSeconds : 1f;
             foreach (var voice in voices)
             {
                 if (!voice.live) continue;
@@ -124,13 +137,15 @@ namespace GrassRun
                     continue;
                 }
 
+                voice.ducking = Mathf.MoveTowards(voice.ducking, ducked ? 1f : 0f, duckStep);
+
                 if (voice.fadeOut > 0f)
                 {
                     float remaining = voice.source.clip.length - voice.source.time;
                     voice.tail = Mathf.Min(voice.tail, Mathf.Clamp01(remaining / voice.fadeOut));
                 }
 
-                voice.source.volume = volume * voice.gain * voice.tail;
+                voice.source.volume = Level(voice);
             }
         }
 
@@ -146,23 +161,27 @@ namespace GrassRun
 
             voice.source.loop = false;
             active = 1 - active;
-            Begin(voices[active], clip, true, 1f, 0f);
+            Begin(voices[active], clip, true, 1f, 0f, voice.ducking);
         }
 
-        void Begin(Voice voice, AudioClip clip, bool loop, float gain, float fadeOut)
+        void Begin(Voice voice, AudioClip clip, bool loop, float gain, float fadeOut, float ducking)
         {
-            var source = voice.source;
-            source.Stop();
-            source.clip = clip;
-            source.loop = loop;
-            source.volume = volume * gain;
-            source.Play();
-
             voice.live = true;
             voice.gain = gain;
             voice.target = 1f;
             voice.fadeOut = fadeOut;
             voice.tail = 1f;
+            voice.ducking = ducking;
+
+            var source = voice.source;
+            source.Stop();
+            source.clip = clip;
+            source.loop = loop;
+            source.volume = Level(voice);
+            source.Play();
         }
+
+        float Level(Voice voice) =>
+            volume * Mathf.Lerp(1f, duckedVolume, voice.ducking) * voice.gain * voice.tail;
     }
 }

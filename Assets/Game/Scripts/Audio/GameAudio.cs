@@ -53,16 +53,32 @@ namespace GrassRun
             controller.RunEnded -= OnRunEnded;
         }
 
-        void OnRunStarted() => music.Play(MusicCue.Running);
+        void OnRunStarted()
+        {
+            music.SetDucked(false);
+            music.Play(MusicCue.Running);
+        }
 
-        void OnEventOpened(bool deadEnd) => PlaySfx(deadEnd ? deadEndSfx : eventOpenedSfx);
+        // 事件面板到結果畫面這段把音樂壓低，回到奔跑（或進結算）才恢復。
+        void OnEventOpened(bool deadEnd)
+        {
+            music.SetDucked(true);
+            PlaySfx(deadEnd ? deadEndSfx : eventOpenedSfx);
+        }
 
         void OnOptionChosen(ChoiceResult result) => PlaySfx(optionChosenSfx);
 
-        void OnResultClosed() => PlaySfx(resultClosedSfx);
+        void OnResultClosed()
+        {
+            music.SetDucked(false);
+            PlaySfx(resultClosedSfx);
+        }
 
-        void OnRunEnded(RunEndReason reason) =>
+        void OnRunEnded(RunEndReason reason)
+        {
+            music.SetDucked(false);
             music.Play(reason == RunEndReason.SpecialEnding ? MusicCue.SpecialEnding : MusicCue.NormalEnding);
+        }
 
         void PlaySfx(AudioClip clip)
         {
