@@ -48,11 +48,11 @@ namespace GrassRun.EditorTools
                 ("專精速度", _ => RunSimulator.FavorPolicy(StatType.Speed)),
                 ("專精溼度", _ => RunSimulator.FavorPolicy(StatType.Moisture)),
                 ("專精韌度", _ => RunSimulator.FavorPolicy(StatType.Toughness)),
-                ("規劃（看預告配點）", _ => RunSimulator.PlannerPolicy()),
+                ("規劃（為檢驗點配點）", _ => RunSimulator.PlannerPolicy()),
             };
 
             var sb = new StringBuilder();
-            sb.AppendLine($"平衡模擬：每種策略 {runs} 局，容量{(balance.useCapacity ? "開" : "關")}，事件 {library.Count} 個");
+            sb.AppendLine($"平衡模擬：每種策略 {runs} 局，事件 {library.Count} 個");
             sb.AppendLine("策略｜通過檢驗點（中位數／平均／最多）｜死於檢驗點／枯竭／沒結束");
 
             foreach (var (name, create) in policies)

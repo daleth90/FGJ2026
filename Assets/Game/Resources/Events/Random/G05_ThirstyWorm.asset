@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: G05_ThirstyWorm
   m_EditorClassIdentifier: GrassRun::GrassRun.EventDefinition
   kind: 0
-  zones: 7
   weight: 1
   title: "\u4E7E\u6E34\u7684\u86AF\u8693"
   description: "\u4E00\u689D\u86AF\u8693\u56F0\u5728\u66EC\u786C\u7684\u571F\u9762\u4E0A\uFF0C\u6162\u6162\u5730\u626D\u52D5\u3002\u7260\u9700\u8981\u7684\u6771\u897F\uFF0C\u4F60\u8EAB\u4E0A\u525B\u597D\u6709\u3002"

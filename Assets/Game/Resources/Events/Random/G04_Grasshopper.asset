@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: G04_Grasshopper
   m_EditorClassIdentifier: GrassRun::GrassRun.EventDefinition
   kind: 0
-  zones: 7
   weight: 1
   title: "\u8FFD\u9010\u7684\u86B1\u8722"
   description: "\u4E00\u96BB\u86B1\u8722\u5F9E\u4F60\u8EAB\u908A\u5F48\u904E\u53BB\uFF0C\u53C8\u505C\u4E0B\u4F86\u56DE\u982D\u770B\u4F60\uFF0C\u50CF\u662F\u5728\u7B49\u3002"

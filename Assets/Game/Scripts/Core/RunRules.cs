@@ -30,7 +30,7 @@ namespace GrassRun
     /// </summary>
     public static class RunRules
     {
-        /// <summary>檢驗點考的是下一級，所以比同區的隨機事件高一級。</summary>
+        /// <summary>檢驗點考的是下一級，所以比隨機事件高一級。</summary>
         public static int LevelFor(EventKind kind, int cycle) => kind == EventKind.Checkpoint ? cycle + 1 : cycle;
 
         public static bool Meets(Comparison comparison, int value, int threshold) =>
@@ -75,47 +75,22 @@ namespace GrassRun
             return new OptionCheck { available = true };
         }
 
-        /// <summary>
-        /// 結算一個選項：先扣代價騰出空間，再依 changes 的順序成長；超出容量的成長溢出。
-        /// 回傳實際套用的增減。
-        /// </summary>
-        public static StatBlock Apply(EventOption option, ref StatBlock stats, int capacity, out int overflow)
+        /// <summary>結算一個選項，回傳套用的增減。</summary>
+        public static StatBlock Apply(EventOption option, ref StatBlock stats)
         {
             var net = NetChange(option);
-            var applied = new StatBlock();
-            overflow = 0;
-
             for (int i = 0; i < StatBlock.StatCount; i++)
             {
                 var stat = (StatType)i;
-                if (net[stat] >= 0) continue;
                 stats[stat] += net[stat];
-                applied[stat] = net[stat];
             }
-
-            if (option.changes == null) return applied;
-
-            foreach (var change in option.changes)
-            {
-                var stat = change.stat;
-                int gain = net[stat];
-                if (gain <= 0) continue;
-                net[stat] = 0; // 同一項數值只結算一次
-
-                int room = Mathf.Max(0, capacity - stats.Total);
-                int taken = Mathf.Min(gain, room);
-                stats[stat] += taken;
-                applied[stat] = taken;
-                overflow += gain - taken;
-            }
-
-            return applied;
+            return net;
         }
 
         /// <summary>試算選了之後的數值，不改動原本的。</summary>
-        public static StatBlock Preview(EventOption option, StatBlock stats, int capacity)
+        public static StatBlock Preview(EventOption option, StatBlock stats)
         {
-            Apply(option, ref stats, capacity, out _);
+            Apply(option, ref stats);
             return stats;
         }
     }

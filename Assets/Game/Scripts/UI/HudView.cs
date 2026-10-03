@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GrassRun
 {
     /// <summary>
-    /// 常駐資訊：三數值、容量條、區域與預告、檢驗點倒數、旅程紀錄。
+    /// 常駐資訊：三項數值、旅程紀錄。
     /// </summary>
     public class HudView : MonoBehaviour
     {
@@ -17,25 +17,6 @@ namespace GrassRun
         [SerializeField] RectTransform speedChip;
         [SerializeField] RectTransform moistureChip;
         [SerializeField] RectTransform toughnessChip;
-
-        [Header("容量")]
-        [SerializeField] GameObject capacityRoot;
-        [SerializeField] RectTransform speedSegment;
-        [SerializeField] RectTransform moistureSegment;
-        [SerializeField] RectTransform toughnessSegment;
-        [SerializeField] TMP_Text capacityLabel;
-
-        [Header("區域與時間")]
-        [SerializeField] TMP_Text zoneLabel;
-        [SerializeField] TMP_Text nextZoneLabel;
-        [SerializeField] TMP_Text checkpointLabel;
-        [SerializeField] TMP_Text runTimeLabel;
-
-        [Header("區域橫幅")]
-        [SerializeField] CanvasGroup zoneBanner;
-        [SerializeField] TMP_Text zoneBannerTitle;
-        [SerializeField] TMP_Text zoneBannerBody;
-        [SerializeField] float bannerDuration = 3.5f;
 
         [Header("其他")]
         [Tooltip("只在奔跑時顯示的東西（旅程紀錄、操作說明）。事件面板開著時會被蓋住，所以直接藏起來。")]
@@ -50,27 +31,13 @@ namespace GrassRun
         readonly float[] punch = new float[StatBlock.StatCount];
         StatBlock shown;
         bool hasShown;
-        float bannerTimer;
-
-        void Awake()
-        {
-            if (zoneBanner != null) zoneBanner.alpha = 0f;
-        }
 
         void Update()
         {
             float dt = Time.unscaledDeltaTime;
-
             ApplyPunch(speedChip, 0, dt);
             ApplyPunch(moistureChip, 1, dt);
             ApplyPunch(toughnessChip, 2, dt);
-
-            if (zoneBanner != null && bannerTimer > 0f)
-            {
-                bannerTimer -= dt;
-                float elapsed = bannerDuration - bannerTimer;
-                zoneBanner.alpha = Mathf.Clamp01(Mathf.Min(elapsed / 0.4f, bannerTimer / 0.8f));
-            }
         }
 
         void ApplyPunch(RectTransform chip, int index, float dt)
@@ -80,46 +47,25 @@ namespace GrassRun
             chip.localScale = Vector3.one * (1f + PunchScale * punch[index]);
         }
 
-        public void Render(StatBlock stats, int capacity, bool useCapacity, ZoneType zone, ZoneType nextZone,
-            float secondsToCheckpoint, float runTime)
+        public void Render(StatBlock stats)
         {
             if (hasShown)
             {
+                bool changed = false;
                 for (int i = 0; i < StatBlock.StatCount; i++)
-                    if (stats[(StatType)i] != shown[(StatType)i]) punch[i] = 1f;
+                {
+                    if (stats[(StatType)i] == shown[(StatType)i]) continue;
+                    punch[i] = 1f;
+                    changed = true;
+                }
+                if (!changed) return;
             }
+
             shown = stats;
             hasShown = true;
-
             speedValue.text = stats.speed.ToString();
             moistureValue.text = stats.moisture.ToString();
             toughnessValue.text = stats.toughness.ToString();
-
-            capacityRoot.SetActive(useCapacity);
-            if (useCapacity)
-            {
-                float cap = Mathf.Max(1, capacity);
-                float a = stats.speed / cap;
-                float b = a + stats.moisture / cap;
-                float c = b + stats.toughness / cap;
-                SetSegment(speedSegment, 0f, a);
-                SetSegment(moistureSegment, a, b);
-                SetSegment(toughnessSegment, b, c);
-                capacityLabel.text = $"養分 {stats.Total} / {capacity}";
-            }
-
-            zoneLabel.text = GameText.ZoneName(zone);
-            nextZoneLabel.text = $"下一區：{GameText.ZoneName(nextZone)}";
-            checkpointLabel.text = $"檢驗點 {GameText.FormatTime(Mathf.Ceil(secondsToCheckpoint))}";
-            runTimeLabel.text = $"已奔跑 {GameText.FormatTime(runTime)}";
-        }
-
-        static void SetSegment(RectTransform segment, float from, float to)
-        {
-            segment.anchorMin = new Vector2(Mathf.Clamp01(from), 0f);
-            segment.anchorMax = new Vector2(Mathf.Clamp01(to), 1f);
-            segment.offsetMin = Vector2.zero;
-            segment.offsetMax = Vector2.zero;
         }
 
         /// <summary>重新開始時呼叫，避免數值重設被當成一次變化。</summary>
@@ -127,16 +73,6 @@ namespace GrassRun
         {
             hasShown = false;
             for (int i = 0; i < punch.Length; i++) punch[i] = 0f;
-            bannerTimer = 0f;
-            if (zoneBanner != null) zoneBanner.alpha = 0f;
-        }
-
-        public void ShowZoneBanner(ZoneType zone)
-        {
-            if (zoneBanner == null) return;
-            zoneBannerTitle.text = GameText.ZoneName(zone);
-            zoneBannerBody.text = GameText.ZoneIntro(zone);
-            bannerTimer = bannerDuration;
         }
 
         public void SetRunningVisible(bool visible)

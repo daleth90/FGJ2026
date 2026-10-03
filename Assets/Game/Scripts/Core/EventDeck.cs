@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace GrassRun
 {
     /// <summary>
-    /// 依事件種類與區域抽事件，並盡量避開最近抽過的。
+    /// 依事件種類抽事件，並盡量避開最近抽過的。
     /// </summary>
     public sealed class EventDeck
     {
@@ -25,10 +25,11 @@ namespace GrassRun
 
         public IReadOnlyList<EventDefinition> Library => library;
 
-        public EventDefinition Draw(EventKind kind, ZoneType zone)
+        public EventDefinition Draw(EventKind kind)
         {
-            Collect(kind, zone, true);
-            if (candidates.Count == 0) Collect(kind, zone, false);
+            candidates.Clear();
+            foreach (var e in library)
+                if (e.kind == kind && e.weight > 0f) candidates.Add(e);
             if (candidates.Count == 0) return null;
 
             // 候選夠多時才排除最近抽過的，至少留一個可抽。
@@ -42,17 +43,6 @@ namespace GrassRun
             recent.Add(picked);
             if (recent.Count > RecentWindow) recent.RemoveAt(0);
             return picked;
-        }
-
-        void Collect(EventKind kind, ZoneType zone, bool respectZone)
-        {
-            candidates.Clear();
-            foreach (var e in library)
-            {
-                if (e.kind != kind || e.weight <= 0f) continue;
-                if (respectZone && !e.AppearsIn(zone)) continue;
-                candidates.Add(e);
-            }
         }
 
         EventDefinition PickWeighted()

@@ -32,11 +32,17 @@ namespace GrassRun.Tests
         }
 
         [Test]
+        public void EventsComeEveryThreeSeconds()
+        {
+            Assert.AreEqual(3f, balance.eventInterval);
+        }
+
+        [Test]
         public void FreshGrass_CanAlwaysActOnItsFirstEvent()
         {
             foreach (var e in library)
             {
-                if (e.kind != EventKind.Random || !e.AppearsIn(ZoneType.Meadow)) continue;
+                if (e.kind != EventKind.Random) continue;
 
                 bool any = false;
                 foreach (var option in e.options)
@@ -69,7 +75,7 @@ namespace GrassRun.Tests
         }
 
         [Test]
-        public void APlayerWhoReadsTheForecast_UsuallyPassesTheFirstCheckpoint()
+        public void APlayerWhoPreparesForTheCheckpoint_UsuallyPassesTheFirstOne()
         {
             int passed = 0;
             for (int seed = 1; seed <= Runs; seed++)

@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: G02_StoneInTheWay
   m_EditorClassIdentifier: GrassRun::GrassRun.EventDefinition
   kind: 0
-  zones: 7
   weight: 1
   title: "\u64CB\u8DEF\u7684\u77F3\u982D"
   description: "\u8DEF\u4E2D\u9593\u8EBA\u8457\u4E00\u584A\u66EC\u6696\u7684\u77F3\u982D\u3002\u7E5E\u904E\u53BB\u5F88\u9060\uFF0C\u7FFB\u904E\u53BB\u5F88\u786C\u3002"
