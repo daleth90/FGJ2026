@@ -60,7 +60,7 @@ MonoBehaviour:
   maxScrollSpeed: 900
   character: {fileID: 7662383211074561286}
   hopHeight: 22
-  hopsPerSecond: 2.4
+  hopsPerSecond: 5
   characterSprites: {fileID: 11400000, guid: a6e4ce20b0ae6fc428cb99fcfe0a5c92, type: 2}
   framesPerSecond: 8
 --- !u!1 &3357919302769133022
