@@ -12,7 +12,6 @@ namespace GrassRun
     {
         [SerializeField] Button button;
         [SerializeField] TMP_Text titleLabel;
-        [SerializeField] TMP_Text designerLabel;
 
         [Header("顏色")]
         [SerializeField] Color titleColor = new Color(0.93f, 0.94f, 0.89f);
@@ -25,7 +24,7 @@ namespace GrassRun
             button.onClick.AddListener(() => onClick?.Invoke());
         }
 
-        public void Setup(EventOption option, bool available, string designerText, bool designer, Action onClick)
+        public void Setup(EventOption option, bool available, Action onClick)
         {
             this.onClick = onClick;
 
@@ -33,11 +32,6 @@ namespace GrassRun
 
             button.interactable = available;
             titleLabel.color = available ? titleColor : lockedTextColor;
-
-            designerLabel.text = designerText;
-            SetDesigner(designer);
         }
-
-        public void SetDesigner(bool on) => designerLabel.gameObject.SetActive(on);
     }
 }

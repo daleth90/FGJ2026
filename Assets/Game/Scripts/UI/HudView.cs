@@ -22,8 +22,6 @@ namespace GrassRun
         [Tooltip("只在奔跑時顯示的東西（旅程紀錄、操作說明）。事件面板開著時會被蓋住，所以直接藏起來。")]
         [SerializeField] GameObject runningRoot;
         [SerializeField] TMP_Text journalLabel;
-        [SerializeField] GameObject designerRoot;
-        [SerializeField] TMP_Text designerLabel;
 
         const float PunchDecay = 4f;
         const float PunchScale = 0.3f;
@@ -101,12 +99,6 @@ namespace GrassRun
                 sb.Append('\n').Append("<alpha=#").Append(alpha).Append('>').Append(journal[i]);
             }
             journalLabel.text = sb.ToString();
-        }
-
-        public void SetDesigner(bool on, string text)
-        {
-            designerRoot.SetActive(on);
-            if (on) designerLabel.text = text;
         }
     }
 }

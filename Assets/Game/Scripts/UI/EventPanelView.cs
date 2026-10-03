@@ -23,8 +23,7 @@ namespace GrassRun
             deadEndButton.onClick.AddListener(() => onDeadEnd?.Invoke());
         }
 
-        public void Show(EventDefinition e, OptionCheck[] checks, string[] designerTexts, bool designer,
-            Action<int> onChoose, Action onDeadEnd)
+        public void Show(EventDefinition e, OptionCheck[] checks, Action<int> onChoose, Action onDeadEnd)
         {
             this.onDeadEnd = onDeadEnd;
             root.SetActive(true);
@@ -41,16 +40,10 @@ namespace GrassRun
 
                 int index = i;
                 anyAvailable |= checks[i].available;
-                cards[i].Setup(e.options[i], checks[i].available, designerTexts[i], designer,
-                    () => onChoose?.Invoke(index));
+                cards[i].Setup(e.options[i], checks[i].available, () => onChoose?.Invoke(index));
             }
 
             deadEndButton.gameObject.SetActive(!anyAvailable);
-        }
-
-        public void SetDesigner(bool on)
-        {
-            foreach (var card in cards) card.SetDesigner(on);
         }
 
         public void Hide() => root.SetActive(false);

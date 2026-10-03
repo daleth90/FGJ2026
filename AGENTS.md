@@ -70,7 +70,7 @@ Running --計時到 eventInterval--> Choosing --Choose(i)--> Result
 6. `RunEngine.Choose(i)` 解析並套用 offset 字串、增加 `EventsResolved`，回傳 `ChoiceResult`；controller 再驅動 Result UI、HUD 和 world。
 7. `endingTitleId` 目前只隨結果保留，不觸發稱號或結局；這兩者不在目前事件系統範圍。
 
-目前鍵盤操作：選項 `1/2/3`、確認 `Space/Enter`、重開 `R`、按住 `Tab` 快轉、`F1` 切換 designer mode。輸入使用新版 Input System 的 `Keyboard.current`。
+目前鍵盤操作：選項 `1/2/3`、確認 `Space/Enter`、重開 `R`、按住 `Tab` 快轉；結果畫面也可以點滑鼠繼續。輸入使用新版 Input System 的 `Keyboard.current`。
 
 ## 不可暗改的玩法不變量
 
@@ -136,8 +136,8 @@ Running --計時到 eventInterval--> Choosing --Choose(i)--> Result
 
 1. Core/Data/事件內容有改：跑全部 EditMode tests（Test Runner → EditMode → Run All）。
 2. 事件或平衡有改：再跑 Unity 選單 `GrassRun/檢查事件資料`，確認 40 筆事件、0/3/6 批次、字串格式與濕度規則都通過。
-3. Controller/UI/Runner/場景有改：Play `Assets/Game/Scenes/Prototype.unity`，至少走過 Running → Choosing → Result → Running；用固定 seed 重現，並檢查 F1、Tab、滑鼠與鍵盤操作。
-4. `endingTitleId` 或全鎖定流程有改：用 designer mode 或 `DebugOpenEventNow()` 加速驗證；目前只有全鎖定會走 DeadEnd → Ended → restart，結局 ID 不得自行結束遊戲。
+3. Controller/UI/Runner/場景有改：Play `Assets/Game/Scenes/Prototype.unity`，至少走過 Running → Choosing → Result → Running；用固定 seed 重現，並檢查 Tab、滑鼠與鍵盤操作。
+4. `endingTitleId` 或全鎖定流程有改：用 `DebugOpenEventNow()` 加速驗證；目前只有全鎖定會走 DeadEnd → Ended → restart，結局 ID 不得自行結束遊戲。
 5. 最後檢查 Console 無新 exception/error、場景引用完整、`git diff` 沒有 Library/Temp 或無關序列化 churn。
 
 優先透過 Unity CLI 操作目前已開啟的 Editor，並先確認狀態：

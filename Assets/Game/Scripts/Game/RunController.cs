@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -31,13 +30,13 @@ namespace GrassRun
         [Header("除錯")]
         [SerializeField] int seed;
         [SerializeField] float fastForwardScale = 8f;
-        [SerializeField] bool designerMode;
 
         const int JournalLines = 4;
 
         readonly List<string> journal = new List<string>();
         EventDefinition[] library;
         RunEngine engine;
+        int resultShownFrame;
         Phase phase;
         float eventTimer;
         bool fastForward;
@@ -100,11 +99,19 @@ namespace GrassRun
 
         void HandleKeys()
         {
+            // 結果畫面：點滑鼠（或觸控）任一處也能繼續。跳過選選項那一下所在的幀，免得同一下點擊直接跳過結果。
+            var pointer = Pointer.current;
+            if (phase == Phase.Result && Time.frameCount > resultShownFrame &&
+                pointer != null && pointer.press.wasPressedThisFrame)
+            {
+                Continue();
+                return;
+            }
+
             var keyboard = Keyboard.current;
             fastForward = keyboard != null && keyboard.tabKey.isPressed;
             if (keyboard == null) return;
 
-            if (keyboard.f1Key.wasPressedThisFrame) SetDesignerMode(!designerMode);
             bool confirm = keyboard.spaceKey.wasPressedThisFrame || keyboard.enterKey.wasPressedThisFrame ||
                            keyboard.numpadEnterKey.wasPressedThisFrame;
 
@@ -143,24 +150,8 @@ namespace GrassRun
         {
             var e = engine.CurrentEvent;
             var checks = engine.CurrentChecks;
-            var designerTexts = new string[checks.Length];
-
-            for (int i = 0; i < checks.Length; i++)
-            {
-                designerTexts[i] = DesignerText(e.options[i]);
-            }
-
-            eventPanel.Show(e, checks, designerTexts, designerMode, Choose, ConfirmDeadEnd);
+            eventPanel.Show(e, checks, Choose, ConfirmDeadEnd);
             ClearSelection();
-        }
-
-        static string DesignerText(EventOption option)
-        {
-            var sb = new StringBuilder();
-            sb.Append(string.IsNullOrEmpty(option.requirement) ? "無需求" : option.requirement);
-            sb.Append('\n').Append(string.IsNullOrEmpty(option.offset) ? "數值不變" : option.offset);
-            if (option.endingTitleId != 0) sb.Append("　結局 ").Append(option.endingTitleId);
-            return sb.ToString();
         }
 
         public void Choose(int index)
@@ -177,6 +168,7 @@ namespace GrassRun
             AddJournal(result.option.resultText);
 
             phase = Phase.Result;
+            resultShownFrame = Time.frameCount;
             resultPanel.Show(result.option.resultText, GameText.ChangeSummary(result.applied));
             ClearSelection();
         }
@@ -220,29 +212,11 @@ namespace GrassRun
         {
             hud.Render(engine.Stats);
             hud.SetRunningVisible(phase == Phase.Running);
-            hud.SetDesigner(designerMode, designerMode ? DesignerOverlay() : null);
-        }
-
-        string DesignerOverlay()
-        {
-            var stats = engine.Stats;
-            var sb = new StringBuilder();
-            sb.Append("設計師模式（F1）\n");
-            sb.Append($"已經歷 {engine.EventsResolved} 個事件　狀態 {phase}\n");
-            sb.Append($"mor {stats.morality}　hmd {stats.moisture}　spd {stats.speed}　tgh {stats.toughness}");
-            if (engine.CurrentEvent != null) sb.Append($"\n目前事件：{engine.CurrentEvent.eventId}");
-            return sb.ToString();
         }
 
         static void ClearSelection()
         {
             if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(null);
-        }
-
-        public void SetDesignerMode(bool on)
-        {
-            designerMode = on;
-            eventPanel.SetDesigner(on);
         }
 
         public void DebugOpenEventNow()
