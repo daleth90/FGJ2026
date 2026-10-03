@@ -648,6 +648,12 @@ MonoBehaviour:
   farFactor: 0.25
   hopHeight: 22
   hopsPerSecond: 2.4
+  characterFrames:
+  - {fileID: 21300000, guid: 8d22bc9f4b64b8544a04331dc4ed976d, type: 3}
+  - {fileID: 21300000, guid: a907fdb298f60f94aa2f9e526a2d8e08, type: 3}
+  - {fileID: 21300000, guid: 226cd4e0082c49b4f837aac19a19fd3d, type: 3}
+  - {fileID: 21300000, guid: 7bc89221ee7cf034897f832817ceb788, type: 3}
+  framesPerSecond: 8
 --- !u!1 &3912367430816101573
 GameObject:
   m_ObjectHideFlags: 0
@@ -1268,16 +1274,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.36, g: 0.64, b: 0.28, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 8d22bc9f4b64b8544a04331dc4ed976d, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1

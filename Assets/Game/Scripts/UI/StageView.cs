@@ -6,7 +6,7 @@ namespace GrassRun
     /// <summary>
     /// 舞台：一張會向左循環捲動的背景圖，加上站在原地跳動的主角。
     /// 背景：把圖拖到 Background 的 RawImage.Texture。圖會以高度貼齊畫面、寬度照比例，左右接縫要畫成能接起來的。
-    /// 主角：換 Character 的 Image.Sprite。
+    /// 主角：把走路的圖依序拖進 Character Frames，跑的時候會輪播；停下時顯示第一張。
     /// 速度只影響捲動快慢，不影響任何規則。
     /// 其他背景物件（Sky、FarLayer、Ground、Turf、NearLayer）目前在場景裡是關閉的，打開後這裡會照舊讓它們動。
     /// </summary>
@@ -26,6 +26,9 @@ namespace GrassRun
         [SerializeField] RectTransform character;
         [SerializeField] float hopHeight = 22f;
         [SerializeField] float hopsPerSecond = 2.4f;
+        [Tooltip("走路動畫的圖，依播放順序排。第一張同時是停下時顯示的圖。")]
+        [SerializeField] Sprite[] characterFrames;
+        [SerializeField] float framesPerSecond = 8f;
 
         [Header("目前關閉的背景物件")]
         [SerializeField] RectTransform[] farItems;
@@ -43,10 +46,14 @@ namespace GrassRun
         float backgroundOffset;
         float stride;
         float characterBaseY;
+        Image characterImage;
+        float frameTime;
 
         void Awake()
         {
-            if (character != null) characterBaseY = character.anchoredPosition.y;
+            if (character == null) return;
+            characterBaseY = character.anchoredPosition.y;
+            characterImage = character.GetComponent<Image>();
         }
 
         /// <summary>每幀由 RunController 餵入目前狀態。</summary>
@@ -75,6 +82,13 @@ namespace GrassRun
                 var position = character.anchoredPosition;
                 position.y = characterBaseY + Mathf.Abs(Mathf.Sin(stride)) * hopHeight * motion;
                 character.anchoredPosition = position;
+
+                if (characterImage != null && characterFrames != null && characterFrames.Length > 0)
+                {
+                    // 停下時回到第一張，再起跑時從頭播。
+                    frameTime = motion > 0f ? frameTime + dt * motion * Mathf.Min(timeScale, 3f) * framesPerSecond : 0f;
+                    characterImage.sprite = characterFrames[(int)frameTime % characterFrames.Length];
+                }
             }
         }
 
