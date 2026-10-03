@@ -179,7 +179,8 @@ namespace GrassRun
         {
             if (phase != Phase.Result) return;
             resultPanel.Hide();
-            phase = Phase.Running;
+            if (engine.IsEnded) ShowGameOver();
+            else phase = Phase.Running;
             ClearSelection();
         }
 
@@ -187,10 +188,18 @@ namespace GrassRun
         {
             if (phase != Phase.DeadEnd) return;
             eventPanel.Hide();
-            phase = Phase.Ended;
-
-            gameOver.Show(GameText.EndTitle(engine.EndReason), StartRun);
+            ShowGameOver();
             ClearSelection();
+        }
+
+        void ShowGameOver()
+        {
+            phase = Phase.Ended;
+            var titleTable = balance.titleTable;
+            var title = engine.EndingTitleId != 0
+                ? RunRules.FindTitleById(titleTable.specialEndingTitles, engine.EndingTitleId)
+                : RunRules.ResolveTitle(titleTable.titles, engine.Stats);
+            gameOver.Show(title != null ? title.titleName : GameText.EndTitle(engine.EndReason), StartRun);
         }
 
         void AddJournal(string line)

@@ -80,5 +80,51 @@ namespace GrassRun.Tests
             Assert.AreEqual(50, stats.moisture);
             Assert.AreEqual(0, stats.speed);
         }
+
+        [Test]
+        public void ResolveTitle_ChecksFromTheEndAndReturnsFirstMatch()
+        {
+            var titles = new[]
+            {
+                new TitleDefinition { titleId = 0, titleName = "保底", requirement = "" },
+                new TitleDefinition { titleId = 1, titleName = "速度", requirement = "spd>=20" },
+                new TitleDefinition { titleId = 3, titleName = "速度韌度", requirement = "spd>=20;tgh>=20" },
+            };
+
+            var title = RunRules.ResolveTitle(titles, new StatBlock(0, 50, 20, 20));
+
+            Assert.IsNotNull(title);
+            Assert.AreEqual(3, title.titleId);
+        }
+
+        [Test]
+        public void ResolveTitle_UsesFallbackWhenNoThresholdMatches()
+        {
+            var titles = new[]
+            {
+                new TitleDefinition { titleId = 0, titleName = "保底", requirement = "" },
+                new TitleDefinition { titleId = 1, titleName = "速度", requirement = "spd>=20" },
+            };
+
+            var title = RunRules.ResolveTitle(titles, new StatBlock(0, 50, 0, 0));
+
+            Assert.IsNotNull(title);
+            Assert.AreEqual(0, title.titleId);
+        }
+
+        [Test]
+        public void FindTitleById_ReturnsTheMatchingSpecialEnding()
+        {
+            var titles = new[]
+            {
+                new TitleDefinition { titleId = 2008, titleName = "永生不朽" },
+                new TitleDefinition { titleId = 2009, titleName = "兔子的晚餐" },
+            };
+
+            var title = RunRules.FindTitleById(titles, 2009);
+
+            Assert.IsNotNull(title);
+            Assert.AreEqual("兔子的晚餐", title.titleName);
+        }
     }
 }

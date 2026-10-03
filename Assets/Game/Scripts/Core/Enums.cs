@@ -27,5 +27,8 @@ namespace GrassRun
     {
         None = 0,
         NoAvailableOption = 1,
+        MoistureDepleted = 2,
+        MoistureSaturated = 3,
+        SpecialEnding = 4,
     }
 }

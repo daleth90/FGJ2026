@@ -97,9 +97,9 @@ namespace GrassRun.Tests
         }
 
         [Test]
-        public void ChoiceResult_CarriesEndingIdWithoutEndingTheRun()
+        public void ChoiceResult_WithEndingIdEndsAfterApplyingStats()
         {
-            var ending = Free();
+            var ending = Free("mor:+10;hmd:-50");
             ending.endingTitleId = 2008;
             var e = MakeEvent(1001, 0, ending, Free(), Free());
             var engine = NewEngine(e);
@@ -108,7 +108,40 @@ namespace GrassRun.Tests
             var result = engine.Choose(0);
 
             Assert.AreEqual(2008, result.endingTitleId);
-            Assert.IsFalse(engine.IsEnded, "稱號／結局流程不在這次事件資料改版的範圍");
+            Assert.AreEqual(2008, engine.EndingTitleId);
+            Assert.AreEqual(10, engine.Stats.morality, "特殊結局仍要先完成數值結算");
+            Assert.AreEqual(0, engine.Stats.moisture);
+            Assert.IsTrue(engine.IsEnded);
+            Assert.AreEqual(RunEndReason.SpecialEnding, engine.EndReason,
+                "特殊結局應優先於同次結算觸發的濕度邊界");
+        }
+
+        [TestCase("hmd:-50", RunEndReason.MoistureDepleted, 0)]
+        [TestCase("hmd:+50", RunEndReason.MoistureSaturated, 100)]
+        public void MoistureBoundary_AfterChoiceEndsTheRun(string offset, RunEndReason reason, int expectedMoisture)
+        {
+            var e = MakeEvent(1001, 0, Free(offset), Free(), Free());
+            var engine = NewEngine(e);
+
+            engine.BeginNextEvent();
+            engine.Choose(0);
+
+            Assert.IsTrue(engine.IsEnded);
+            Assert.AreEqual(reason, engine.EndReason);
+            Assert.AreEqual(expectedMoisture, engine.Stats.moisture);
+        }
+
+        [Test]
+        public void MoistureInsideBounds_DoesNotEndTheRun()
+        {
+            var e = MakeEvent(1001, 0, Free("hmd:-10"), Free(), Free());
+            var engine = NewEngine(e);
+
+            engine.BeginNextEvent();
+            engine.Choose(0);
+
+            Assert.IsFalse(engine.IsEnded);
+            Assert.AreEqual(40, engine.Stats.moisture);
         }
 
         [Test]
