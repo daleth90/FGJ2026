@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 4661966558383976041, guid: bb8802cbc12dd2d428780ddf50faf820, type: 3}
+  m_Sprite: {fileID: -7672908365065857516, guid: fe19808546185bd42bdd91dd80c07877, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1223,9 +1223,9 @@ MonoBehaviour:
   toughnessChip: {fileID: 2188399541851475370}
   campChip: {fileID: 5106422459940038918}
   campIcon: {fileID: 8079524084929093772}
-  campPositiveSprite: {fileID: 0}
-  campNeutralSprite: {fileID: 0}
-  campNegativeSprite: {fileID: 0}
+  campPositiveSprite: {fileID: 7318117368104276624, guid: f6008a3a3209c404fa5e11c205e01632, type: 3}
+  campNeutralSprite: {fileID: -7672908365065857516, guid: fe19808546185bd42bdd91dd80c07877, type: 3}
+  campNegativeSprite: {fileID: -6256883217925509137, guid: af72d3965be176e4d8c4fcb1f20290c9, type: 3}
   runningRoot: {fileID: 2235387316982953853}
   journalLabel: {fileID: 5647948365637583060}
 --- !u!1 &7105658714501309030
