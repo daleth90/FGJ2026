@@ -11,16 +11,10 @@ namespace GrassRun
     public class EventPanelView : MonoBehaviour
     {
         [SerializeField] GameObject root;
-        [SerializeField] Image kindTag;
-        [SerializeField] TMP_Text kindLabel;
         [SerializeField] TMP_Text titleLabel;
         [SerializeField] TMP_Text descriptionLabel;
         [SerializeField] OptionCardView[] cards;
         [SerializeField] Button deadEndButton;
-
-        [Header("顏色")]
-        [SerializeField] Color randomColor = new Color(0.56f, 0.69f, 0.48f);
-        [SerializeField] Color checkpointColor = new Color(0.90f, 0.65f, 0.27f);
 
         Action onDeadEnd;
 
@@ -35,8 +29,6 @@ namespace GrassRun
             this.onDeadEnd = onDeadEnd;
             root.SetActive(true);
 
-            kindLabel.text = "事件";
-            kindTag.color = randomColor;
             titleLabel.text = e.DisplayTitle;
             descriptionLabel.text = e.description;
 

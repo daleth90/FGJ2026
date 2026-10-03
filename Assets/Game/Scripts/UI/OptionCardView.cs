@@ -11,15 +11,13 @@ namespace GrassRun
     public class OptionCardView : MonoBehaviour
     {
         [SerializeField] Button button;
-        [SerializeField] TMP_Text keyLabel;
         [SerializeField] TMP_Text titleLabel;
-        [SerializeField] TMP_Text descriptionLabel;
+        [Tooltip("不可選時顯示原因的文字。可以不接，不接就不顯示原因。")]
         [SerializeField] TMP_Text lockLabel;
         [SerializeField] TMP_Text designerLabel;
 
         [Header("顏色")]
         [SerializeField] Color titleColor = new Color(0.93f, 0.94f, 0.89f);
-        [SerializeField] Color bodyColor = new Color(0.78f, 0.80f, 0.73f);
         [SerializeField] Color lockedTextColor = new Color(0.50f, 0.52f, 0.47f);
 
         Action onClick;
@@ -34,18 +32,16 @@ namespace GrassRun
         {
             this.onClick = onClick;
 
-            keyLabel.text = (index + 1).ToString();
             titleLabel.text = option.description;
-            descriptionLabel.text = string.Empty;
-            descriptionLabel.gameObject.SetActive(false);
 
             button.interactable = available;
             titleLabel.color = available ? titleColor : lockedTextColor;
-            descriptionLabel.color = available ? bodyColor : lockedTextColor;
-            keyLabel.color = available ? titleColor : lockedTextColor;
 
-            lockLabel.gameObject.SetActive(!available);
-            lockLabel.text = lockText;
+            if (lockLabel != null)
+            {
+                lockLabel.gameObject.SetActive(!available);
+                lockLabel.text = lockText;
+            }
 
             designerLabel.text = designerText;
             SetDesigner(designer);
