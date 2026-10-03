@@ -4,9 +4,6 @@ using UnityEngine;
 
 namespace GrassRun.Tests
 {
-    /// <summary>
-    /// 一局的流程：事件節奏、檢驗點，以及「沒有選項可選」的兩種結局。
-    /// </summary>
     public class EngineTests
     {
         readonly List<Object> created = new List<Object>();
@@ -22,168 +19,123 @@ namespace GrassRun.Tests
         [TearDown]
         public void TearDown()
         {
-            foreach (var o in created) Object.DestroyImmediate(o);
+            foreach (var item in created) Object.DestroyImmediate(item);
             created.Clear();
         }
 
-        EventDefinition MakeEvent(string name, EventKind kind, params EventOption[] options)
+        EventDefinition MakeEvent(int id, int unlock, params EventOption[] options)
         {
             var e = ScriptableObject.CreateInstance<EventDefinition>();
-            e.name = name;
-            e.kind = kind;
-            e.title = name;
-            e.description = name;
+            e.name = $"Event_{id}";
+            e.eventId = id;
+            e.unlockEventCount = unlock;
+            e.description = "事件";
             e.options = options;
             created.Add(e);
             return e;
         }
 
-        static EventOption Free(params StatChange[] changes) =>
-            new EventOption { title = "free", description = "d", resultText = "r", changes = changes };
+        static EventOption Free(string offset = "") => new EventOption
+        {
+            description = "自由選項",
+            offset = offset,
+            resultText = "結果",
+        };
 
-        static EventOption Gated(StatType stat, Comparison comparison, Tier tier, params StatChange[] changes) =>
-            new EventOption
-            {
-                title = "gated", description = "d", resultText = "r", changes = changes,
-                requirements = new[] { new Requirement(stat, comparison, tier) },
-            };
+        static EventOption Gated(string requirement, string offset = "") => new EventOption
+        {
+            description = "門檻選項",
+            requirement = requirement,
+            offset = offset,
+            resultText = "結果",
+        };
 
-        static EventOption Impossible() => Gated(StatType.Speed, Comparison.AtMost, Tier.Low, new StatChange(StatType.Speed, -999));
-
-        RunEngine NewEngine(params EventDefinition[] library) => new RunEngine(balance, library, new System.Random(7));
+        RunEngine NewEngine(params EventDefinition[] library) =>
+            new RunEngine(balance, library, new System.Random(7));
 
         [Test]
-        public void EverySixthEvent_IsACheckpoint()
+        public void DrawPool_SwitchesExclusivelyAtThreeAndSixResolvedEvents()
         {
-            var random = MakeEvent("random", EventKind.Random, Free(), Free(), Free());
-            var checkpoint = MakeEvent("checkpoint", EventKind.Checkpoint,
-                Gated(StatType.Speed, Comparison.AtLeast, Tier.Low), Free(), Free());
-            var engine = NewEngine(random, checkpoint);
+            var stage1 = MakeEvent(1001, 0, Free(), Free(), Free());
+            var stage2 = MakeEvent(2001, 3, Free(), Free(), Free());
+            var stage3 = MakeEvent(3001, 6, Free(), Free(), Free());
+            var engine = NewEngine(stage1, stage2, stage3);
 
-            var kinds = new List<EventKind>();
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < 9; i++)
             {
                 Assert.IsTrue(engine.BeginNextEvent());
-                kinds.Add(engine.CurrentEvent.kind);
-                engine.Choose(1);
-            }
-
-            for (int i = 0; i < kinds.Count; i++)
-                Assert.AreEqual(i % 6 == 5 ? EventKind.Checkpoint : EventKind.Random, kinds[i], $"第 {i + 1} 個事件");
-            Assert.AreEqual(2, engine.Cycle);
-        }
-
-        [Test]
-        public void PassingACheckpoint_RaisesTheThresholds()
-        {
-            var random = MakeEvent("random", EventKind.Random, Free(), Free(), Free());
-            var checkpoint = MakeEvent("checkpoint", EventKind.Checkpoint, Free(), Free(), Free());
-            var engine = NewEngine(random, checkpoint);
-
-            engine.BeginNextEvent();
-            int levelBefore = engine.CurrentLevel;
-            engine.Choose(0);
-            for (int i = 0; i < 5; i++)
-            {
-                engine.BeginNextEvent();
+                int expected = i < 3 ? 1001 : i < 6 ? 2001 : 3001;
+                Assert.AreEqual(expected, engine.CurrentEvent.eventId, $"已經歷 {i} 個事件");
                 engine.Choose(0);
             }
-            engine.BeginNextEvent();
-
-            Assert.AreEqual(1, engine.Cycle);
-            Assert.AreEqual(EventKind.Random, engine.CurrentEvent.kind);
-            Assert.AreEqual(levelBefore + 1, engine.CurrentLevel);
         }
 
         [Test]
-        public void NoSelectableOption_OnARandomEvent_IsWithered()
+        public void OptionRequirements_AreCheckedAgainstCurrentFourStats()
         {
-            var random = MakeEvent("random", EventKind.Random, Impossible(), Impossible(), Impossible());
-            var engine = NewEngine(random);
-
-            Assert.IsTrue(engine.BeginNextEvent());
-
-            Assert.IsTrue(engine.IsEnded);
-            Assert.AreEqual(RunEndReason.Withered, engine.EndReason);
-            Assert.Throws<System.InvalidOperationException>(() => engine.Choose(0));
-        }
-
-        [Test]
-        public void NoSelectableOption_OnACheckpoint_IsDeath()
-        {
-            balance.eventsPerCycle = 2;
-            var random = MakeEvent("random", EventKind.Random, Free(), Free(), Free());
-            var checkpoint = MakeEvent("checkpoint", EventKind.Checkpoint,
-                Gated(StatType.Speed, Comparison.AtLeast, Tier.High),
-                Gated(StatType.Moisture, Comparison.AtLeast, Tier.High),
-                Gated(StatType.Toughness, Comparison.AtLeast, Tier.High));
-            var engine = NewEngine(random, checkpoint);
+            var e = MakeEvent(1001, 0,
+                Gated("spd>=10"), Gated("mor<=-5"), Free("spd:+10"));
+            var engine = NewEngine(e);
 
             engine.BeginNextEvent();
-            engine.Choose(0);
-            engine.BeginNextEvent();
+            Assert.IsFalse(engine.CurrentChecks[0].available);
+            Assert.IsFalse(engine.CurrentChecks[1].available);
+            Assert.IsTrue(engine.CurrentChecks[2].available);
 
-            Assert.AreEqual(EventKind.Checkpoint, engine.CurrentEvent.kind);
-            Assert.AreEqual(RunEndReason.Death, engine.EndReason);
-        }
-
-        [Test]
-        public void SelectableOptions_NeverEndTheRun()
-        {
-            // 風險只以代價呈現：就算選了代價最重的選項，只要付得起就不會結束。
-            var random = MakeEvent("random", EventKind.Random,
-                Free(new StatChange(StatType.Toughness, -4)), Impossible(), Impossible());
-            var engine = NewEngine(random);
-
-            engine.BeginNextEvent();
-            Assert.IsFalse(engine.IsEnded);
-            engine.Choose(0);
-
-            Assert.IsFalse(engine.IsEnded);
-            Assert.AreEqual(0, engine.Stats.toughness);
+            engine.Choose(2);
+            Assert.AreEqual(10, engine.Stats.speed);
         }
 
         [Test]
         public void LockedOption_CannotBeChosen()
         {
-            var random = MakeEvent("random", EventKind.Random, Impossible(), Free(), Free());
-            var engine = NewEngine(random);
+            var e = MakeEvent(1001, 0, Gated("spd>=10"), Free(), Free());
+            var engine = NewEngine(e);
 
             engine.BeginNextEvent();
-
-            Assert.IsFalse(engine.CurrentChecks[0].available);
             Assert.Throws<System.InvalidOperationException>(() => engine.Choose(0));
         }
 
         [Test]
-        public void NewEngine_StartsFromTheStartingStats()
+        public void ChoiceResult_CarriesEndingIdWithoutEndingTheRun()
         {
-            // 重新開始就是建一個新的引擎：數值和進度都要回到起點。
-            var random = MakeEvent("random", EventKind.Random, Free(new StatChange(StatType.Speed, 5)), Free(), Free());
-            var first = NewEngine(random);
-            first.BeginNextEvent();
-            first.Choose(0);
+            var ending = Free();
+            ending.endingTitleId = 2008;
+            var e = MakeEvent(1001, 0, ending, Free(), Free());
+            var engine = NewEngine(e);
 
-            var second = NewEngine(random);
+            engine.BeginNextEvent();
+            var result = engine.Choose(0);
 
-            Assert.AreEqual(balance.startStats.ToString(), second.Stats.ToString());
-            Assert.AreEqual(0, second.EventsResolved);
-            Assert.AreEqual(0, second.Cycle);
+            Assert.AreEqual(2008, result.endingTitleId);
+            Assert.IsFalse(engine.IsEnded, "稱號／結局流程不在這次事件資料改版的範圍");
         }
 
         [Test]
-        public void Deck_DoesNotRepeatWithinACycle_WhenThereAreEnoughEvents()
+        public void NoAvailableOption_EndsWithNoAvailableOptionReason()
+        {
+            var e = MakeEvent(1001, 0,
+                Gated("spd>=10"), Gated("tgh>=10"), Gated("mor>=10"));
+            var engine = NewEngine(e);
+
+            Assert.IsTrue(engine.BeginNextEvent());
+            Assert.IsTrue(engine.IsEnded);
+            Assert.AreEqual(RunEndReason.NoAvailableOption, engine.EndReason);
+        }
+
+        [Test]
+        public void Deck_AvoidsRecentEventsWhenTheBatchHasEnoughCandidates()
         {
             var library = new List<EventDefinition>();
             for (int i = 0; i < 6; i++)
-                library.Add(MakeEvent("e" + i, EventKind.Random, Free(), Free(), Free()));
+                library.Add(MakeEvent(1001 + i, 0, Free(), Free(), Free()));
             var deck = new EventDeck(library, new System.Random(11));
 
-            for (int round = 0; round < 50; round++)
+            for (int round = 0; round < 20; round++)
             {
                 var seen = new HashSet<EventDefinition>();
                 for (int i = 0; i < 5; i++)
-                    Assert.IsTrue(seen.Add(deck.Draw(EventKind.Random)), "同一個週期抽到重複的事件");
+                    Assert.IsTrue(seen.Add(deck.Draw(0)), "最近四次不應重複事件");
             }
         }
     }

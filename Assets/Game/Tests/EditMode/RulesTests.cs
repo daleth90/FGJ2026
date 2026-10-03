@@ -1,121 +1,84 @@
+using System.Collections.Generic;
 using NUnit.Framework;
-using UnityEngine;
 
 namespace GrassRun.Tests
 {
-    /// <summary>
-    /// 選項能不能選只看兩件事：門檻有沒有到、代價付不付得起。
-    /// </summary>
     public class RulesTests
     {
-        GameBalance balance;
-
-        [SetUp]
-        public void SetUp() => balance = ScriptableObject.CreateInstance<GameBalance>();
-
-        [TearDown]
-        public void TearDown() => Object.DestroyImmediate(balance);
-
-        static EventOption Option(Requirement[] requirements, params StatChange[] changes) =>
-            new EventOption { title = "t", requirements = requirements, changes = changes };
-
-        static Requirement[] Need(StatType stat, Comparison comparison, Tier tier) =>
-            new[] { new Requirement(stat, comparison, tier) };
-
-        static readonly Requirement[] NoRequirement = new Requirement[0];
+        static EventOption Option(string requirement = "", string offset = "") => new EventOption
+        {
+            description = "選項",
+            requirement = requirement,
+            offset = offset,
+            resultText = "結果",
+        };
 
         [Test]
-        public void FirstCheckpoint_UsesTheAgreedNumbers()
+        public void OffsetParser_ReadsFourStatsInTableOrder()
         {
-            Assert.AreEqual(4, balance.Threshold(Tier.Low, 1));
-            Assert.AreEqual(7, balance.Threshold(Tier.Mid, 1));
-            Assert.AreEqual(10, balance.Threshold(Tier.High, 1));
-            Assert.AreEqual(12, balance.startStats.Total);
+            var changes = new List<StatChange>();
+            Assert.IsTrue(RunRules.TryParseOffsets("mor:-15;hmd:-10;spd:+5;tgh:+10", changes, out string error), error);
+            Assert.AreEqual(4, changes.Count);
+            Assert.AreEqual(StatType.Morality, changes[0].stat);
+            Assert.AreEqual(-15, changes[0].amount);
+            Assert.AreEqual(StatType.Toughness, changes[3].stat);
+            Assert.AreEqual(10, changes[3].amount);
+        }
+
+        [TestCase("spd:10", "屬性")]
+        [TestCase("spd: +10", "空白")]
+        [TestCase("hmd:-10;hmd:-10", "重複")]
+        [TestCase("spd:+10;hmd:-20", "排列")]
+        public void OffsetParser_RejectsInvalidGrammar(string expression, string expectedMessage)
+        {
+            var changes = new List<StatChange>();
+            Assert.IsFalse(RunRules.TryParseOffsets(expression, changes, out string error));
+            StringAssert.Contains(expectedMessage, error);
         }
 
         [Test]
-        public void EventsComeEveryThreeSeconds_ByDefault()
+        public void RequirementParser_SupportsRangesAndNegativeMorality()
         {
-            Assert.AreEqual(3f, balance.eventInterval);
+            var requirements = new List<Requirement>();
+            Assert.IsTrue(RunRules.TryParseRequirements("mor>=-10;mor<=10;spd>=20", requirements, out string error), error);
+            Assert.AreEqual(3, requirements.Count);
+            Assert.AreEqual(Comparison.AtLeast, requirements[0].comparison);
+            Assert.AreEqual(-10, requirements[0].threshold);
+            Assert.AreEqual(Comparison.AtMost, requirements[1].comparison);
         }
 
         [Test]
-        public void CheckpointIsOneLevelAboveRandomEvents()
+        public void RequirementCheck_RequiresEveryClause()
         {
-            Assert.AreEqual(2, RunRules.LevelFor(EventKind.Random, 2));
-            Assert.AreEqual(3, RunRules.LevelFor(EventKind.Checkpoint, 2));
-        }
+            var option = Option("mor>=-10;mor<=10;spd>=20");
+            Assert.IsTrue(RunRules.Check(option, new StatBlock(0, 50, 20, 0)).available);
 
-        [Test]
-        public void ThresholdsKeepRising()
-        {
-            for (int level = 0; level < 50; level++)
-                Assert.Greater(balance.Threshold(Tier.Mid, level + 1), balance.Threshold(Tier.Mid, level));
-        }
-
-        [Test]
-        public void AtLeast_LocksWhenBelowThreshold()
-        {
-            var option = Option(Need(StatType.Speed, Comparison.AtLeast, Tier.High));
-
-            var locked = RunRules.Check(option, new StatBlock(9, 4, 4), balance, 1);
+            var locked = RunRules.Check(option, new StatBlock(15, 50, 20, 0));
             Assert.IsFalse(locked.available);
-            Assert.AreEqual(LockKind.Requirement, locked.lockKind);
-            Assert.AreEqual(10, locked.threshold);
-            Assert.AreEqual(1, locked.gap);
-
-            Assert.IsTrue(RunRules.Check(option, new StatBlock(10, 4, 4), balance, 1).available);
-        }
-
-        [Test]
-        public void AtMost_LocksWhenAboveThreshold()
-        {
-            var option = Option(Need(StatType.Moisture, Comparison.AtMost, Tier.Mid));
-
-            Assert.IsTrue(RunRules.Check(option, new StatBlock(4, 7, 4), balance, 1).available);
-
-            var locked = RunRules.Check(option, new StatBlock(4, 9, 4), balance, 1);
-            Assert.IsFalse(locked.available);
+            Assert.AreEqual(StatType.Morality, locked.requirement.stat);
             Assert.AreEqual(Comparison.AtMost, locked.requirement.comparison);
-            Assert.AreEqual(2, locked.gap);
         }
 
         [Test]
-        public void UnpayableCost_LocksTheOption()
+        public void Apply_UpdatesFourStatsAndClampsTheirRanges()
         {
-            var option = Option(NoRequirement, new StatChange(StatType.Moisture, -1), new StatChange(StatType.Toughness, 1));
+            var stats = new StatBlock(-5, 95, 2, 3);
+            var applied = RunRules.Apply(Option(offset: "mor:-10;hmd:+20;spd:-10;tgh:+5"), ref stats, 100);
 
-            Assert.IsTrue(RunRules.Check(option, new StatBlock(4, 1, 4), balance, 0).available);
-
-            var locked = RunRules.Check(option, new StatBlock(4, 0, 4), balance, 0);
-            Assert.IsFalse(locked.available);
-            Assert.AreEqual(LockKind.Cost, locked.lockKind);
-            Assert.AreEqual(StatType.Moisture, locked.costStat);
+            Assert.AreEqual("-15/100/0/8", stats.ToString());
+            Assert.AreEqual("-10/5/-2/5", applied.ToString());
         }
 
         [Test]
-        public void Apply_AddsGainsAndSubtractsCosts_WithNoUpperLimit()
+        public void Preview_DoesNotModifyOriginal()
         {
-            var option = Option(NoRequirement, new StatChange(StatType.Speed, 3), new StatChange(StatType.Moisture, -1));
-            var stats = new StatBlock(50, 50, 50);
+            var stats = new StatBlock(0, 50, 0, 0);
+            var after = RunRules.Preview(Option(offset: "hmd:-20;spd:+10"), stats, 100);
 
-            var applied = RunRules.Apply(option, ref stats);
-
-            Assert.AreEqual("53/49/50", stats.ToString());
-            Assert.AreEqual(3, applied.speed);
-            Assert.AreEqual(-1, applied.moisture);
-        }
-
-        [Test]
-        public void Preview_DoesNotTouchTheOriginal()
-        {
-            var option = Option(NoRequirement, new StatChange(StatType.Speed, 2));
-            var stats = new StatBlock(4, 4, 4);
-
-            var after = RunRules.Preview(option, stats);
-
-            Assert.AreEqual(6, after.speed);
-            Assert.AreEqual(4, stats.speed);
+            Assert.AreEqual(30, after.moisture);
+            Assert.AreEqual(10, after.speed);
+            Assert.AreEqual(50, stats.moisture);
+            Assert.AreEqual(0, stats.speed);
         }
     }
 }

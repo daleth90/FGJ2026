@@ -9,20 +9,28 @@ namespace GrassRun
     public class EventDefinition : ScriptableObject
     {
         public const int OptionCount = 3;
+        public const int MaxOptionTextLength = 14;
 
-        [Tooltip("隨機事件每隔一段時間出現；檢驗點每個週期的最後出現，門檻比隨機事件高一級。")]
-        public EventKind kind = EventKind.Random;
+        [Tooltip("唯一事件 ID。千位數代表內容階段。")]
+        [Min(1)]
+        public int eventId;
 
-        [Tooltip("抽中的權重。調高會更常出現。")]
-        [Min(0f)]
-        public float weight = 1f;
+        [Tooltip("已經歷至少幾個事件後進入這一批抽選池。抽選只會使用目前最高的已解鎖批次。")]
+        [Min(0)]
+        public int unlockEventCount;
 
+        [Tooltip("可選的事件標題；空白時畫面會顯示事件 ID。")]
         public string title;
 
         [TextArea(2, 5)]
         public string description;
 
+        [Tooltip("事件發生時顯示的圖片 ID，不含副檔名。")]
+        public string imageId;
+
         [Tooltip("固定三個選項。")]
         public EventOption[] options = { new EventOption(), new EventOption(), new EventOption() };
+
+        public string DisplayTitle => string.IsNullOrWhiteSpace(title) ? $"事件 {eventId}" : title;
     }
 }

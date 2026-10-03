@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GrassRun
 {
     /// <summary>
-    /// 常駐資訊：三項數值、旅程紀錄。
+    /// 常駐資訊：四項數值、旅程紀錄。善惡沿用旅程紀錄區顯示。
     /// </summary>
     public class HudView : MonoBehaviour
     {
@@ -29,15 +29,16 @@ namespace GrassRun
         const float PunchScale = 0.3f;
 
         readonly float[] punch = new float[StatBlock.StatCount];
+        readonly List<string> journal = new List<string>();
         StatBlock shown;
         bool hasShown;
 
         void Update()
         {
             float dt = Time.unscaledDeltaTime;
-            ApplyPunch(speedChip, 0, dt);
-            ApplyPunch(moistureChip, 1, dt);
-            ApplyPunch(toughnessChip, 2, dt);
+            ApplyPunch(speedChip, (int)StatType.Speed, dt);
+            ApplyPunch(moistureChip, (int)StatType.Moisture, dt);
+            ApplyPunch(toughnessChip, (int)StatType.Toughness, dt);
         }
 
         void ApplyPunch(RectTransform chip, int index, float dt)
@@ -66,6 +67,7 @@ namespace GrassRun
             speedValue.text = stats.speed.ToString();
             moistureValue.text = stats.moisture.ToString();
             toughnessValue.text = stats.toughness.ToString();
+            RebuildJournal();
         }
 
         /// <summary>重新開始時呼叫，避免數值重設被當成一次變化。</summary>
@@ -83,13 +85,20 @@ namespace GrassRun
         /// <summary>旅程紀錄：最新的一行最亮，越舊越淡。</summary>
         public void SetJournal(IReadOnlyList<string> lines)
         {
+            journal.Clear();
+            for (int i = 0; i < lines.Count; i++) journal.Add(lines[i]);
+            RebuildJournal();
+        }
+
+        void RebuildJournal()
+        {
             var sb = new StringBuilder();
-            for (int i = 0; i < lines.Count; i++)
+            sb.Append("善惡 ").Append(shown.morality);
+            for (int i = 0; i < journal.Count; i++)
             {
-                int age = lines.Count - 1 - i;
+                int age = journal.Count - 1 - i;
                 string alpha = age == 0 ? "FF" : age == 1 ? "99" : age == 2 ? "66" : "40";
-                if (i > 0) sb.Append('\n');
-                sb.Append("<alpha=#").Append(alpha).Append('>').Append(lines[i]);
+                sb.Append('\n').Append("<alpha=#").Append(alpha).Append('>').Append(journal[i]);
             }
             journalLabel.text = sb.ToString();
         }

@@ -1,16 +1,13 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 
 namespace GrassRun.Tests
 {
-    /// <summary>
-    /// 針對專案裡實際的事件資料與平衡設定。新增或修改事件後，這裡會抓出規則被破壞的情況。
-    /// </summary>
     public class ContentTests
     {
         const string BalancePath = "Assets/Game/Data/Balance.asset";
-        const int Runs = 200;
 
         GameBalance balance;
         EventDefinition[] library;
@@ -25,66 +22,66 @@ namespace GrassRun.Tests
         }
 
         [Test]
-        public void EventLibrary_HasNoValidationIssues()
+        public void EventLibrary_MatchesV2TableAndHasNoValidationIssues()
         {
+            Assert.AreEqual(40, library.Length, "v2 表格應匯入 40 個事件");
             var issues = EventValidation.ValidateLibrary(library, balance);
             Assert.IsEmpty(issues, string.Join("\n", issues));
         }
 
         [Test]
-        public void EventsComeEveryThreeSeconds()
+        public void EventIdsAreUniqueAndStageCountsMatchTheTable()
         {
-            Assert.AreEqual(3f, balance.eventInterval);
+            var ids = new HashSet<int>();
+            int stage1 = 0, stage2 = 0, stage3 = 0;
+            foreach (var e in library)
+            {
+                Assert.IsTrue(ids.Add(e.eventId), $"事件 ID {e.eventId} 重複");
+                if (e.unlockEventCount == 0) stage1++;
+                else if (e.unlockEventCount == 3) stage2++;
+                else if (e.unlockEventCount == 6) stage3++;
+            }
+
+            Assert.AreEqual(10, stage1);
+            Assert.AreEqual(10, stage2);
+            Assert.AreEqual(20, stage3);
         }
 
         [Test]
-        public void FreshGrass_CanAlwaysActOnItsFirstEvent()
+        public void EveryEventHasAtLeastOneOptionWithoutRequirements()
         {
             foreach (var e in library)
             {
-                if (e.kind != EventKind.Random) continue;
-
-                bool any = false;
+                bool found = false;
                 foreach (var option in e.options)
-                    any |= RunRules.Check(option, balance.startStats, balance, 0).available;
-                Assert.IsTrue(any, $"{e.name}：剛出發的小草沒有任何選項可選");
+                    found |= string.IsNullOrEmpty(option.requirement);
+                Assert.IsTrue(found, $"{e.name} 沒有保底選項");
             }
         }
 
         [Test]
-        public void EveryStrategy_EventuallyEnds()
+        public void ImageIdsAndOptionLengthsMatchTheLatestTableFormat()
         {
-            var policies = new (string name, System.Func<int, RunSimulator.Policy> create)[]
+            foreach (var e in library)
             {
-                ("亂選", seed => RunSimulator.RandomPolicy(seed)),
-                ("平均", _ => RunSimulator.BalancedPolicy()),
-                ("專精速度", _ => RunSimulator.FavorPolicy(StatType.Speed)),
-                ("專精溼度", _ => RunSimulator.FavorPolicy(StatType.Moisture)),
-                ("專精韌度", _ => RunSimulator.FavorPolicy(StatType.Toughness)),
-                ("規劃", _ => RunSimulator.PlannerPolicy()),
-            };
-
-            foreach (var (name, create) in policies)
-            {
-                for (int seed = 1; seed <= Runs; seed++)
+                Assert.AreEqual($"event_{e.eventId}", e.imageId);
+                for (int i = 0; i < e.options.Length; i++)
                 {
-                    var result = RunSimulator.Run(balance, library, create(seed), seed);
-                    Assert.IsFalse(result.hitEventLimit, $"策略「{name}」種子 {seed} 跑了 {result.eventsResolved} 個事件還沒結束");
+                    Assert.LessOrEqual(e.options[i].description.Length, EventDefinition.MaxOptionTextLength,
+                        $"{e.name} 選項 {(char)('A' + i)} 超過字數限制");
+                    Assert.AreEqual($"event_{e.eventId}_{(char)('a' + i)}", e.options[i].resultImageId);
                 }
             }
         }
 
         [Test]
-        public void APlayerWhoPreparesForTheCheckpoint_UsuallyPassesTheFirstOne()
+        public void StartStatsMatchTheV2Rules()
         {
-            int passed = 0;
-            for (int seed = 1; seed <= Runs; seed++)
-            {
-                var result = RunSimulator.Run(balance, library, RunSimulator.PlannerPolicy(), seed);
-                if (result.checkpointsPassed >= 1) passed++;
-            }
-
-            Assert.GreaterOrEqual(passed, Runs * 9 / 10, $"{Runs} 局裡只有 {passed} 局通過第一個檢驗點");
+            Assert.AreEqual(0, balance.startStats.morality);
+            Assert.AreEqual(50, balance.startStats.moisture);
+            Assert.AreEqual(0, balance.startStats.speed);
+            Assert.AreEqual(0, balance.startStats.toughness);
+            Assert.AreEqual(100, balance.maxMoisture);
         }
     }
 }

@@ -6,10 +6,7 @@ using UnityEngine.InputSystem;
 
 namespace GrassRun
 {
-    /// <summary>
-    /// 一局的主流程：奔跑 → 事件 → 結果敘事 → 繼續，直到沒有選項可選。
-    /// 規則本身都在 <see cref="RunEngine"/>，這裡只負責時間、輸入和畫面。
-    /// </summary>
+    /// <summary>奔跑計時、事件選擇與結果畫面的協調層。</summary>
     public class RunController : MonoBehaviour
     {
         enum Phase
@@ -22,7 +19,6 @@ namespace GrassRun
         }
 
         [SerializeField] GameBalance balance;
-        [Tooltip("Resources 底下的事件資料夾，裡面所有 EventDefinition 都會進事件池。")]
         [SerializeField] string eventsResourcePath = "Events";
 
         [Header("畫面")]
@@ -33,11 +29,8 @@ namespace GrassRun
         [SerializeField] StageView stage;
 
         [Header("除錯")]
-        [Tooltip("亂數種子。0 代表每次都不同。")]
         [SerializeField] int seed;
-        [Tooltip("按住 Tab 時，奔跑加速的倍率。")]
         [SerializeField] float fastForwardScale = 8f;
-        [Tooltip("設計師模式：顯示實際門檻與數值變化。執行時按 F1 切換。")]
         [SerializeField] bool designerMode;
 
         const int JournalLines = 4;
@@ -62,18 +55,14 @@ namespace GrassRun
             }
 
             library = Resources.LoadAll<EventDefinition>(eventsResourcePath);
-            if (library.Length == 0)
-                Debug.LogError($"Resources/{eventsResourcePath} 底下沒有任何事件。");
-
+            if (library.Length == 0) Debug.LogError($"Resources/{eventsResourcePath} 底下沒有任何事件。");
             StartRun();
         }
 
-        /// <summary>開始新的一局。結算畫面的重新開始按鈕也是呼叫這裡。</summary>
         public void StartRun()
         {
             var rng = seed != 0 ? new System.Random(seed) : new System.Random();
             engine = new RunEngine(balance, library, rng);
-
             phase = Phase.Running;
             eventTimer = 0f;
             journal.Clear();
@@ -92,7 +81,8 @@ namespace GrassRun
 
             if (phase == Phase.Running)
             {
-                eventTimer += Time.deltaTime * (fastForward ? fastForwardScale : 1f);
+                float dt = Time.deltaTime * (fastForward ? fastForwardScale : 1f);
+                eventTimer += dt;
                 if (eventTimer >= balance.eventInterval)
                 {
                     eventTimer = 0f;
@@ -100,9 +90,7 @@ namespace GrassRun
                 }
             }
 
-            hud.Render(engine.Stats);
-            hud.SetRunningVisible(phase == Phase.Running);
-            hud.SetDesigner(designerMode, designerMode ? DesignerOverlay() : null);
+            RefreshHud();
             if (stage != null)
                 stage.SetState(engine.Stats.speed, phase == Phase.Running, fastForward ? fastForwardScale : 1f);
         }
@@ -114,7 +102,6 @@ namespace GrassRun
             if (keyboard == null) return;
 
             if (keyboard.f1Key.wasPressedThisFrame) SetDesignerMode(!designerMode);
-
             bool confirm = keyboard.spaceKey.wasPressedThisFrame || keyboard.enterKey.wasPressedThisFrame ||
                            keyboard.numpadEnterKey.wasPressedThisFrame;
 
@@ -141,7 +128,7 @@ namespace GrassRun
         {
             if (!engine.BeginNextEvent())
             {
-                Debug.LogWarning("事件池裡沒有可抽的事件，這個時段直接跳過。");
+                Debug.LogWarning("目前事件批次沒有可抽的事件。");
                 return;
             }
 
@@ -158,53 +145,20 @@ namespace GrassRun
 
             for (int i = 0; i < checks.Length; i++)
             {
-                var option = e.options[i];
-                lockTexts[i] = checks[i].available ? string.Empty : LockText(option, checks[i]);
-                designerTexts[i] = DesignerText(option, engine.CurrentLevel);
+                lockTexts[i] = checks[i].available ? string.Empty : GameText.LockReason(checks[i]);
+                designerTexts[i] = DesignerText(e.options[i]);
             }
 
             eventPanel.Show(e, checks, lockTexts, designerTexts, designerMode, Choose, ConfirmDeadEnd);
             ClearSelection();
         }
 
-        string LockText(EventOption option, OptionCheck check)
-        {
-            if (!string.IsNullOrWhiteSpace(option.lockedText) && check.lockKind == LockKind.Requirement)
-                return option.lockedText;
-
-            bool far = check.lockKind == LockKind.Requirement && balance.IsFarGap(check.gap, check.threshold);
-            return GameText.LockReason(check, far);
-        }
-
-        string DesignerText(EventOption option, int level)
+        static string DesignerText(EventOption option)
         {
             var sb = new StringBuilder();
-            if (option.requirements == null || option.requirements.Length == 0)
-            {
-                sb.Append("無門檻");
-            }
-            else
-            {
-                for (int i = 0; i < option.requirements.Length; i++)
-                {
-                    if (i > 0) sb.Append("，");
-                    var requirement = option.requirements[i];
-                    sb.Append(GameText.RequirementDebug(requirement, balance.Threshold(requirement.tier, level)));
-                }
-            }
-
-            sb.Append('\n');
-            var net = RunRules.NetChange(option);
-            bool any = false;
-            for (int i = 0; i < StatBlock.StatCount; i++)
-            {
-                var stat = (StatType)i;
-                if (net[stat] == 0) continue;
-                if (any) sb.Append("　");
-                sb.Append(GameText.StatName(stat)).Append(net[stat] > 0 ? " +" : " ").Append(net[stat]);
-                any = true;
-            }
-            if (!any) sb.Append("數值不變");
+            sb.Append(string.IsNullOrEmpty(option.requirement) ? "無需求" : option.requirement);
+            sb.Append('\n').Append(string.IsNullOrEmpty(option.offset) ? "數值不變" : option.offset);
+            if (option.endingTitleId != 0) sb.Append("　結局 ").Append(option.endingTitleId);
             return sb.ToString();
         }
 
@@ -216,12 +170,10 @@ namespace GrassRun
 
             var result = engine.Choose(index);
             eventPanel.Hide();
-
-            string hint = result.option.hintText;
-            AddJournal(string.IsNullOrWhiteSpace(hint) ? result.option.resultText : hint);
+            AddJournal(result.option.resultText);
 
             phase = Phase.Result;
-            resultPanel.Show(result.option.title, result.option.resultText, hint,
+            resultPanel.Show(result.option.description, result.option.resultText, string.Empty,
                 GameText.ChangeSummary(result.applied), Continue);
             ClearSelection();
         }
@@ -229,7 +181,6 @@ namespace GrassRun
         public void Continue()
         {
             if (phase != Phase.Result) return;
-
             resultPanel.Hide();
             phase = Phase.Running;
             ClearSelection();
@@ -238,10 +189,10 @@ namespace GrassRun
         public void ConfirmDeadEnd()
         {
             if (phase != Phase.DeadEnd) return;
-
             eventPanel.Hide();
             phase = Phase.Ended;
-            gameOver.Show(GameText.PlaceholderTitle, StartRun);
+
+            gameOver.Show(GameText.EndTitle(engine.EndReason), StartRun);
             ClearSelection();
         }
 
@@ -253,23 +204,24 @@ namespace GrassRun
             hud.SetJournal(journal);
         }
 
+        void RefreshHud()
+        {
+            hud.Render(engine.Stats);
+            hud.SetRunningVisible(phase == Phase.Running);
+            hud.SetDesigner(designerMode, designerMode ? DesignerOverlay() : null);
+        }
+
         string DesignerOverlay()
         {
-            int cycle = engine.Cycle;
             var stats = engine.Stats;
             var sb = new StringBuilder();
             sb.Append("設計師模式（F1）\n");
-            sb.Append($"第 {cycle + 1} 週期　事件 {engine.EventIndexInCycle + 1}/{balance.eventsPerCycle}　狀態 {phase}\n");
-            sb.Append($"隨機事件門檻 L{cycle}：低 {balance.Threshold(Tier.Low, cycle)}　中 {balance.Threshold(Tier.Mid, cycle)}　高 {balance.Threshold(Tier.High, cycle)}\n");
-            sb.Append($"檢驗點門檻 L{cycle + 1}：低 {balance.Threshold(Tier.Low, cycle + 1)}　中 {balance.Threshold(Tier.Mid, cycle + 1)}　高 {balance.Threshold(Tier.High, cycle + 1)}\n");
-            sb.Append($"數值 {stats.speed}/{stats.moisture}/{stats.toughness}");
-            if (engine.CurrentEvent != null) sb.Append($"\n目前事件：{engine.CurrentEvent.name}");
+            sb.Append($"已經歷 {engine.EventsResolved} 個事件　狀態 {phase}\n");
+            sb.Append($"mor {stats.morality}　hmd {stats.moisture}　spd {stats.speed}　tgh {stats.toughness}");
+            if (engine.CurrentEvent != null) sb.Append($"\n目前事件：{engine.CurrentEvent.eventId}");
             return sb.ToString();
         }
 
-        /// <summary>
-        /// 清掉 UI 的選取狀態，避免滑鼠點過的按鈕之後被空白鍵或 Enter 再觸發一次。
-        /// </summary>
         static void ClearSelection()
         {
             if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(null);
@@ -281,7 +233,6 @@ namespace GrassRun
             eventPanel.SetDesigner(on);
         }
 
-        /// <summary>除錯用：不等計時，立刻觸發下一個事件。</summary>
         public void DebugOpenEventNow()
         {
             if (phase != Phase.Running) return;

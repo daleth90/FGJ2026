@@ -12,16 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff8ee07f0238e8e41bc4d9a3ffab51cf, type: 3}
   m_Name: Balance
   m_EditorClassIdentifier: GrassRun::GrassRun.GameBalance
-  eventInterval: 3
-  eventsPerCycle: 6
+  eventInterval: 10
   startStats:
-    speed: 4
-    moisture: 4
-    toughness: 4
-  expectedBase: 4
-  expectedPerLevel: 3
-  harshnessPerLevel: 0.04
-  lowTier: 0.6
-  midTier: 0.9
-  highTier: 1.4
-  farGapRatio: 0.3
+    morality: 0
+    moisture: 50
+    speed: 0
+    toughness: 0
+  maxMoisture: 100

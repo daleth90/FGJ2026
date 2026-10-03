@@ -35,9 +35,9 @@ namespace GrassRun
             this.onDeadEnd = onDeadEnd;
             root.SetActive(true);
 
-            kindLabel.text = GameText.KindName(e.kind);
-            kindTag.color = e.kind == EventKind.Checkpoint ? checkpointColor : randomColor;
-            titleLabel.text = e.title;
+            kindLabel.text = "事件";
+            kindTag.color = randomColor;
+            titleLabel.text = e.DisplayTitle;
             descriptionLabel.text = e.description;
 
             bool anyAvailable = false;

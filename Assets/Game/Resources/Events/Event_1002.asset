@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c93da0a96c34a8f44a6fd19f14877af1, type: 3}
+  m_Name: Event_1002
+  m_EditorClassIdentifier: GrassRun::GrassRun.EventDefinition
+  eventId: 1002
+  unlockEventCount: 0
+  title: 
+  description: "\u4E00\u5217\u879E\u87FB\u625B\u8457\u9905\u4E7E\u5C51\uFF0C\u6D69\u6D69\u8569\u8569\u64CB\u5728\u8DEF\u4E2D\u9593\u3002"
+  imageId: event_1002
+  options:
+  - description: "\u7AD9\u8457\u7B49\u7260\u5011\u6162\u6162\u8D70\u5B8C"
+    requirement: 
+    offset: tgh:+5
+    resultText: "\u7B49\u5F85\u8B93\u4F60\u5B78\u6703\u5FCD\u8010\uFF0C\u6839\u624E\u5F97\u66F4\u7A69\u4E86\u3002"
+    resultImageId: event_1002_a
+    endingTitleId: 0
+  - description: "\u8D81\u4E82\u5077\u4E00\u584A\u9905\u4E7E\u5C51"
+    requirement: 
+    offset: mor:-5;tgh:+5
+    resultText: "\u9905\u4E7E\u5C51\u5F88\u9999\uFF0C\u879E\u87FB\u5728\u80CC\u5F8C\u7F75\u4F60\u3002\u4F60\u58EF\u4E86\u4E00\u9EDE\uFF0C\u4E5F\u58DE\u4E86\u4E00\u9EDE\u3002"
+    resultImageId: event_1002_b
+    endingTitleId: 0
+  - description: "\u7E5E\u9060\u8DEF\uFF0C\u5F9E\u66EC\u71D9\u7684\u77F3\u982D\u4E0A\u8DF3\u904E\u53BB"
+    requirement: 
+    offset: hmd:-20;spd:+5
+    resultText: "\u77F3\u982D\u71D9\u5F97\u4F60\u76F4\u8DF3\u8173\uFF0C\u817F\u8173\u662F\u9748\u6D3B\u4E86\uFF0C\u6C34\u5206\u537B\u84B8\u767C\u4E0D\u5C11\u3002"
+    resultImageId: event_1002_c
+    endingTitleId: 0

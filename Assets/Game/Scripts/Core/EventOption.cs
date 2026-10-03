@@ -1,24 +1,23 @@
-using System;
 using UnityEngine;
 
 namespace GrassRun
 {
-    [Serializable]
+    [System.Serializable]
     public struct Requirement
     {
         public StatType stat;
         public Comparison comparison;
-        public Tier tier;
+        public int threshold;
 
-        public Requirement(StatType stat, Comparison comparison, Tier tier)
+        public Requirement(StatType stat, Comparison comparison, int threshold)
         {
             this.stat = stat;
             this.comparison = comparison;
-            this.tier = tier;
+            this.threshold = threshold;
         }
     }
 
-    [Serializable]
+    [System.Serializable]
     public struct StatChange
     {
         public StatType stat;
@@ -32,31 +31,28 @@ namespace GrassRun
         }
     }
 
-    [Serializable]
+    [System.Serializable]
     public class EventOption
     {
-        [Tooltip("選項標題：玩家要做的動作。")]
-        public string title;
-
-        [Tooltip("一行說明：用文字暗示需要什麼、會付出什麼。不要寫數字。")]
-        [TextArea(1, 3)]
+        [Tooltip("玩家看到的選項文案。只暗示需求與後果，不直接寫數字。")]
+        [TextArea(1, 4)]
         public string description;
 
-        [Tooltip("門檻。全部達成才可選；留空代表沒有門檻。")]
-        public Requirement[] requirements = Array.Empty<Requirement>();
+        [Tooltip("需求字串，例如 spd>=15 或 mor>=-10;mor<=10。留空代表沒有需求。")]
+        public string requirement;
 
-        [Tooltip("選後的數值增減。負數是代價；付不起（會扣到 0 以下）時選項不可選。\n容量滿時，成長依這裡的順序分配，排後面的先溢出。")]
-        public StatChange[] changes = Array.Empty<StatChange>();
+        [Tooltip("變動字串，例如 mor:+10;hmd:-10。固定依 mor、hmd、spd、tgh 排列。")]
+        public string offset;
 
-        [Tooltip("自訂的鎖定原因。留空則依未達成的門檻自動產生。")]
-        public string lockedText;
-
-        [Tooltip("選後的微敘事。")]
+        [Tooltip("選完後顯示的微敘事與提示。")]
         [TextArea(2, 4)]
         public string resultText;
 
-        [Tooltip("後設提示：這個選擇對之後意味著什麼。")]
-        [TextArea(1, 3)]
-        public string hintText;
+        [Tooltip("選完此選項後顯示的圖片 ID，不含副檔名。")]
+        public string resultImageId;
+
+        [Tooltip("特殊結局對應的稱號 ID。0 代表沒有；目前只保存資料，不處理結局流程。")]
+        [Min(0)]
+        public int endingTitleId;
     }
 }

@@ -35,8 +35,9 @@ namespace GrassRun
             this.onClick = onClick;
 
             keyLabel.text = (index + 1).ToString();
-            titleLabel.text = option.title;
-            descriptionLabel.text = option.description;
+            titleLabel.text = option.description;
+            descriptionLabel.text = string.Empty;
+            descriptionLabel.gameObject.SetActive(false);
 
             button.interactable = available;
             titleLabel.color = available ? titleColor : lockedTextColor;

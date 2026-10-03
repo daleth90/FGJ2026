@@ -3,7 +3,7 @@ using UnityEngine;
 namespace GrassRun
 {
     /// <summary>
-    /// 所有規則參數集中在這裡。事件只寫階級（低／中／高），實際門檻由這裡依週期換算。
+    /// 事件節奏與玩家起始數值。
     /// </summary>
     [CreateAssetMenu(menuName = "GrassRun/Game Balance", fileName = "Balance")]
     public class GameBalance : ScriptableObject
@@ -11,56 +11,13 @@ namespace GrassRun
         [Header("節奏")]
         [Tooltip("每隔幾秒出現一個事件。")]
         [Min(0.5f)]
-        public float eventInterval = 3f;
-
-        [Tooltip("一個週期有幾個事件，最後一個是檢驗點。")]
-        [Min(2)]
-        public int eventsPerCycle = 6;
+        public float eventInterval = 10f;
 
         [Header("起始")]
-        public StatBlock startStats = new StatBlock(4, 4, 4);
+        public StatBlock startStats = new StatBlock(0, 50, 0, 0);
 
-        [Header("門檻曲線")]
-        [Tooltip("等級 0 時，一項數值的預期值。")]
-        public float expectedBase = 4f;
-
-        [Tooltip("每升一級，預期值增加多少。")]
-        public float expectedPerLevel = 3f;
-
-        [Tooltip("嚴苛度爬升：每升一級，門檻額外提高的比例。大於 0 時門檻成長會越來越快，遊戲才保證會結束。")]
-        [Min(0f)]
-        public float harshnessPerLevel = 0.04f;
-
-        [Tooltip("各階級的門檻 = 當級需求值 × 這個倍率。")]
-        public float lowTier = 0.6f;
-        public float midTier = 0.9f;
-        public float highTier = 1.4f;
-
-        [Header("回饋")]
-        [Tooltip("差距超過門檻的這個比例時，鎖定原因會從「還不夠」變成「遠遠不夠」。")]
-        [Range(0f, 1f)]
-        public float farGapRatio = 0.3f;
-
-        /// <summary>一項數值在該等級的預期值。</summary>
-        public float Expected(int level) => expectedBase + expectedPerLevel * level;
-
-        /// <summary>該等級的需求值：預期值再乘上嚴苛度爬升。</summary>
-        public float Demand(int level) => Expected(level) * (1f + harshnessPerLevel * level);
-
-        public float TierFactor(Tier tier)
-        {
-            switch (tier)
-            {
-                case Tier.Low: return lowTier;
-                case Tier.Mid: return midTier;
-                default: return highTier;
-            }
-        }
-
-        public int Threshold(Tier tier, int level) => RoundHalfUp(Demand(level) * TierFactor(tier));
-
-        public bool IsFarGap(int gap, int threshold) => gap > Mathf.Max(1f, threshold * farGapRatio);
-
-        static int RoundHalfUp(float value) => Mathf.Max(0, Mathf.FloorToInt(value + 0.5f));
+        [Tooltip("溼度上限；溼度與其他非善惡屬性的下限都是 0。")]
+        [Min(1)]
+        public int maxMoisture = 100;
     }
 }

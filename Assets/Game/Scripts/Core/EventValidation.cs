@@ -2,9 +2,7 @@ using System.Collections.Generic;
 
 namespace GrassRun
 {
-    /// <summary>
-    /// 事件資料的檢查。回傳問題清單，空清單代表沒問題。
-    /// </summary>
+    /// <summary>依 v2 事件表格式檢查單一事件與整個事件池。</summary>
     public static class EventValidation
     {
         public static List<string> Validate(EventDefinition e)
@@ -17,9 +15,19 @@ namespace GrassRun
             }
 
             string name = e.name;
-            if (string.IsNullOrWhiteSpace(e.title)) issues.Add($"{name}：沒有標題。");
-            if (string.IsNullOrWhiteSpace(e.description)) issues.Add($"{name}：沒有情境描述。");
-            if (e.weight <= 0f) issues.Add($"{name}：權重是 0，永遠不會被抽到。");
+            if (e.eventId <= 0) issues.Add($"{name}：事件 ID 必須大於 0。");
+            if (e.unlockEventCount < 0) issues.Add($"{name}：解鎖事件數不可為負數。");
+            if (string.IsNullOrWhiteSpace(e.description)) issues.Add($"{name}：沒有事件敘述。");
+            string expectedEventImage = $"event_{e.eventId}";
+            if (e.imageId != expectedEventImage)
+                issues.Add($"{name}：事件圖片 ID 應為 {expectedEventImage}。");
+
+            int stage = e.eventId / 1000;
+            int expectedUnlock = stage == 1 ? 0 : stage == 2 ? 3 : stage == 3 ? 6 : -1;
+            if (expectedUnlock < 0)
+                issues.Add($"{name}：事件 ID {e.eventId} 不在 1xxx、2xxx、3xxx 階段。");
+            else if (e.unlockEventCount != expectedUnlock)
+                issues.Add($"{name}：{stage}xxx 事件的解鎖事件數應為 {expectedUnlock}。");
 
             if (e.options == null || e.options.Length != EventDefinition.OptionCount)
             {
@@ -30,52 +38,72 @@ namespace GrassRun
             for (int i = 0; i < e.options.Length; i++)
             {
                 var option = e.options[i];
-                string label = $"{name} 選項 {i + 1}";
+                string label = $"{name} 選項 {(char)('A' + i)}";
                 if (option == null)
                 {
                     issues.Add($"{label}：是空的。");
                     continue;
                 }
 
-                if (string.IsNullOrWhiteSpace(option.title)) issues.Add($"{label}：沒有標題。");
-                if (string.IsNullOrWhiteSpace(option.description)) issues.Add($"{label}：沒有說明文字，玩家看不出需求和風險。");
-                if (string.IsNullOrWhiteSpace(option.resultText)) issues.Add($"{label}：沒有結果敘事。");
+                if (string.IsNullOrWhiteSpace(option.description)) issues.Add($"{label}：沒有選項文案。");
+                else if (option.description.Length > EventDefinition.MaxOptionTextLength)
+                    issues.Add($"{label}：選項文案不可超過 {EventDefinition.MaxOptionTextLength} 字。");
+                if (string.IsNullOrWhiteSpace(option.resultText)) issues.Add($"{label}：沒有選後回饋。");
+                string expectedResultImage = $"event_{e.eventId}_{(char)('a' + i)}";
+                if (option.resultImageId != expectedResultImage)
+                    issues.Add($"{label}：結果圖片 ID 應為 {expectedResultImage}。");
 
-                // 「夠低」的門檻不會隨週期變難，只靠它的檢驗點選項等於永遠過得了。
-                bool hasRisingRequirement = false;
-                if (option.requirements != null)
-                {
-                    foreach (var requirement in option.requirements)
-                        hasRisingRequirement |= requirement.comparison == Comparison.AtLeast;
-                }
-                if (e.kind == EventKind.Checkpoint && !hasRisingRequirement)
-                    issues.Add($"{label}：檢驗點的選項至少要有一條「夠高」的門檻，否則永遠不會失敗。");
+                var requirements = new List<Requirement>();
+                if (!RunRules.TryParseRequirements(option.requirement, requirements, out string requirementError))
+                    issues.Add($"{label}：需求格式錯誤：{requirementError}");
+
+                var changes = new List<StatChange>();
+                if (!RunRules.TryParseOffsets(option.offset, changes, out string offsetError))
+                    issues.Add($"{label}：變動格式錯誤：{offsetError}");
+
+                if (option.endingTitleId == 0 && changes.Count == 0)
+                    issues.Add($"{label}：沒有結局 ID 時，至少要有一項數值變動。");
+                if (option.endingTitleId < 0)
+                    issues.Add($"{label}：結局 ID 不可為負數。");
+
+                bool mustLoseMoisture = stage == 1 ? i == 2 : stage == 2 ? i >= 1 : stage == 3;
+                if (option.endingTitleId != 0) mustLoseMoisture = false;
+                if (mustLoseMoisture && !HasNegativeMoisture(changes))
+                    issues.Add($"{label}：依階段規則必須包含負數 hmd 變動。");
             }
 
             return issues;
         }
 
-        /// <summary>整個事件池的檢查：要有檢驗點，隨機事件也要夠一個週期不重複。</summary>
-        public static List<string> ValidateLibrary(IReadOnlyList<EventDefinition> library, GameBalance balance)
+        public static List<string> ValidateLibrary(IReadOnlyList<EventDefinition> library, GameBalance balance = null)
         {
             var issues = new List<string>();
-            foreach (var e in library) issues.AddRange(Validate(e));
-
-            int randomPerCycle = balance != null ? balance.eventsPerCycle - 1 : 5;
-            int randoms = 0;
-            int checkpoints = 0;
-            foreach (var e in library)
+            if (library == null || library.Count == 0)
             {
-                if (e == null || e.weight <= 0f) continue;
-                if (e.kind == EventKind.Checkpoint) checkpoints++;
-                else randoms++;
+                issues.Add("事件池是空的。");
+                return issues;
             }
 
-            if (checkpoints == 0) issues.Add("沒有檢驗點事件。");
-            if (randoms < randomPerCycle)
-                issues.Add($"隨機事件只有 {randoms} 個，一個週期需要 {randomPerCycle} 個才不會重複。");
+            var ids = new HashSet<int>();
+            var unlocks = new HashSet<int>();
+            foreach (var e in library)
+            {
+                issues.AddRange(Validate(e));
+                if (e == null) continue;
+                if (!ids.Add(e.eventId)) issues.Add($"事件 ID {e.eventId} 重複。");
+                unlocks.Add(e.unlockEventCount);
+            }
 
+            foreach (int required in new[] { 0, 3, 6 })
+                if (!unlocks.Contains(required)) issues.Add($"缺少解鎖事件數為 {required} 的事件批次。");
             return issues;
+        }
+
+        static bool HasNegativeMoisture(List<StatChange> changes)
+        {
+            foreach (var change in changes)
+                if (change.stat == StatType.Moisture && change.amount < 0) return true;
+            return false;
         }
     }
 }

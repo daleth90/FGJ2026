@@ -5,20 +5,23 @@ namespace GrassRun
     [Serializable]
     public struct StatBlock
     {
-        public const int StatCount = 3;
+        public const int StatCount = 4;
 
-        public int speed;
+        public int morality;
         public int moisture;
+        public int speed;
         public int toughness;
 
-        public StatBlock(int speed, int moisture, int toughness)
+        public StatBlock(int morality, int moisture, int speed, int toughness)
         {
-            this.speed = speed;
+            this.morality = morality;
             this.moisture = moisture;
+            this.speed = speed;
             this.toughness = toughness;
         }
 
-        public int Total => speed + moisture + toughness;
+        /// <summary>世界表現沿用的三項身體數值總和；善惡不屬於身體能力。</summary>
+        public int Total => moisture + speed + toughness;
 
         public int this[StatType stat]
         {
@@ -26,22 +29,26 @@ namespace GrassRun
             {
                 switch (stat)
                 {
-                    case StatType.Speed: return speed;
+                    case StatType.Morality: return morality;
                     case StatType.Moisture: return moisture;
-                    default: return toughness;
+                    case StatType.Speed: return speed;
+                    case StatType.Toughness: return toughness;
+                    default: throw new ArgumentOutOfRangeException(nameof(stat), stat, null);
                 }
             }
             set
             {
                 switch (stat)
                 {
-                    case StatType.Speed: speed = value; break;
+                    case StatType.Morality: morality = value; break;
                     case StatType.Moisture: moisture = value; break;
-                    default: toughness = value; break;
+                    case StatType.Speed: speed = value; break;
+                    case StatType.Toughness: toughness = value; break;
+                    default: throw new ArgumentOutOfRangeException(nameof(stat), stat, null);
                 }
             }
         }
 
-        public override string ToString() => $"{speed}/{moisture}/{toughness}";
+        public override string ToString() => $"{morality}/{moisture}/{speed}/{toughness}";
     }
 }
