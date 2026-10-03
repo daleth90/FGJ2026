@@ -543,7 +543,6 @@ MonoBehaviour:
   stage: {fileID: 5605637551474529795}
   seed: 0
   fastForwardScale: 8
-  designerMode: 0
 --- !u!4 &2003688585
 Transform:
   m_ObjectHideFlags: 0
@@ -641,7 +640,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7202937544672885873, guid: b7e643f95b80da94a876649bc78c1017, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -87.51544
+      value: -33
       objectReference: {fileID: 0}
     - target: {fileID: 7202937544672885873, guid: b7e643f95b80da94a876649bc78c1017, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -680,6 +679,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1465397904}
     m_Modifications:
+    - target: {fileID: 71715307241337174, guid: 6e3ffd73ee3a04c45bca83c5ca85e1eb, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0.93499756
+      objectReference: {fileID: 0}
+    - target: {fileID: 71715307241337174, guid: 6e3ffd73ee3a04c45bca83c5ca85e1eb, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -388.12494
+      objectReference: {fileID: 0}
     - target: {fileID: 806417385549444596, guid: 6e3ffd73ee3a04c45bca83c5ca85e1eb, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -793,6 +800,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1465397904}
     m_Modifications:
+    - target: {fileID: 3188950655108700, guid: 9f73bf97f9d0a154dac5a094e4a2afa5, type: 3}
+      propertyPath: m_fontSize
+      value: 30.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 218736304848753301, guid: 9f73bf97f9d0a154dac5a094e4a2afa5, type: 3}
+      propertyPath: m_fontSize
+      value: 30.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 2412057602429710792, guid: 9f73bf97f9d0a154dac5a094e4a2afa5, type: 3}
+      propertyPath: m_fontSize
+      value: 30.35
+      objectReference: {fileID: 0}
     - target: {fileID: 2875237975012617980, guid: 9f73bf97f9d0a154dac5a094e4a2afa5, type: 3}
       propertyPath: m_Name
       value: EventPanel
