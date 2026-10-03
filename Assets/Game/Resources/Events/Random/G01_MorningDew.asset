@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c93da0a96c34a8f44a6fd19f14877af1, type: 3}
+  m_Name: G01_MorningDew
+  m_EditorClassIdentifier: GrassRun::GrassRun.EventDefinition
+  kind: 0
+  zones: 7
+  weight: 1
+  title: "\u6668\u9732"
+  description: "\u5929\u9084\u6C92\u4EAE\u900F\uFF0C\u6BCF\u4E00\u7247\u8349\u8449\u4E0A\u90FD\u639B\u8457\u9732\u6C34\u3002\u592A\u967D\u4E00\u51FA\u4F86\uFF0C\u5B83\u5011\u5C31\u6703\u6D88\u5931\u3002"
+  options:
+  - title: "\u4E00\u9846\u4E00\u9846\u559D\u6389"
+    description: "\u6162\u6162\u628A\u9732\u6C34\u6536\u9032\u8449\u8108\u88E1\u3002"
+    requirements: []
+    changes:
+    - stat: 1
+      amount: 2
+    lockedText: 
+    resultText: "\u4F60\u559D\u5F97\u5F88\u6162\u3002\u7B49\u592A\u967D\u51FA\u4F86\uFF0C\u4F60\u5DF2\u7D93\u662F\u9019\u4E00\u5E36\u6700\u6C34\u6F64\u7684\u4E00\u682A\u8349\u3002"
+    hintText: "\u4F60\u8B8A\u5F97\u66F4\u6EBC\u6F64\u4E86\u3002\u5982\u679C\u524D\u65B9\u662F\u4E7E\u5730\uFF0C\u9019\u8EAB\u6C34\u6C23\u672A\u5FC5\u662F\u597D\u4E8B\u3002"
+  - title: "\u7529\u6389\u9732\u6C34\u8D95\u8DEF"
+    description: "\u6296\u4E00\u6296\uFF0C\u8F15\u88DD\u4E0A\u8DEF\u3002"
+    requirements: []
+    changes:
+    - stat: 0
+      amount: 2
+    - stat: 1
+      amount: -1
+    lockedText: 
+    resultText: "\u6C34\u73E0\u98DB\u6563\uFF0C\u4F60\u8F15\u5F97\u50CF\u4E00\u53E3\u6C23\u3002"
+    hintText: "\u8F15\u4E86\uFF0C\u4E5F\u4E7E\u4E86\u4E00\u9EDE\u3002"
+  - title: "\u8B93\u9732\u6C34\u58D3\u5F4E\u518D\u5F48\u8D77"
+    description: "\u501F\u5B83\u7684\u91CD\u91CF\uFF0C\u7DF4\u4E00\u7DF4\u8170\u3002"
+    requirements:
+    - stat: 2
+      comparison: 0
+      tier: 0
+    changes:
+    - stat: 2
+      amount: 2
+    lockedText: 
+    resultText: "\u9732\u6C34\u628A\u4F60\u58D3\u4E0B\u53BB\uFF0C\u4F60\u628A\u81EA\u5DF1\u6490\u56DE\u4F86\u3002\u4E00\u6B21\uFF0C\u53C8\u4E00\u6B21\u3002"
+    hintText: "\u4F60\u7684\u8396\u66F4\u6709\u5F48\u6027\u4E86\u3002"

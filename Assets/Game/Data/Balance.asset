@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff8ee07f0238e8e41bc4d9a3ffab51cf, type: 3}
+  m_Name: Balance
+  m_EditorClassIdentifier: GrassRun::GrassRun.GameBalance
+  eventInterval: 10
+  eventsPerCycle: 6
+  startStats:
+    speed: 4
+    moisture: 4
+    toughness: 4
+  expectedBase: 4
+  expectedPerLevel: 3
+  harshnessPerLevel: 0.04
+  lowTier: 0.6
+  midTier: 0.9
+  highTier: 1.4
+  useCapacity: 1
+  capacityFactor: 1
+  farGapRatio: 0.3

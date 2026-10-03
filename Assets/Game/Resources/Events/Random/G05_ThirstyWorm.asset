@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c93da0a96c34a8f44a6fd19f14877af1, type: 3}
+  m_Name: G05_ThirstyWorm
+  m_EditorClassIdentifier: GrassRun::GrassRun.EventDefinition
+  kind: 0
+  zones: 7
+  weight: 1
+  title: "\u4E7E\u6E34\u7684\u86AF\u8693"
+  description: "\u4E00\u689D\u86AF\u8693\u56F0\u5728\u66EC\u786C\u7684\u571F\u9762\u4E0A\uFF0C\u6162\u6162\u5730\u626D\u52D5\u3002\u7260\u9700\u8981\u7684\u6771\u897F\uFF0C\u4F60\u8EAB\u4E0A\u525B\u597D\u6709\u3002"
+  options:
+  - title: "\u628A\u6C34\u5206\u7D66\u7260"
+    description: "\u4F60\u5920\u6EBC\u6F64\uFF0C\u5206\u5F97\u8D77\u3002"
+    requirements:
+    - stat: 1
+      comparison: 0
+      tier: 1
+    changes:
+    - stat: 2
+      amount: 3
+    - stat: 1
+      amount: -2
+    lockedText: 
+    resultText: "\u7260\u947D\u56DE\u571F\u88E1\uFF0C\u5728\u4F60\u7684\u6839\u65C1\u908A\u9B06\u51FA\u4E00\u5708\u8EDF\u571F\u3002\u4F60\u624E\u5F97\u6BD4\u4EE5\u524D\u66F4\u6DF1\u4E86\u3002"
+    hintText: "\u7D66\u51FA\u53BB\u7684\u6C34\uFF0C\u63DB\u56DE\u4E86\u66F4\u7A69\u7684\u6839\u3002"
+  - title: "\u6EF4\u5E7E\u6EF4\u5728\u7260\u8EAB\u4E0A"
+    description: "\u4E0D\u591A\uFF0C\u5920\u7260\u6490\u5230\u9670\u5F71\u88E1\u3002"
+    requirements:
+    - stat: 1
+      comparison: 0
+      tier: 0
+    changes:
+    - stat: 0
+      amount: 2
+    - stat: 1
+      amount: -1
+    lockedText: 
+    resultText: "\u7260\u722C\u8D70\u4E86\u3002\u4F60\u89BA\u5F97\u8EAB\u5B50\u8F15\u4E86\u4E00\u9EDE\uFF0C\u8173\u6B65\u4E5F\u8DDF\u8457\u5FEB\u4E86\u3002"
+    hintText: "\u5C11\u4E00\u9EDE\u6C34\uFF0C\u5C31\u5C11\u4E00\u9EDE\u91CD\u91CF\u3002"
+  - title: "\u64E0\u51FA\u6700\u5F8C\u4E00\u9EDE\u6EBC\u6C23"
+    description: "\u4F60\u81EA\u5DF1\u4E5F\u4E0D\u591A\u4E86\u3002"
+    requirements: []
+    changes:
+    - stat: 2
+      amount: 1
+    - stat: 1
+      amount: -1
+    lockedText: 
+    resultText: "\u90A3\u4E00\u9EDE\u9EDE\u6C34\u6551\u4E0D\u4E86\u7260\uFF0C\u537B\u8B93\u4F60\u8A18\u4F4F\u4E86\u4E7E\u6E34\u662F\u4EC0\u9EBC\u611F\u89BA\u3002"
+    hintText: "\u4F60\u5FEB\u8981\u6C92\u6709\u6C34\u53EF\u4EE5\u7D66\u4E86\u3002"

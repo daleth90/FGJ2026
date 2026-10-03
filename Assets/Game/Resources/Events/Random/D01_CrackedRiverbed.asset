@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c93da0a96c34a8f44a6fd19f14877af1, type: 3}
+  m_Name: D01_CrackedRiverbed
+  m_EditorClassIdentifier: GrassRun::GrassRun.EventDefinition
+  kind: 0
+  zones: 2
+  weight: 2
+  title: "\u9F9C\u88C2\u7684\u6CB3\u5E8A"
+  description: "\u9019\u88E1\u66FE\u7D93\u6709\u6C34\u3002\u73FE\u5728\u53EA\u5269\u4E00\u7247\u7247\u7FF9\u8D77\u7684\u6CE5\u6BBC\uFF0C\u8E29\u91CD\u4E86\u5C31\u6703\u788E\u3002"
+  options:
+  - title: "\u8F15\u8F15\u8E29\u904E\u53BB"
+    description: "\u8EAB\u5B50\u5920\u8F15\uFF0C\u6CE5\u6BBC\u5C31\u4E0D\u6703\u788E\u3002"
+    requirements:
+    - stat: 1
+      comparison: 1
+      tier: 1
+    changes:
+    - stat: 0
+      amount: 2
+    lockedText: 
+    resultText: "\u6CE5\u6BBC\u5728\u4F60\u8173\u4E0B\u53EA\u8F15\u8F15\u97FF\u4E86\u4E00\u8072\u3002"
+    hintText: "\u5728\u4E7E\u5730\uFF0C\u8F15\u76C8\u6BD4\u8C50\u6F64\u6709\u7528\u3002"
+  - title: "\u8E29\u788E\u5B83\uFF0C\u786C\u8D70"
+    description: "\u788E\u7247\u6703\u5272\u4EBA\uFF0C\u5F97\u5920\u8010\u78E8\u624D\u884C\u3002"
+    requirements:
+    - stat: 2
+      comparison: 0
+      tier: 1
+    changes:
+    - stat: 2
+      amount: 1
+    - stat: 1
+      amount: -1
+    lockedText: 
+    resultText: "\u788E\u7247\u522E\u8457\u4F60\u7684\u8396\u3002\u4F60\u8D70\u904E\u53BB\u4E86\uFF0C\u4E5F\u88AB\u98A8\u4E7E\u4E86\u4E00\u4E9B\u3002"
+    hintText: "\u97CC\u5EA6\u80FD\u5E36\u4F60\u904E\u53BB\uFF0C\u4F46\u4E7E\u5730\u7E3D\u6703\u6536\u4E00\u9EDE\u6C34\u7576\u904E\u8DEF\u8CBB\u3002"
+  - title: "\u5F80\u88C2\u7E2B\u6DF1\u8655\u627E\u6C34"
+    description: "\u5E95\u4E0B\u4E5F\u8A31\u9084\u6709\u6EBC\u6CE5\u3002"
+    requirements: []
+    changes:
+    - stat: 1
+      amount: 2
+    - stat: 2
+      amount: -1
+    lockedText: 
+    resultText: "\u88C2\u7E2B\u6DF1\u8655\u771F\u7684\u9084\u6709\u4E00\u9EDE\u6EBC\u6CE5\u3002\u4F60\u559D\u5230\u4E86\uFF0C\u8449\u5B50\u4E5F\u88AB\u6CE5\u6BBC\u522E\u50B7\u4E86\u3002"
+    hintText: "\u5728\u4E7E\u5730\u5B58\u6C34\uFF0C\u7E3D\u8981\u62FF\u5225\u7684\u6771\u897F\u53BB\u63DB\u3002"

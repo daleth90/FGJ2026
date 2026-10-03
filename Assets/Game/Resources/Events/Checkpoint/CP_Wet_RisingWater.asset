@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c93da0a96c34a8f44a6fd19f14877af1, type: 3}
+  m_Name: CP_Wet_RisingWater
+  m_EditorClassIdentifier: GrassRun::GrassRun.EventDefinition
+  kind: 1
+  zones: 4
+  weight: 1
+  title: "\u6F2B\u904E\u4F4E\u5730\u7684\u6C34"
+  description: "\u96E8\u4E0B\u4E86\u5F88\u4E45\uFF0C\u4F4E\u5730\u8B8A\u6210\u4E00\u7247\u7DE9\u6162\u79FB\u52D5\u7684\u6C34\u3002\u6C34\u4E0D\u6025\uFF0C\u4F46\u5B83\u4E0D\u6253\u7B97\u7E5E\u904E\u4F60\u3002"
+  options:
+  - title: "\u9806\u6D41\u800C\u4E0B"
+    description: "\u653E\u9B06\u8EAB\u9AD4\uFF0C\u8B93\u6C34\u5E36\u4F60\u8D70\u3002\u5920\u6EBC\u6F64\u7684\u8349\u624D\u6D6E\u5F97\u8D77\u4F86\u3002"
+    requirements:
+    - stat: 1
+      comparison: 0
+      tier: 1
+    changes:
+    - stat: 1
+      amount: 1
+    lockedText: 
+    resultText: "\u4F60\u50CF\u4E00\u7247\u672C\u4F86\u5C31\u5C6C\u65BC\u6C34\u7684\u8449\u5B50\uFF0C\u6F02\u904E\u4E86\u6574\u7247\u4F4E\u5730\u3002"
+    hintText: "\u6EBC\u6F64\u7684\u8EAB\u9AD4\u5728\u9019\u88E1\u5982\u9B5A\u5F97\u6C34\u2014\u2014\u5230\u4E86\u4E7E\u5730\u5C31\u4E0D\u4E00\u5B9A\u4E86\u3002"
+  - title: "\u6293\u7DCA\u5CA9\u7E2B"
+    description: "\u628A\u6839\u7E8F\u9032\u77F3\u982D\uFF0C\u7B49\u6C34\u9000\u3002\u5F97\u975E\u5E38\u5F37\u97CC\u3002"
+    requirements:
+    - stat: 2
+      comparison: 0
+      tier: 2
+    changes:
+    - stat: 2
+      amount: 1
+    - stat: 0
+      amount: -1
+    lockedText: 
+    resultText: "\u6C34\u62C9\u4E86\u4F60\u4E00\u6574\u591C\u3002\u5929\u4EAE\u6642\u4F60\u9084\u5728\u539F\u5730\uFF0C\u6839\u6BD4\u4EE5\u524D\u66F4\u7C97\u4E86\u3002"
+    hintText: "\u786C\u6490\u5F88\u6709\u6548\uFF0C\u53EA\u662F\u4F60\u4E5F\u56E0\u6B64\u6162\u4E86\u4E0B\u4F86\u3002"
+  - title: "\u9006\u6D41\u885D\u523A"
+    description: "\u8D81\u6C34\u9084\u6DFA\uFF0C\u8E29\u8457\u6C34\u82B1\u885D\u904E\u53BB\u3002\u53EA\u6709\u6700\u5FEB\u7684\u8349\u505A\u5F97\u5230\u3002"
+    requirements:
+    - stat: 0
+      comparison: 0
+      tier: 2
+    changes:
+    - stat: 0
+      amount: -2
+    - stat: 2
+      amount: -1
+    lockedText: 
+    resultText: "\u4F60\u885D\u904E\u53BB\u4E86\u3002\u6C34\u6C92\u80FD\u7559\u4F4F\u4F60\uFF0C\u537B\u704C\u9032\u4E86\u4F60\u7684\u8396\u2014\u2014\u6BCF\u4E00\u6B65\u90FD\u6BD4\u4EE5\u524D\u6C89\u3002"
+    hintText: "\u5728\u6EBC\u5730\uFF0C\u5FEB\u4E0D\u662F\u672C\u4E8B\uFF0C\u8F15\u624D\u662F\u3002"
