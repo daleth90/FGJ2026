@@ -31,7 +31,7 @@ MonoBehaviour:
     resultImageId: event_3007_b
     endingTitleId: 0
   - description: "\u628A\u9EB5\u5305\u5C51\u8B93\u7D66\u6436\u4E0D\u5230\u7684\u96DB\u9CE5"
-    requirement: 
+    requirement: mor>=-10
     offset: mor:+10;hmd:-10
     resultText: "\u96DB\u9CE5\u5403\u98FD\u4E86\uFF0C\u4F60\u5728\u5EE3\u5834\u4E2D\u592E\u66EC\u4E86\u597D\u4E45\u3002"
     resultImageId: event_3007_c

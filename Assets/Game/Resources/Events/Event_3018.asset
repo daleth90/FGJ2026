@@ -30,7 +30,7 @@ MonoBehaviour:
     resultText: "\u8001\u723A\u723A\u7B11\u8457\u8AAA\uFF1A\u300C\u4E56\u5594\u3002\u300D"
     resultImageId: event_3018_b
     endingTitleId: 0
-  - description: "\u8D81\u5979\u4E0D\u6CE8\u610F\u5FEB\u8DD1"
+  - description: "\u8D81\u4ED6\u4E0D\u6CE8\u610F\u5FEB\u8DD1"
     requirement: 
     offset: hmd:-10;spd:+10
     resultText: "\u7AF9\u7C43\u5DEE\u9EDE\u7F69\u5230\u4F60\u982D\u4E0A\u3002"

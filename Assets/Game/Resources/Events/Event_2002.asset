@@ -25,7 +25,7 @@ MonoBehaviour:
     resultImageId: event_2002_a
     endingTitleId: 0
   - description: "\u4F38\u9577\u8449\u5B50\u6488\u8D77\u88AB\u6C96\u8D70\u7684\u74E2\u87F2"
-    requirement: 
+    requirement: mor>=-10
     offset: mor:+10;hmd:-20
     resultText: "\u74E2\u87F2\u5F97\u6551\u4E86\uFF0C\u4F46\u4F60\u63A2\u51FA\u8EAB\u5B50\u5728\u592A\u967D\u4E0B\u6488\u4E86\u597D\u4E45\u3002"
     resultImageId: event_2002_b

@@ -25,13 +25,13 @@ MonoBehaviour:
     resultImageId: event_3011_a
     endingTitleId: 0
   - description: "\u5077\u5403\u4E00\u53E3\u7C89\u5713"
-    requirement: mor<=-5
+    requirement: 
     offset: mor:-5;hmd:-10;spd:+10
     resultText: "\u7CD6\u5206\u8B93\u4F60\u7CBE\u795E\u767E\u500D\uFF0C\u53EA\u662F\u8D8A\u5403\u8D8A\u6E34\u3002"
     resultImageId: event_3011_b
     endingTitleId: 0
   - description: "\u5E6B\u6524\u8CA9\u8D95\u84BC\u8805"
-    requirement: 
+    requirement: mor>=-10
     offset: mor:+10;hmd:-10
     resultText: "\u6524\u8CA9\u6C92\u767C\u73FE\u662F\u4F60\uFF0C\u4F46\u84BC\u8805\u90FD\u88AB\u8D95\u8DD1\u4E86\u3002"
     resultImageId: event_3011_c

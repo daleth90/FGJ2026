@@ -25,7 +25,7 @@ MonoBehaviour:
     resultImageId: event_3005_a
     endingTitleId: 0
   - description: "\u5E6B\u7260\u6414\u4E0B\u5DF4"
-    requirement: mor>=0
+    requirement: 
     offset: mor:+5;hmd:-10
     resultText: "\u8C93\u54AA\u547C\u5695\u547C\u5695\uFF0C\u4F60\u5011\u6210\u4E86\u670B\u53CB\u3002"
     resultImageId: event_3005_b

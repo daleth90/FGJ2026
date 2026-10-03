@@ -19,7 +19,7 @@ MonoBehaviour:
   imageId: event_2001
   options:
   - description: "\u6DF7\u9032\u83DC\u82D7\u88E1\u5047\u88DD\u662F\u852C\u83DC"
-    requirement: mor<=-5
+    requirement: 
     offset: mor:-5;hmd:+10
     resultText: "\u6C34\u7BA1\u4E5F\u9806\u4FBF\u6F86\u5230\u4F60\uFF0C\u8FB2\u592B\u9084\u8A87\u4F60\u9577\u5F97\u597D\u3002"
     resultImageId: event_2001_a

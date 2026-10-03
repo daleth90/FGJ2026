@@ -101,14 +101,16 @@ namespace GrassRun.Tests
                 Assert.AreEqual(i, titleTable.titles[i].titleId);
                 Assert.IsFalse(string.IsNullOrWhiteSpace(titleTable.titles[i].titleName));
                 Assert.AreEqual($"title_{i}", titleTable.titles[i].imageId);
+                Assert.IsFalse(string.IsNullOrWhiteSpace(titleTable.titles[i].description));
+                Assert.IsFalse(string.IsNullOrWhiteSpace(titleTable.titles[i].conditionDescription));
                 Assert.IsTrue(RunRules.TryParseRequirements(titleTable.titles[i].requirement,
                     new List<Requirement>(), out string error), $"稱號 {i}：{error}");
             }
         }
 
-        [TestCase(10, 20, 20, 7)]
-        [TestCase(-10, 20, 20, 11)]
-        [TestCase(0, 20, 20, 3)]
+        [TestCase(10, 15, 15, 7)]
+        [TestCase(-10, 15, 15, 11)]
+        [TestCase(0, 15, 15, 3)]
         [TestCase(0, 0, 0, 0)]
         public void GeneralTitles_SelectTheLastMatchingTableRow(
             int morality, int speed, int toughness, int expectedTitleId)
@@ -133,6 +135,8 @@ namespace GrassRun.Tests
                 Assert.AreEqual(expectedIds[i], title.titleId);
                 Assert.IsFalse(string.IsNullOrWhiteSpace(title.titleName));
                 Assert.AreEqual($"title_{expectedIds[i]}", title.imageId);
+                Assert.IsFalse(string.IsNullOrWhiteSpace(title.description));
+                Assert.IsFalse(string.IsNullOrWhiteSpace(title.conditionDescription));
             }
         }
 
@@ -151,8 +155,10 @@ namespace GrassRun.Tests
                 foreach (var option in e.options)
                     text.Append(option.description).Append(option.resultText);
             }
-            foreach (var title in titleTable.titles) text.Append(title.titleName);
-            foreach (var title in titleTable.specialEndingTitles) text.Append(title.titleName);
+            foreach (var title in titleTable.titles)
+                text.Append(title.titleName).Append(title.description).Append(title.conditionDescription);
+            foreach (var title in titleTable.specialEndingTitles)
+                text.Append(title.titleName).Append(title.description).Append(title.conditionDescription);
 
             var missing = new SortedSet<string>();
             string all = text.ToString();

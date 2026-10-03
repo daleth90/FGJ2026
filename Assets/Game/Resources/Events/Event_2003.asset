@@ -25,14 +25,14 @@ MonoBehaviour:
     resultImageId: event_2003_a
     endingTitleId: 0
   - description: "\u8DDF\u9EBB\u96C0\u4E00\u8D77\u5077\u5403\u7A3B\u7A40"
-    requirement: 
+    requirement: mor<=10
     offset: mor:-10;hmd:-20;tgh:+5
     resultText: "\u7A3B\u7A40\u5F88\u88DC\uFF0C\u4F46\u4F60\u5011\u5728\u5927\u592A\u967D\u4E0B\u5403\u4E86\u4E00\u6574\u500B\u4E2D\u5348\u3002"
     resultImageId: event_2003_b
     endingTitleId: 0
-  - description: "\u722C\u4E0A\u7A3B\u8349\u4EBA\u7684\u6597\u7B20\u773A\u671B\u9060\u65B9"
+  - description: "\u8E29\u6241\u7A3B\u8349\u4EBA\u7684\u6597\u7B20"
     requirement: 
-    offset: hmd:-20;spd:+5
-    resultText: "\u4F60\u770B\u6E05\u4E86\u524D\u9762\u7684\u8DEF\uFF0C\u6597\u7B20\u4E0A\u537B\u66EC\u5F97\u8981\u547D\u3002"
+    offset: mor:-5;hmd:-20;spd:+5
+    resultText: "\u4F60\u8E29\u8457\u6597\u7B20\u8DF3\u5F97\u8001\u9AD8\uFF0C\u770B\u6E05\u4E86\u524D\u9762\u7684\u8DEF\u3002\u7A3B\u8349\u4EBA\u88AB\u4F60\u5F04\u5F97\u6B6A\u4E03\u626D\u516B\uFF0C\u592A\u967D\u4E5F\u66EC\u5F97\u4F60\u767C\u6688\u3002"
     resultImageId: event_2003_c
     endingTitleId: 0

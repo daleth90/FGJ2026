@@ -30,9 +30,9 @@ MonoBehaviour:
     resultText: "\u71D9\uFF01\u4F46\u4F60\u6490\u4F4F\u4E86\uFF0C\u6574\u682A\u8B8A\u5F97\u66F4\u786C\u6717\u3002"
     resultImageId: event_3012_b
     endingTitleId: 0
-  - description: "\u628A\u6389\u51FA\u5DE2\u7684\u96DB\u9CE5\u63A8\u56DE\u53BB"
+  - description: "\u5077\u5403\u9CE5\u5DE2\u88E1\u7684\u87F2"
     requirement: 
-    offset: mor:+10;hmd:-10
-    resultText: "\u9CE5\u5ABD\u5ABD\u56DE\u4F86\u6642\uFF0C\u96DB\u9CE5\u6B63\u597D\u597D\u5730\u5F85\u5728\u5DE2\u88E1\u3002"
+    offset: mor:-5;hmd:-10
+    resultText: "\u87F2\u5B50\u5F88\u597D\u5403\uFF0C\u9CE5\u5ABD\u5ABD\u56DE\u4F86\u6642\u6C23\u5F97\u76F4\u53EB\u3002\u9435\u76AE\u5C4B\u9802\u66EC\u5F97\u4F60\u982D\u660F\u773C\u82B1\u3002"
     resultImageId: event_3012_c
     endingTitleId: 0
