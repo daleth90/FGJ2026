@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8038892428866639393}
   - component: {fileID: 3627002240409992348}
-  - component: {fileID: 4260709372577235074}
   m_Layer: 0
   m_Name: Audio
   m_TagString: Untagged
@@ -51,25 +50,8 @@ MonoBehaviour:
   specialEnding: {fileID: 8300000, guid: 2f1a5d7e79342b245b9c081382dedfd1, type: 3}
   volume: 0.55
   crossfadeSeconds: 0.4
+  duckedVolume: 0.4
+  duckSeconds: 1.5
   titleLoopOverlap: 3
   runningLoopOverlap: 1.2
   endingFadeOut: 1.5
---- !u!114 &4260709372577235074
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4444687716575040431}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c945689f6d4f17408f6da5ca34be712, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: GrassRun::GrassRun.GameAudio
-  controller: {fileID: 0}
-  music: {fileID: 3627002240409992348}
-  eventOpenedSfx: {fileID: 0}
-  deadEndSfx: {fileID: 0}
-  optionChosenSfx: {fileID: 0}
-  resultClosedSfx: {fileID: 0}
-  sfxVolume: 1

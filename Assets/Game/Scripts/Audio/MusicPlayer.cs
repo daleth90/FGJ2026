@@ -13,9 +13,13 @@ namespace GrassRun
     /// <summary>
     /// 背景音樂：兩個 AudioSource 輪流用，換曲時交叉淡入淡出。
     /// 被動元件，只提供 Play(cue) 和 SetDucked；不讀遊戲狀態，也不判斷結局種類。
+    /// 跨場景常駐（DontDestroyOnLoad）；同時只留一個，後來的重複實例會自己銷毀。
     /// </summary>
     public class MusicPlayer : MonoBehaviour
     {
+        /// <summary>目前常駐的音樂播放器；還沒建立時是 null。</summary>
+        public static MusicPlayer Instance { get; private set; }
+
         [Header("曲目")]
         [SerializeField] AudioClip titleTheme;
         [SerializeField] AudioClip runningMusic;
@@ -61,6 +65,16 @@ namespace GrassRun
 
         void Awake()
         {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+            if (transform.parent != null) transform.SetParent(null);
+            DontDestroyOnLoad(gameObject);
+
             for (int i = 0; i < voices.Length; i++)
             {
                 var source = gameObject.AddComponent<AudioSource>();
@@ -68,6 +82,11 @@ namespace GrassRun
                 source.spatialBlend = 0f;
                 voices[i] = new Voice { source = source };
             }
+        }
+
+        void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
         }
 
         /// <summary>切到指定曲目，一律從頭播。已經是這首就忽略。</summary>
