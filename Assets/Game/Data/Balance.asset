@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff8ee07f0238e8e41bc4d9a3ffab51cf, type: 3}
   m_Name: Balance
   m_EditorClassIdentifier: GrassRun::GrassRun.GameBalance
-  eventInterval: 10
+  eventInterval: 3
   startStats:
     morality: 0
     moisture: 50
