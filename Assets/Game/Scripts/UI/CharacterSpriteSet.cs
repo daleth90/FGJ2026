@@ -16,6 +16,12 @@ namespace GrassRun
         [SerializeField] Sprite[] wetToughnessFrames;
         [Tooltip("濕潤、韌性高且速度高（濕度 > 60 且 韌性 ≥ 8 且 速度 ≥ 8）。")]
         [SerializeField] Sprite[] wetToughnessSpeedFrames;
+        [Tooltip("乾枯、韌性高且速度高（濕度 ≤ 25 且 韌性 ≥ 8 且 速度 ≥ 8）。")]
+        [SerializeField] Sprite[] dryToughnessSpeedFrames;
+        [Tooltip("乾枯且韌性高、速度不高（濕度 ≤ 25 且 韌性 ≥ 8 且 速度 < 8）。")]
+        [SerializeField] Sprite[] dryToughnessFrames;
+        [Tooltip("韌性和速度都高、濕度一般（濕度 26～60 且 韌性 ≥ 8 且 速度 ≥ 8）。")]
+        [SerializeField] Sprite[] toughnessSpeedFrames;
 
         public Sprite[] GetFrames(CharacterAppearance appearance)
         {
@@ -28,6 +34,9 @@ namespace GrassRun
                 case CharacterAppearance.DrySpeed: return drySpeedFrames;
                 case CharacterAppearance.WetToughness: return wetToughnessFrames;
                 case CharacterAppearance.WetToughnessSpeed: return wetToughnessSpeedFrames;
+                case CharacterAppearance.DryToughnessSpeed: return dryToughnessSpeedFrames;
+                case CharacterAppearance.DryToughness: return dryToughnessFrames;
+                case CharacterAppearance.ToughnessSpeed: return toughnessSpeedFrames;
                 default: return defaultFrames;
             }
         }

@@ -134,7 +134,7 @@ namespace GrassRun
             StatBlock after)
         {
             // 1. 剛達成的條件優先換。由低到高檢查，後面的蓋掉前面的：
-            //    Dry_Speed > Dry > Wet_Toughness_Speed > Wet_Toughness > Wet > Speed > Toughness。
+            //    Dry_Toughness_Speed > Dry_Speed > Dry_Toughness > Dry > Wet_Toughness_Speed > Wet_Toughness > Wet > Toughness_Speed > Speed > Toughness。
             bool triggered = false;
             var result = current;
             foreach (var appearance in AppearancesLowToHigh)
@@ -156,11 +156,14 @@ namespace GrassRun
         {
             CharacterAppearance.Toughness,
             CharacterAppearance.Speed,
+            CharacterAppearance.ToughnessSpeed,
             CharacterAppearance.Wet,
             CharacterAppearance.WetToughness,
             CharacterAppearance.WetToughnessSpeed,
             CharacterAppearance.Dry,
+            CharacterAppearance.DryToughness,
             CharacterAppearance.DrySpeed,
+            CharacterAppearance.DryToughnessSpeed,
         };
 
         static bool Holds(CharacterAppearance appearance, StatBlock stats)
@@ -174,6 +177,9 @@ namespace GrassRun
                 case CharacterAppearance.DrySpeed: return IsDrySpeedAppearance(stats);
                 case CharacterAppearance.WetToughness: return IsWetToughnessAppearance(stats);
                 case CharacterAppearance.WetToughnessSpeed: return IsWetToughnessSpeedAppearance(stats);
+                case CharacterAppearance.DryToughnessSpeed: return IsDryToughnessSpeedAppearance(stats);
+                case CharacterAppearance.DryToughness: return IsDryToughnessAppearance(stats);
+                case CharacterAppearance.ToughnessSpeed: return IsToughnessSpeedAppearance(stats);
                 default:
                     // Default 只在其他條件全部不成立時才算成立。
                     foreach (var other in AppearancesLowToHigh)
@@ -201,6 +207,15 @@ namespace GrassRun
 
         static bool IsWetToughnessSpeedAppearance(StatBlock stats) =>
             stats.moisture > 60 && stats.toughness >= 8 && stats.speed >= 8;
+
+        static bool IsDryToughnessSpeedAppearance(StatBlock stats) =>
+            stats.moisture <= 25 && stats.toughness >= 8 && stats.speed >= 8;
+
+        static bool IsDryToughnessAppearance(StatBlock stats) =>
+            stats.moisture <= 25 && stats.toughness >= 8 && stats.speed < 8;
+
+        static bool IsToughnessSpeedAppearance(StatBlock stats) =>
+            stats.moisture > 25 && stats.moisture <= 60 && stats.toughness >= 8 && stats.speed >= 8;
 
         public static bool TryParseRequirements(string expression, List<Requirement> output, out string error)
         {

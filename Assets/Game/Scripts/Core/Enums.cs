@@ -33,6 +33,9 @@ namespace GrassRun
         DrySpeed = 5,
         WetToughness = 6,
         WetToughnessSpeed = 7,
+        DryToughnessSpeed = 8,
+        DryToughness = 9,
+        ToughnessSpeed = 10,
     }
 
     public enum RunEndReason

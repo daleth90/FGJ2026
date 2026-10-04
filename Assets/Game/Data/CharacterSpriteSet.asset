@@ -43,12 +43,27 @@ MonoBehaviour:
   - {fileID: -2662641386400601272, guid: 2c93476655f464e4287dd0a19a5941fe, type: 3}
   - {fileID: -6992531288312760961, guid: 4e3c4c85e7e4a3e4db86771212ec6379, type: 3}
   wetToughnessFrames:
-  - {fileID: -4988829507363274131, guid: 24025d1e1dd77b5489a96abeede0bd18, type: 3}
-  - {fileID: 1217502368400224464, guid: 6c72e1166aba5ad42963a2b9041ace90, type: 3}
-  - {fileID: 4111646498950724595, guid: 084876b130f2c1c4fb0e763a1fa81ebc, type: 3}
-  - {fileID: -2576602640688340425, guid: e47f3ca8690b89543a939c8b7406118e, type: 3}
+  - {fileID: 4786341958951184411, guid: d2cffc13dd47cfd41b931562a58f2d8a, type: 3}
+  - {fileID: -5821381134871231408, guid: 2e447c947f7525d4d916306ab9afd270, type: 3}
+  - {fileID: 8486208239740442331, guid: 69e0b27696b37b4419dd90c8cb2f639a, type: 3}
+  - {fileID: 7111642654090286180, guid: c14fe27321d2f8a4699388521ca67181, type: 3}
   wetToughnessSpeedFrames:
-  - {fileID: 1152749004779316847, guid: 9c27f0ebcdbf1204b920c91ed3fbf7d6, type: 3}
-  - {fileID: -397752748525208137, guid: efb68c458206546438774a194230508a, type: 3}
-  - {fileID: 835738766531943494, guid: 8ff503454a17bc4428df1493b2988c2a, type: 3}
-  - {fileID: 7328845955880408784, guid: eb96d7fa6288b864a8e55018ceded856, type: 3}
+  - {fileID: 8101408578553920245, guid: 72e2cd119d2aaf24ca2525ff326de68b, type: 3}
+  - {fileID: 8798375979398204229, guid: d5bbaffd4f0c28c4ebf071001abab400, type: 3}
+  - {fileID: -7288596276063126463, guid: a23d49dbd0fa345438547272a89de4e6, type: 3}
+  - {fileID: 871142517827736444, guid: b46586625dbdfe440a4fcb661705578e, type: 3}
+  dryToughnessSpeedFrames:
+  - {fileID: 3362744488755765870, guid: d456dc237a4b8d247a2d777e33631c6f, type: 3}
+  - {fileID: -7257755673799244084, guid: 28bc956cc1a00d0439ca2c02067b09ad, type: 3}
+  - {fileID: -7634587994455516152, guid: 6e8665bd641a02b4ebd9b6d709d042d7, type: 3}
+  - {fileID: 5595236572464375907, guid: 4dbdc793c677b304e9216c41631797a0, type: 3}
+  dryToughnessFrames:
+  - {fileID: 6619657098970770631, guid: db5f060c7dab08f46ae953530d409a74, type: 3}
+  - {fileID: -4217695962207860871, guid: fc6e1efeef6083b4a9176bebc07f8dfb, type: 3}
+  - {fileID: 5016864981484739247, guid: 87f0d03c8eb773f4c931069cdd28e102, type: 3}
+  - {fileID: 299143434395870827, guid: 55ae1e9fdd8e9dd438a8d6394db4f513, type: 3}
+  toughnessSpeedFrames:
+  - {fileID: 4103444364096390548, guid: 7676b8d9c226ac348b5edfc8dc37be76, type: 3}
+  - {fileID: -1648425716469785394, guid: 45e7043e1db204d43a8ac0ca556dce2a, type: 3}
+  - {fileID: -246055742887745440, guid: 78d3a9f2cc537b1498aed828fa857d27, type: 3}
+  - {fileID: -8408976370575171168, guid: 62956e9f279b00c4aa8b8cb33c01e961, type: 3}
