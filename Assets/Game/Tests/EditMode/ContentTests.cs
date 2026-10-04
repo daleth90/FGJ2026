@@ -83,7 +83,6 @@ namespace GrassRun.Tests
             CollectionAssert.AreEquivalent(expected.Keys, found);
         }
 
-        [TestCase(1009, 0, 2007)]
         [TestCase(1005, 1, 3006)]
         [TestCase(2005, 1, 3015)]
         public void V3MainlineChoice_GuaranteesItsConfiguredNextEvent(
@@ -95,6 +94,47 @@ namespace GrassRun.Tests
 
             Assert.IsNotNull(next);
             Assert.AreEqual(expectedEventId, next.eventId);
+        }
+
+        [Test]
+        public void FirstEvent_VariesAcrossSeedsAndComesFromTheOrdinaryFirstBatch()
+        {
+            var firstEventIds = new HashSet<int>();
+            for (int seed = 1; seed <= 20; seed++)
+            {
+                var engine = new RunEngine(balance, library, new System.Random(seed));
+                Assert.IsTrue(engine.BeginNextEvent());
+                var first = engine.CurrentEvent;
+                Assert.AreEqual(1, first.eventId / 1000, $"seed {seed} 的首事件必須是 1XXX");
+                Assert.AreEqual(0, first.unlockEventCount);
+                Assert.IsFalse(first.HasPrerequisite, "尚未選擇任何選項時不能觸發後續事件");
+                firstEventIds.Add(first.eventId);
+            }
+
+            Assert.Greater(firstEventIds.Count, 1, "新局首事件應隨亂數種子變化，不能固定為青蛙或其他單一事件");
+        }
+
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(2)]
+        public void RandomlyDrawnFrog_ContinuesTo2007OnlyAfterChoosingA(int optionIndex)
+        {
+            RunEngine engine = null;
+            for (int seed = 1; seed <= 100; seed++)
+            {
+                var candidate = new RunEngine(balance, library, new System.Random(seed));
+                Assert.IsTrue(candidate.BeginNextEvent());
+                if (candidate.CurrentEvent.eventId != 1009) continue;
+                engine = candidate;
+                break;
+            }
+
+            Assert.IsNotNull(engine, "一般首抽池應能隨機抽到青蛙事件 1009");
+            Assert.IsTrue(engine.CurrentChecks[optionIndex].available);
+            engine.Choose(optionIndex);
+            Assert.IsTrue(engine.BeginNextEvent());
+            Assert.AreEqual(optionIndex == 0, engine.CurrentEvent.eventId == 2007,
+                "青蛙事件只有選 A 才必定接續 2007；B、C 應回到一般抽選");
         }
 
         [Test]
