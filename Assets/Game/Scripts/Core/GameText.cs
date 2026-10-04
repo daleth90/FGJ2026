@@ -73,7 +73,7 @@ namespace GrassRun
                 var stat = (StatType)i;
                 int amount = applied[stat];
                 if (amount == 0) continue;
-                if (sb.Length > 0) sb.Append("　");
+                if (sb.Length > 0) sb.Append('\n');
                 sb.Append("<color=").Append(StatColor(stat)).Append('>')
                     .Append(StatName(stat)).Append(amount > 0 ? " +" : " ").Append(amount)
                     .Append("</color>");
