@@ -7,14 +7,13 @@ using UnityEngine.UI;
 namespace GrassRun
 {
     /// <summary>
-    /// 事件面板：事件標題、敘事加三張選項卡。全部選項都不可選時，改顯示「無路可走」的繼續鈕。
+    /// 事件面板：事件圖片、敘事加三張選項卡。全部選項都不可選時，改顯示「無路可走」的繼續鈕。
     /// </summary>
     public class EventPanelView : MonoBehaviour
     {
         [SerializeField] GameObject root;
         [SerializeField] GameObject imageRoot;
         [SerializeField] UnityEngine.UI.Image eventImage;
-        [SerializeField] TMP_Text titleLabel;
         [SerializeField] TMP_Text descriptionLabel;
         [SerializeField] OptionCardView[] cards;
         [SerializeField] Button deadEndButton;
@@ -43,7 +42,6 @@ namespace GrassRun
 
             eventImage.sprite = image;
             imageRoot.SetActive(image != null);
-            titleLabel.text = e.DisplayTitle;
             descriptionLabel.text = e.description;
 
             bool anyAvailable = false;
