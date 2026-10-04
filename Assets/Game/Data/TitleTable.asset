@@ -31,7 +31,7 @@ MonoBehaviour:
     requirement: spd>=15
   - titleId: 2
     titleName: "\u8DDF\u77F3\u982D\u4E00\u6A23\u786C"
-    image: {fileID: 21300000, guid: 7c92d1d1a555be94980d717006818680, type: 3}
+    image: {fileID: 1977396090951120646, guid: 9edcbcd6252fc834f9082cacc2c8d09d, type: 3}
     description: "\u98A8\u5439\u4E0D\u5012\u3001\u65E5\u66EC\u4E0D\u67AF\uFF0C\u9023\u8B1B\u8A71\u77F3\u982D\u90FD\u8AAA\u4F60\u6BD4\u5B83\u9084\u786C\u3002\u4F60\u7684\u6839\u6DF1\u6DF1\u624E\u9032\u571F\u88E1\uFF0C\u518D\u4E5F\u6C92\u6709\u4EC0\u9EBC\u80FD\u628A\u4F60\u62D4\u8D77\u4F86\u3002"
     conditionDescription: "\u6C92\u6709\u89F8\u767C\u7279\u6B8A\u7D50\u5C40\uFF0C\u4E14\u7D50\u7B97\u6642\uFF1A\u5584\u826F\u503C\u4ECB\u65BC
       -9 \uFF5E 9\uFF08\u4E2D\u7ACB\uFF09\u3001\u901F\u5EA6 < 15\u3001\u97CC\u5EA6
@@ -89,7 +89,7 @@ MonoBehaviour:
     requirement: mor<=-10;spd>=15
   - titleId: 10
     titleName: "\u6A6B\u884C\u9738\u9053"
-    image: {fileID: 21300000, guid: 801b476d9314f4844a6bc9b1c3d7a110, type: 3}
+    image: {fileID: 21300000, guid: 7c92d1d1a555be94980d717006818680, type: 3}
     description: "\u4F60\u53C8\u786C\u53C8\u58DE\uFF0C\u64CB\u5728\u9762\u524D\u7684\u6771\u897F\u5168\u88AB\u4F60\u8E22\u958B\u3002\u5927\u5BB6\u90FD\u6015\u4F60\uFF0C\u800C\u4F60\u4E00\u9EDE\u4E5F\u4E0D\u5728\u4E4E\u3002"
     conditionDescription: "\u6C92\u6709\u89F8\u767C\u7279\u6B8A\u7D50\u5C40\uFF0C\u4E14\u7D50\u7B97\u6642\uFF1A\u5584\u826F\u503C
       \u2264 -10\u3001\u901F\u5EA6 < 15\u3001\u97CC\u5EA6 \u2265 15"
