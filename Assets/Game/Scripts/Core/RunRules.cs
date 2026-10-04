@@ -124,31 +124,28 @@ namespace GrassRun
             return stats;
         }
 
-        /// <summary>
-        /// 只在條件由未達成變成達成時切換外觀，否則保留最後觸發的狀態。
-        /// 同一次結算若同時觸發多個條件，依企劃列出的順序判定，後面的狀態為準。
-        /// </summary>
-        public static CharacterAppearance ResolveCharacterAppearance(
-            CharacterAppearance current,
-            StatBlock before,
-            StatBlock after)
-        {
-            // 1. 剛達成的條件優先換。由低到高檢查，後面的蓋掉前面的：
-            //    Dry_Toughness_Speed > Dry_Speed > Dry_Toughness > Dry > Wet_Toughness_Speed > Wet_Toughness > Wet > Toughness_Speed > Speed > Toughness。
-            bool triggered = false;
-            var result = current;
-            foreach (var appearance in AppearancesLowToHigh)
-            {
-                if (Holds(appearance, before) || !Holds(appearance, after)) continue;
-                result = appearance;
-                triggered = true;
-            }
-            if (triggered) return result;
+        /// <summary>善良值達到這個數字（含）以上時，主角身上疊加天使裝飾。</summary>
+        public const int AngelMoralityThreshold = 20;
+        /// <summary>善良值在這個數字（含）以下時，主角身上疊加惡魔裝飾。</summary>
+        public const int DevilMoralityThreshold = -10;
 
-            // 2. 沒有剛達成的：目前外觀的條件還成立就維持；否則換成仍成立中優先順序最高的，都沒有就回 Default。
-            if (Holds(current, after)) return current;
+        /// <summary>依當下善良值決定裝飾：≥ 20 天使、≤ -10 惡魔，其他都不顯示。不影響主角外觀。</summary>
+        public static MoralityDecoration ResolveMoralityDecoration(StatBlock stats)
+        {
+            if (stats.morality >= AngelMoralityThreshold) return MoralityDecoration.Angel;
+            if (stats.morality <= DevilMoralityThreshold) return MoralityDecoration.Devil;
+            return MoralityDecoration.None;
+        }
+
+        /// <summary>
+        /// 主角外觀只看當下數值：取目前成立的條件中優先順序最高的，都不成立就是 Default。
+        /// 優先順序：Dry_Toughness_Speed > Dry_Speed > Dry_Toughness > Dry > Wet_Toughness_Speed
+        /// > Wet_Toughness > Wet > Toughness_Speed > Speed > Toughness。
+        /// </summary>
+        public static CharacterAppearance ResolveCharacterAppearance(StatBlock stats)
+        {
             for (int i = AppearancesLowToHigh.Length - 1; i >= 0; i--)
-                if (Holds(AppearancesLowToHigh[i], after)) return AppearancesLowToHigh[i];
+                if (Holds(AppearancesLowToHigh[i], stats)) return AppearancesLowToHigh[i];
             return CharacterAppearance.Default;
         }
 
@@ -180,11 +177,7 @@ namespace GrassRun
                 case CharacterAppearance.DryToughnessSpeed: return IsDryToughnessSpeedAppearance(stats);
                 case CharacterAppearance.DryToughness: return IsDryToughnessAppearance(stats);
                 case CharacterAppearance.ToughnessSpeed: return IsToughnessSpeedAppearance(stats);
-                default:
-                    // Default 只在其他條件全部不成立時才算成立。
-                    foreach (var other in AppearancesLowToHigh)
-                        if (Holds(other, stats)) return false;
-                    return true;
+                default: return false;
             }
         }
 

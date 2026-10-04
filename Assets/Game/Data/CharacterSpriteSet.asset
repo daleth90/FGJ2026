@@ -17,6 +17,16 @@ MonoBehaviour:
   - {fileID: 21300000, guid: a907fdb298f60f94aa2f9e526a2d8e08, type: 3}
   - {fileID: 21300000, guid: 226cd4e0082c49b4f837aac19a19fd3d, type: 3}
   - {fileID: 21300000, guid: 7bc89221ee7cf034897f832817ceb788, type: 3}
+  angelFrames:
+  - {fileID: -1524771386762262704, guid: a5b014f392e7b6d42832f6bbbfcde13f, type: 3}
+  - {fileID: -5488738201489515660, guid: b040931e654322b4c9dc3f602a74ef57, type: 3}
+  - {fileID: -6095307882193007521, guid: 9c8dec4ac9785ac4884f31907653be22, type: 3}
+  - {fileID: -8560787871399106586, guid: 974546a60b1f7e6428befa5e7b613f15, type: 3}
+  devilFrames:
+  - {fileID: -4005260018239972765, guid: 69012de09b7ee744c97baf4aed235c52, type: 3}
+  - {fileID: -8382145343513895990, guid: 1d0179633cbc79f45ab1aefc03e3cd31, type: 3}
+  - {fileID: -4604160505528713386, guid: a5e796b43e8ef41499eb8d3ee252393b, type: 3}
+  - {fileID: 6034257401170707535, guid: 25836bc707c963540911ec97419a5358, type: 3}
   toughnessFrames:
   - {fileID: 21300000, guid: 9e7edfdbca9ab844bb1637a1e2166526, type: 3}
   - {fileID: 21300000, guid: 5448d690c80f4a34aaf41e197ee3566b, type: 3}

@@ -44,6 +44,10 @@ namespace GrassRun
         [Tooltip("五種角色狀態的走路動畫集合。每組第一張同時是停下時顯示的圖。")]
         [SerializeField] CharacterSpriteSet characterSprites;
         [SerializeField] float framesPerSecond = 8f;
+        [Tooltip("疊在主角上的天使裝飾（Character 的子物件），和走路動畫同步換格。")]
+        [SerializeField] Image angelImage;
+        [Tooltip("疊在主角上的惡魔裝飾（Character 的子物件），和走路動畫同步換格。")]
+        [SerializeField] Image devilImage;
 
         int speedStat;
         bool moving;
@@ -56,6 +60,7 @@ namespace GrassRun
         Image characterImage;
         float frameTime;
         Sprite[] activeCharacterFrames;
+        MoralityDecoration decoration;
 
         void Awake()
         {
@@ -63,7 +68,29 @@ namespace GrassRun
             characterBaseY = character.anchoredPosition.y;
             characterImage = character.GetComponent<Image>();
             activeCharacterFrames = GetCharacterFrames(CharacterAppearance.Default);
+            SetMoralityDecoration(MoralityDecoration.None);
         }
+
+        /// <summary>由 RunController 依善良值決定顯示天使、惡魔或都不顯示。</summary>
+        public void SetMoralityDecoration(MoralityDecoration value)
+        {
+            decoration = value;
+            ShowDecoration(angelImage, AngelFrames, value == MoralityDecoration.Angel);
+            ShowDecoration(devilImage, DevilFrames, value == MoralityDecoration.Devil);
+        }
+
+        void ShowDecoration(Image image, Sprite[] frames, bool visible)
+        {
+            if (image == null) return;
+            visible &= frames != null && frames.Length > 0;
+            image.gameObject.SetActive(visible);
+            if (visible) image.sprite = frames[CurrentFrameIndex(frames.Length)];
+        }
+
+        Sprite[] AngelFrames => characterSprites != null ? characterSprites.AngelFrames : null;
+        Sprite[] DevilFrames => characterSprites != null ? characterSprites.DevilFrames : null;
+
+        int CurrentFrameIndex(int frameCount) => frameCount > 0 ? (int)frameTime % frameCount : 0;
 
         /// <summary>每幀由 RunController 餵入目前狀態。</summary>
         public void SetState(int speedStat, bool moving, float timeScale)
@@ -110,8 +137,12 @@ namespace GrassRun
                 {
                     // 停下時回到第一張，再起跑時從頭播。
                     frameTime = motion > 0f ? frameTime + dt * motion * Mathf.Min(timeScale, 3f) * framesPerSecond : 0f;
-                    characterImage.sprite = activeCharacterFrames[(int)frameTime % activeCharacterFrames.Length];
+                    characterImage.sprite = activeCharacterFrames[CurrentFrameIndex(activeCharacterFrames.Length)];
                 }
+
+                // 天使／惡魔和走路動畫同一格。
+                if (decoration == MoralityDecoration.Angel) ShowDecoration(angelImage, AngelFrames, true);
+                else if (decoration == MoralityDecoration.Devil) ShowDecoration(devilImage, DevilFrames, true);
             }
         }
 

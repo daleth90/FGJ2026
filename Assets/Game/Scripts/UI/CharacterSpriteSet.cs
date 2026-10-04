@@ -6,6 +6,10 @@ namespace GrassRun
     public class CharacterSpriteSet : ScriptableObject
     {
         [SerializeField] Sprite[] defaultFrames;
+        [Tooltip("天使裝飾（善良值 ≥ 20），疊在主角上面，和走路動畫同步換格。")]
+        [SerializeField] Sprite[] angelFrames;
+        [Tooltip("惡魔裝飾（善良值 ≤ -10），疊在主角上面，和走路動畫同步換格。")]
+        [SerializeField] Sprite[] devilFrames;
         [SerializeField] Sprite[] toughnessFrames;
         [SerializeField] Sprite[] speedFrames;
         [SerializeField] Sprite[] wetFrames;
@@ -22,6 +26,9 @@ namespace GrassRun
         [SerializeField] Sprite[] dryToughnessFrames;
         [Tooltip("韌性和速度都高、濕度一般（濕度 26～60 且 韌性 ≥ 8 且 速度 ≥ 8）。")]
         [SerializeField] Sprite[] toughnessSpeedFrames;
+
+        public Sprite[] AngelFrames => angelFrames;
+        public Sprite[] DevilFrames => devilFrames;
 
         public Sprite[] GetFrames(CharacterAppearance appearance)
         {

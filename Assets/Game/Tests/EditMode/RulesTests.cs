@@ -82,47 +82,27 @@ namespace GrassRun.Tests
         }
 
         [Test]
-        public void CharacterAppearance_SwitchesWhenEachConditionIsReached()
+        public void CharacterAppearance_MatchesEachBasicCondition()
         {
-            var appearance = CharacterAppearance.Default;
-            var stats = new StatBlock(0, 50, 0, 0);
-
-            var next = new StatBlock(0, 50, 0, 8);
-            appearance = RunRules.ResolveCharacterAppearance(appearance, stats, next);
-            Assert.AreEqual(CharacterAppearance.Toughness, appearance);
-
-            stats = next;
-            next = new StatBlock(0, 50, 8, 7);
-            appearance = RunRules.ResolveCharacterAppearance(appearance, stats, next);
-            Assert.AreEqual(CharacterAppearance.Speed, appearance);
-
-            stats = next;
-            next = new StatBlock(0, 25, 7, 7);
-            appearance = RunRules.ResolveCharacterAppearance(appearance, stats, next);
-            Assert.AreEqual(CharacterAppearance.Dry, appearance);
-
-            stats = new StatBlock(0, 60, 0, 0);
-            next = new StatBlock(0, 61, 0, 0);
-            appearance = RunRules.ResolveCharacterAppearance(appearance, stats, next);
-            Assert.AreEqual(CharacterAppearance.Wet, appearance);
+            Assert.AreEqual(CharacterAppearance.Toughness, RunRules.ResolveCharacterAppearance(new StatBlock(0, 50, 0, 8)));
+            Assert.AreEqual(CharacterAppearance.Speed, RunRules.ResolveCharacterAppearance(new StatBlock(0, 50, 8, 7)));
+            Assert.AreEqual(CharacterAppearance.Dry, RunRules.ResolveCharacterAppearance(new StatBlock(0, 25, 7, 7)));
+            Assert.AreEqual(CharacterAppearance.Wet, RunRules.ResolveCharacterAppearance(new StatBlock(0, 61, 0, 0)));
         }
 
         [Test]
         public void CharacterAppearance_DrySpeedWhenDryAndFast()
         {
             // 濕度與速度同一次達成：Dry_Speed 優先於 Dry。
-            var appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.Speed, new StatBlock(0, 50, 8, 0), new StatBlock(0, 25, 8, 0));
+            var appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 25, 8, 0));
             Assert.AreEqual(CharacterAppearance.DrySpeed, appearance);
 
             // 已經乾枯，速度升到 8：從 Dry 換成 Dry_Speed。
-            appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.Dry, new StatBlock(0, 20, 7, 0), new StatBlock(0, 20, 8, 0));
+            appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 20, 8, 0));
             Assert.AreEqual(CharacterAppearance.DrySpeed, appearance);
 
             // 速度不到 8 只會是 Dry。
-            appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.Default, new StatBlock(0, 50, 7, 0), new StatBlock(0, 25, 7, 0));
+            appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 25, 7, 0));
             Assert.AreEqual(CharacterAppearance.Dry, appearance);
         }
 
@@ -130,18 +110,15 @@ namespace GrassRun.Tests
         public void CharacterAppearance_WetToughnessWhenWetAndTough()
         {
             // 韌性狀態下濕度升到 > 60：Wet_Toughness。
-            var appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.Toughness, new StatBlock(0, 50, 0, 8), new StatBlock(0, 61, 0, 8));
+            var appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 61, 0, 8));
             Assert.AreEqual(CharacterAppearance.WetToughness, appearance);
 
             // 濕潤狀態下韌性升到 8：Wet_Toughness。
-            appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.Wet, new StatBlock(0, 70, 0, 7), new StatBlock(0, 70, 0, 8));
+            appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 70, 0, 8));
             Assert.AreEqual(CharacterAppearance.WetToughness, appearance);
 
             // 濕度降回 26～60、韌性仍 ≥ 8：回到 Toughness。
-            appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.WetToughness, new StatBlock(0, 70, 0, 8), new StatBlock(0, 50, 0, 8));
+            appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 50, 0, 8));
             Assert.AreEqual(CharacterAppearance.Toughness, appearance);
         }
 
@@ -149,18 +126,15 @@ namespace GrassRun.Tests
         public void CharacterAppearance_WetToughnessSpeedWhenAllThreeHold()
         {
             // Wet_Toughness 時速度升到 8：Wet_Toughness_Speed。
-            var appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.WetToughness, new StatBlock(0, 70, 7, 8), new StatBlock(0, 70, 8, 8));
+            var appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 70, 8, 8));
             Assert.AreEqual(CharacterAppearance.WetToughnessSpeed, appearance);
 
             // 三個條件同時達成：Wet_Toughness_Speed 優先於 Wet_Toughness、Speed、Toughness。
-            appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.Default, new StatBlock(0, 50, 0, 0), new StatBlock(0, 61, 8, 8));
+            appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 61, 8, 8));
             Assert.AreEqual(CharacterAppearance.WetToughnessSpeed, appearance);
 
             // 速度掉回 < 8：回到 Wet_Toughness。
-            appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.WetToughnessSpeed, new StatBlock(0, 70, 8, 8), new StatBlock(0, 70, 7, 8));
+            appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 70, 7, 8));
             Assert.AreEqual(CharacterAppearance.WetToughness, appearance);
         }
 
@@ -168,18 +142,15 @@ namespace GrassRun.Tests
         public void CharacterAppearance_DryToughnessSpeedWhenAllThreeHold()
         {
             // Dry_Speed 時韌性升到 8：Dry_Toughness_Speed。
-            var appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.DrySpeed, new StatBlock(0, 20, 8, 7), new StatBlock(0, 20, 8, 8));
+            var appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 20, 8, 8));
             Assert.AreEqual(CharacterAppearance.DryToughnessSpeed, appearance);
 
             // 三個條件同時達成：Dry_Toughness_Speed 優先於 Dry_Speed、Dry。
-            appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.Default, new StatBlock(0, 50, 0, 0), new StatBlock(0, 25, 8, 8));
+            appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 25, 8, 8));
             Assert.AreEqual(CharacterAppearance.DryToughnessSpeed, appearance);
 
             // 韌性掉回 < 8：回到 Dry_Speed。
-            appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.DryToughnessSpeed, new StatBlock(0, 20, 8, 8), new StatBlock(0, 20, 8, 7));
+            appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 20, 8, 7));
             Assert.AreEqual(CharacterAppearance.DrySpeed, appearance);
         }
 
@@ -187,18 +158,15 @@ namespace GrassRun.Tests
         public void CharacterAppearance_DryToughnessWhenDryToughAndSlow()
         {
             // Toughness 時濕度降到 ≤ 25（速度 < 8）：Dry_Toughness，優先於 Dry。
-            var appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.Toughness, new StatBlock(0, 50, 0, 8), new StatBlock(0, 25, 0, 8));
+            var appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 25, 0, 8));
             Assert.AreEqual(CharacterAppearance.DryToughness, appearance);
 
             // Dry_Toughness 時速度升到 8：Dry_Toughness_Speed。
-            appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.DryToughness, new StatBlock(0, 20, 7, 8), new StatBlock(0, 20, 8, 8));
+            appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 20, 8, 8));
             Assert.AreEqual(CharacterAppearance.DryToughnessSpeed, appearance);
 
             // Dry_Toughness_Speed 時速度掉回 < 8：回到 Dry_Toughness。
-            appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.DryToughnessSpeed, new StatBlock(0, 20, 8, 8), new StatBlock(0, 20, 7, 8));
+            appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 20, 7, 8));
             Assert.AreEqual(CharacterAppearance.DryToughness, appearance);
         }
 
@@ -206,59 +174,70 @@ namespace GrassRun.Tests
         public void CharacterAppearance_ToughnessSpeedWhenBothHighAndMoistureNormal()
         {
             // Toughness 時速度升到 8（濕度 26～60）：Toughness_Speed，優先於 Speed。
-            var appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.Toughness, new StatBlock(0, 50, 7, 8), new StatBlock(0, 50, 8, 8));
+            var appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 50, 8, 8));
             Assert.AreEqual(CharacterAppearance.ToughnessSpeed, appearance);
 
             // 濕度邊界：26 和 60 都算。
-            appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.Default, new StatBlock(0, 50, 0, 0), new StatBlock(0, 26, 8, 8));
+            appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 26, 8, 8));
             Assert.AreEqual(CharacterAppearance.ToughnessSpeed, appearance);
-            appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.Default, new StatBlock(0, 50, 0, 0), new StatBlock(0, 60, 8, 8));
+            appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 60, 8, 8));
             Assert.AreEqual(CharacterAppearance.ToughnessSpeed, appearance);
 
             // 濕度升到 > 60：Wet_Toughness_Speed。
-            appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.ToughnessSpeed, new StatBlock(0, 60, 8, 8), new StatBlock(0, 61, 8, 8));
+            appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 61, 8, 8));
             Assert.AreEqual(CharacterAppearance.WetToughnessSpeed, appearance);
 
             // 速度掉回 < 8：回到 Toughness。
-            appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.ToughnessSpeed, new StatBlock(0, 50, 8, 8), new StatBlock(0, 50, 7, 8));
+            appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 50, 7, 8));
             Assert.AreEqual(CharacterAppearance.Toughness, appearance);
+        }
+
+        [Test]
+        public void MoralityDecoration_AngelAtTwentyDevilAtMinusTenOtherwiseNone()
+        {
+            Assert.AreEqual(MoralityDecoration.Angel, RunRules.ResolveMoralityDecoration(new StatBlock(20, 50, 0, 0)));
+            Assert.AreEqual(MoralityDecoration.Angel, RunRules.ResolveMoralityDecoration(new StatBlock(35, 50, 0, 0)));
+            Assert.AreEqual(MoralityDecoration.None, RunRules.ResolveMoralityDecoration(new StatBlock(19, 50, 0, 0)));
+            Assert.AreEqual(MoralityDecoration.None, RunRules.ResolveMoralityDecoration(new StatBlock(0, 50, 0, 0)));
+            Assert.AreEqual(MoralityDecoration.None, RunRules.ResolveMoralityDecoration(new StatBlock(-9, 50, 0, 0)));
+            Assert.AreEqual(MoralityDecoration.Devil, RunRules.ResolveMoralityDecoration(new StatBlock(-10, 50, 0, 0)));
+            Assert.AreEqual(MoralityDecoration.Devil, RunRules.ResolveMoralityDecoration(new StatBlock(-40, 50, 0, 0)));
         }
 
         [Test]
         public void CharacterAppearance_FallsBackWhenCurrentConditionNoLongerHolds()
         {
             // Dry_Speed 之後濕度回到 > 25、速度仍 ≥ 8：Speed。
-            var appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.DrySpeed, new StatBlock(0, 20, 8, 0), new StatBlock(0, 30, 8, 0));
+            var appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 30, 8, 0));
             Assert.AreEqual(CharacterAppearance.Speed, appearance);
 
             // Speed 時速度掉到 < 8，韌性仍 ≥ 8：Toughness。
-            appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.Speed, new StatBlock(0, 50, 8, 8), new StatBlock(0, 50, 7, 8));
+            appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 50, 7, 8));
             Assert.AreEqual(CharacterAppearance.Toughness, appearance);
 
             // 什麼條件都不成立（速度、韌性 < 8，濕度 26～60）：Default。
-            appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.Wet, new StatBlock(0, 61, 0, 0), new StatBlock(0, 50, 0, 0));
+            appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 50, 0, 0));
             Assert.AreEqual(CharacterAppearance.Default, appearance);
 
-            appearance = RunRules.ResolveCharacterAppearance(
-                CharacterAppearance.Dry, new StatBlock(0, 20, 0, 0), new StatBlock(0, 26, 0, 0));
+            appearance = RunRules.ResolveCharacterAppearance(new StatBlock(0, 26, 0, 0));
             Assert.AreEqual(CharacterAppearance.Default, appearance);
         }
 
         [Test]
-        public void CharacterAppearance_KeepsLastTriggeredStateWithoutANewMatch()
+        public void CharacterAppearance_DependsOnlyOnCurrentStats()
         {
-            var before = new StatBlock(0, 50, 0, 8);
+            // 初始數值（濕度 50、其他 0）什麼都不成立：Default。
+            Assert.AreEqual(CharacterAppearance.Default, RunRules.ResolveCharacterAppearance(new StatBlock(0, 50, 0, 0)));
+            // 善良值不影響外觀。
+            Assert.AreEqual(CharacterAppearance.Default, RunRules.ResolveCharacterAppearance(new StatBlock(30, 50, 0, 0)));
+        }
+
+        [Test]
+        public void CharacterAppearance_StaysWhileConditionHolds()
+        {
             var after = new StatBlock(10, 55, 0, 9);
 
-            var appearance = RunRules.ResolveCharacterAppearance(CharacterAppearance.Toughness, before, after);
+            var appearance = RunRules.ResolveCharacterAppearance(after);
 
             Assert.AreEqual(CharacterAppearance.Toughness, appearance);
         }

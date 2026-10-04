@@ -83,8 +83,12 @@ namespace GrassRun
             hud.ResetState();
             hud.SetJournal(journal);
             ClearSelection();
-            characterAppearance = CharacterAppearance.Default;
-            if (stage != null) stage.SetCharacterAppearance(characterAppearance);
+            characterAppearance = RunRules.ResolveCharacterAppearance(engine.Stats);
+            if (stage != null)
+            {
+                stage.SetCharacterAppearance(characterAppearance);
+                stage.SetMoralityDecoration(RunRules.ResolveMoralityDecoration(engine.Stats));
+            }
             RunStarted?.Invoke();
         }
 
@@ -172,10 +176,13 @@ namespace GrassRun
             var checks = engine.CurrentChecks;
             if (index < 0 || index >= checks.Length || !checks[index].available) return;
 
-            var before = engine.Stats;
             var result = engine.Choose(index);
-            characterAppearance = RunRules.ResolveCharacterAppearance(characterAppearance, before, engine.Stats);
-            if (stage != null) stage.SetCharacterAppearance(characterAppearance);
+            characterAppearance = RunRules.ResolveCharacterAppearance(engine.Stats);
+            if (stage != null)
+            {
+                stage.SetCharacterAppearance(characterAppearance);
+                stage.SetMoralityDecoration(RunRules.ResolveMoralityDecoration(engine.Stats));
+            }
             eventPanel.Hide();
             AddJournal(result.option.resultText);
             if (result.endingTitleId != 0) endingResultText = result.option.resultText;

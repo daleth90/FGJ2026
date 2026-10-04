@@ -23,6 +23,14 @@ namespace GrassRun
         Wet = 2,
     }
 
+    /// <summary>依善良值疊在主角身上的裝飾；不影響主角外觀。</summary>
+    public enum MoralityDecoration
+    {
+        None = 0,
+        Angel = 1,
+        Devil = 2,
+    }
+
     public enum CharacterAppearance
     {
         Default = 0,
