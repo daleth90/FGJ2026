@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -12,11 +13,31 @@ namespace GrassRun
         [SerializeField] Button startButton;
         [SerializeField] string gameSceneName = "Prototype";
 
+        private bool _isEntered;
+
         void Awake()
         {
             startButton.onClick.AddListener(StartGame);
         }
 
-        public void StartGame() => SceneManager.LoadScene(gameSceneName);
+        public void StartGame()
+        {
+            if (_isEntered)
+            {
+                return;
+            }
+
+            _isEntered = true;
+            SceneManager.LoadScene(gameSceneName);
+        }
+
+        private void Update()
+        {
+            var keyboard = Keyboard.current;
+            if (keyboard != null && keyboard.spaceKey.isPressed)
+            {
+                StartGame();
+            }
+        }
     }
 }
