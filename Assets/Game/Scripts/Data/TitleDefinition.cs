@@ -8,7 +8,7 @@ namespace GrassRun
     {
         public int titleId;
         public string titleName;
-        public string imageId;
+        public Sprite image;
         [TextArea(2, 5)]
         public string description;
         [TextArea(2, 5)]

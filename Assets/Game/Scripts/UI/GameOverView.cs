@@ -11,6 +11,8 @@ namespace GrassRun
     public class GameOverView : MonoBehaviour
     {
         [SerializeField] GameObject root;
+        [Tooltip("顯示稱號圖片。")]
+        [SerializeField] UnityEngine.UI.Image titleIcon;
         [Tooltip("顯示稱號的文字。")]
         [SerializeField] TMP_Text titleLabel;
         [Tooltip("顯示稱號結局描述的文字（title_desc）。")]
@@ -26,10 +28,12 @@ namespace GrassRun
             restartButton.onClick.AddListener(() => onRestart?.Invoke());
         }
 
-        public void Show(string title, string titleDescription, string deathCause, Action onRestart)
+        public void Show(string title, Sprite titleImage, string titleDescription, string deathCause, Action onRestart)
         {
             this.onRestart = onRestart;
             root.SetActive(true);
+            titleIcon.sprite = titleImage;
+            titleIcon.enabled = titleImage != null;
             titleLabel.text = title;
             if (titleDescLabel != null) titleDescLabel.text = titleDescription;
             if (deadDescLabel != null) deadDescLabel.text = deathCause;
