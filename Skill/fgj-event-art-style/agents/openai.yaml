@@ -1,0 +1,4 @@
+interface:
+  display_name: "事件美術圖風格"
+  short_description: "讓原版兩葉小草出演事件故事，沿用粗線條柔和色塊、透明背景與左右構圖"
+  default_prompt: "請使用 $fgj-event-art-style，依照 FGJ 2026表格_v2.xlsx 中指定事件，繪製原版小草在左、事件在右且具有敘事感的事件視窗插圖。"

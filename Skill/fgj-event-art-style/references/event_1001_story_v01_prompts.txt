@@ -1,0 +1,39 @@
+event_1001 敘事版插圖
+
+用途：事件視窗內的橫式故事插圖。主角使用 Assets/Image/default 的原版兩葉小草，位於左側；右側蒲公英的葉尖伸向左側，露珠仍懸掛，維持選擇前情境。
+方式：Codex 內建 image_gen 生成，並以同工具整理透明邊緣。
+輸出：event_1001_story_v01.png；透明背景，包含小草、蒲公英、露珠與少量共同草地。
+
+角色參考：
+Assets/Image/default/5AE03376-35C6-4381-913B-5A51CA0A78E4.png
+Assets/Image/default/743D92AF-58C1-40E0-9C72-5B119AADA849.png
+事件物件參考：Skill/fgj-event-art-style/references/event_1001_popup_02_rtl.png
+構圖參考：使用者本次提供的事件視窗示意圖（僅參考敘事構圖，不複製胡蘿蔔與草叢角色）。
+
+=== 生成提示詞 ===
+Use case: illustration-story.
+Create ONE new finished narrative illustration for event_1001 in the FGJ2026 game. This artwork goes INSIDE a landscape event popup. The user wants a moment from a story, with their ACTUAL playable sprout character participating, not an isolated item icon.
+
+Input references, in order:
+1. The two-leaf walking sprout PNG is the authoritative CHARACTER IDENTITY and rendering-style reference. Reproduce this exact character species, proportions, leaf forms, stem and root feet.
+2. The second sprout PNG is the same character in another walking pose. Use it to understand anatomy.
+3. The approved dandelion-and-dew illustration is the event-object and style reference, not a layout to copy literally.
+4. The popup screenshot is COMPOSITION AND STORYTELLING REFERENCE ONLY: a protagonist on the left reacts to an event on the right, connected by visual space and a small ground vignette. Do NOT copy its grass-bush character, shoes, flying carrot, wings, border, vines, or outdoor background.
+
+Exact event before the player's choice: A single plump round dew drop hangs from the pointed end of a DANDELION leaf, wobbling and about to fall. The drop remains visibly attached by a short neck. No action has yet been chosen.
+
+Narrative composition: wide horizontal approximately 16:9, the entire illustration fits comfortably inside a landscape popup. On the LEFT third, the actual slim two-leaf walking sprout has just noticed the dew: its step slows, one little root foot pauses slightly lifted, its slender stem bends gently forward and its two leaves tilt toward the droplet with curiosity. Emotion must be conveyed only through posture. On the RIGHT third, a simple small dandelion grows from the same grassy patch; its main broad jagged leaf arches from right to left into the central space, bending under ONE large pale blue round dew drop. The droplet hangs at the LEFT terminal tip of that leaf, between the protagonist and plant, a little above the protagonist's leaf junction. A couple of tiny blue curved wobble lines convey the imminent fall. The sprout and drop remain clearly separated, not touching. The plant has one restrained yellow flower toward upper-right and a few simple leaves; keep the dew more narratively prominent than the blossom. Strong left-to-right visual attention from sprout to droplet, with event branch reaching RIGHT TO LEFT toward the sprout. Create a legible small story scene with shared space and interaction, not two disconnected stickers and not a decorative icon.
+
+Character lock: exactly TWO broad light-green leaf blades joined at one point, asymmetric with one broader horizontal leaf and one more upright leaf, thick dark-green outlines and only short simple central veins. One thin gently curved stalk below, green at top blending into warm light-brown lower stem, splitting into TWO root legs with little branching root toes. Keep tall slender stem proportions from the source. No face, eyes, mouth, head circle, arms, clothing, shoes, extra leaves, grassy bush body or human anatomy. Do not turn the main character into a generic cute sprout mascot.
+
+Scene treatment: a low, loosely shaped pale-green grassy island or little meadow patch beneath both subjects, a few sparse grass tufts and simple soft oval grounding shadows to give a shared place. All other surrounding space genuinely transparent, so it sits naturally over the popup's cream-colored interior. No frame, UI, text, dialogue, numbers, sky, clouds, mountains, trees, horizon, whole gameplay screenshot, or separate inset panels. All artwork including ground must be inside the canvas with comfortable margin, no cut-off feet, flower or motion marks.
+
+Style: match the source game's friendly flat 2D hand-drawn storybook aesthetic: bold softly irregular rounded dark-green outlines, broad muted pastel-green fills, tiny controlled tonal accents, restrained warm yellow flower, pale blue dew with a simple white reflection. Minimal detail, rounded readable silhouettes, no photorealism, 3D, complex lighting, painterly noise or glossy rendering. Let the pose and composition tell the story. True transparent PNG background. Produce only the single complete illustration.
+
+=== 透明邊緣整理提示詞 ===
+Use case: precise-object-edit.
+Edit this exact finished FGJ2026 event_1001 illustration. It is already correct in content, character identity, colors, relative layout and narrative, and must remain the same picture.
+ONLY clean the transparency silhouette and ground edge: remove all stray green/yellow pixel speckles, fragmented streaks, noisy fringes and detached artifacts around and BELOW the shared pale-green grassy island, and the few floating tiny speckles above its edge. Give the ground island a clean continuous softly hand-drawn outer silhouette with a thin muted olive-green edge, not a ragged glowing neon fringe. All space outside the intended sprout, dandelion, dew, deliberate large motion strokes and ground vignette must have TRUE full transparency. Keep normal smooth antialiasing at intentional edges without colored halos. Add a little transparent safety margin at the bottom so the full island edge is comfortably inside the canvas.
+Preserve exactly the left-side two-leaf sprout with thin green-to-tan stem and two root feet, no face; the right dandelion with yellow flower; its leaf extending toward the LEFT and ONE pale-blue drop still attached; the sprout's reaction pose and three green attention strokes; deliberate blue dew wobble marks; sparse grass tufts and ground shadows. Do not replace or redesign any of them. No new objects, text, UI, framing or opaque background.
+Output one complete clean transparent PNG, same wide horizontal aspect ratio and overall scale.
+
