@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,23 +12,37 @@ namespace GrassRun
     public class EventPanelView : MonoBehaviour
     {
         [SerializeField] GameObject root;
+        [SerializeField] GameObject imageRoot;
+        [SerializeField] UnityEngine.UI.Image eventImage;
         [SerializeField] TMP_Text titleLabel;
         [SerializeField] TMP_Text descriptionLabel;
         [SerializeField] OptionCardView[] cards;
         [SerializeField] Button deadEndButton;
 
+        [Header("進場演出")]
+        [SerializeField] CanvasGroup canvasGroup;
+        [SerializeField] RectTransform animationRoot;
+        [SerializeField, Min(0f)] float enterDuration = 0.28f;
+        [SerializeField] float enterOffset = 24f;
+        [SerializeField, Range(0.8f, 1f)] float enterStartScale = 0.97f;
+
         Action onDeadEnd;
+        Coroutine entranceRoutine;
+        Vector2 restingPosition;
 
         void Awake()
         {
             deadEndButton.onClick.AddListener(() => onDeadEnd?.Invoke());
+            if (animationRoot != null) restingPosition = animationRoot.anchoredPosition;
         }
 
-        public void Show(EventDefinition e, OptionCheck[] checks, Action<int> onChoose, Action onDeadEnd)
+        public void Show(EventDefinition e, Sprite image, OptionCheck[] checks, Action<int> onChoose, Action onDeadEnd)
         {
             this.onDeadEnd = onDeadEnd;
             root.SetActive(true);
 
+            eventImage.sprite = image;
+            imageRoot.SetActive(image != null);
             titleLabel.text = e.DisplayTitle;
             descriptionLabel.text = e.description;
 
@@ -44,8 +59,66 @@ namespace GrassRun
             }
 
             deadEndButton.gameObject.SetActive(!anyAvailable);
+            PlayEntrance();
         }
 
-        public void Hide() => root.SetActive(false);
+        public void Hide()
+        {
+            StopEntrance();
+            root.SetActive(false);
+        }
+
+        void PlayEntrance()
+        {
+            StopEntrance();
+
+            if (canvasGroup == null || animationRoot == null || enterDuration <= 0f)
+            {
+                SetEntranceState(1f);
+                return;
+            }
+
+            entranceRoutine = StartCoroutine(AnimateEntrance());
+        }
+
+        IEnumerator AnimateEntrance()
+        {
+            canvasGroup.blocksRaycasts = false;
+            float elapsed = 0f;
+
+            while (elapsed < enterDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float progress = Mathf.Clamp01(elapsed / enterDuration);
+                SetEntranceState(Mathf.SmoothStep(0f, 1f, progress));
+                yield return null;
+            }
+
+            SetEntranceState(1f);
+            canvasGroup.blocksRaycasts = true;
+            entranceRoutine = null;
+        }
+
+        void StopEntrance()
+        {
+            if (entranceRoutine != null)
+            {
+                StopCoroutine(entranceRoutine);
+                entranceRoutine = null;
+            }
+
+            SetEntranceState(1f);
+            if (canvasGroup != null) canvasGroup.blocksRaycasts = true;
+        }
+
+        void SetEntranceState(float progress)
+        {
+            if (canvasGroup != null) canvasGroup.alpha = progress;
+            if (animationRoot == null) return;
+
+            animationRoot.anchoredPosition = restingPosition + Vector2.down * enterOffset * (1f - progress);
+            float scale = Mathf.Lerp(enterStartScale, 1f, progress);
+            animationRoot.localScale = new Vector3(scale, scale, 1f);
+        }
     }
 }

@@ -162,7 +162,7 @@ namespace GrassRun
         {
             var e = engine.CurrentEvent;
             var checks = engine.CurrentChecks;
-            eventPanel.Show(e, checks, Choose, ConfirmDeadEnd);
+            eventPanel.Show(e, e.image, checks, Choose, ConfirmDeadEnd);
             ClearSelection();
         }
 
