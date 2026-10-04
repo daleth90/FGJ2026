@@ -87,13 +87,13 @@ namespace GrassRun
             string cause;
             switch (reason)
             {
-                case RunEndReason.NoAvailableOption: cause = "無路可走"; break;
-                case RunEndReason.MoistureDepleted: cause = "你乾死了"; break;
-                case RunEndReason.MoistureSaturated: cause = "你淹死了"; break;
-                case RunEndReason.SpecialEnding: cause = endingResultText ?? string.Empty; break;
+                case RunEndReason.NoAvailableOption: cause = "死因：無路可走"; break;
+                case RunEndReason.MoistureDepleted: cause = "死因：你乾死了"; break;
+                case RunEndReason.MoistureSaturated: cause = "死因：你淹死了"; break;
+                case RunEndReason.SpecialEnding: cause = "★特殊結局★"; break;
                 default: cause = string.Empty; break;
             }
-            return $"死因：{cause}";
+            return $"{cause}";
         }
 
         public static string EndTitle(RunEndReason reason) => "目前沒有可選的行動";
