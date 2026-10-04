@@ -133,18 +133,53 @@ namespace GrassRun
             StatBlock before,
             StatBlock after)
         {
+            // 1. 剛達成的條件優先換。由低到高檢查，後面的蓋掉前面的：
+            //    Dry_Speed > Dry > Wet_Toughness_Speed > Wet_Toughness > Wet > Speed > Toughness。
+            bool triggered = false;
             var result = current;
+            foreach (var appearance in AppearancesLowToHigh)
+            {
+                if (Holds(appearance, before) || !Holds(appearance, after)) continue;
+                result = appearance;
+                triggered = true;
+            }
+            if (triggered) return result;
 
-            if (!IsToughnessAppearance(before) && IsToughnessAppearance(after))
-                result = CharacterAppearance.Toughness;
-            if (!IsSpeedAppearance(before) && IsSpeedAppearance(after))
-                result = CharacterAppearance.Speed;
-            if (!IsWetAppearance(before) && IsWetAppearance(after))
-                result = CharacterAppearance.Wet;
-            if (!IsDryAppearance(before) && IsDryAppearance(after))
-                result = CharacterAppearance.Dry;
+            // 2. 沒有剛達成的：目前外觀的條件還成立就維持；否則換成仍成立中優先順序最高的，都沒有就回 Default。
+            if (Holds(current, after)) return current;
+            for (int i = AppearancesLowToHigh.Length - 1; i >= 0; i--)
+                if (Holds(AppearancesLowToHigh[i], after)) return AppearancesLowToHigh[i];
+            return CharacterAppearance.Default;
+        }
 
-            return result;
+        static readonly CharacterAppearance[] AppearancesLowToHigh =
+        {
+            CharacterAppearance.Toughness,
+            CharacterAppearance.Speed,
+            CharacterAppearance.Wet,
+            CharacterAppearance.WetToughness,
+            CharacterAppearance.WetToughnessSpeed,
+            CharacterAppearance.Dry,
+            CharacterAppearance.DrySpeed,
+        };
+
+        static bool Holds(CharacterAppearance appearance, StatBlock stats)
+        {
+            switch (appearance)
+            {
+                case CharacterAppearance.Toughness: return IsToughnessAppearance(stats);
+                case CharacterAppearance.Speed: return IsSpeedAppearance(stats);
+                case CharacterAppearance.Wet: return IsWetAppearance(stats);
+                case CharacterAppearance.Dry: return IsDryAppearance(stats);
+                case CharacterAppearance.DrySpeed: return IsDrySpeedAppearance(stats);
+                case CharacterAppearance.WetToughness: return IsWetToughnessAppearance(stats);
+                case CharacterAppearance.WetToughnessSpeed: return IsWetToughnessSpeedAppearance(stats);
+                default:
+                    // Default 只在其他條件全部不成立時才算成立。
+                    foreach (var other in AppearancesLowToHigh)
+                        if (Holds(other, stats)) return false;
+                    return true;
+            }
         }
 
         static bool IsToughnessAppearance(StatBlock stats) =>
@@ -157,6 +192,15 @@ namespace GrassRun
             stats.moisture > 60 && stats.speed < 8 && stats.toughness < 8;
 
         static bool IsDryAppearance(StatBlock stats) => stats.moisture <= 25;
+
+        static bool IsDrySpeedAppearance(StatBlock stats) =>
+            stats.moisture <= 25 && stats.speed >= 8;
+
+        static bool IsWetToughnessAppearance(StatBlock stats) =>
+            stats.moisture > 60 && stats.toughness >= 8;
+
+        static bool IsWetToughnessSpeedAppearance(StatBlock stats) =>
+            stats.moisture > 60 && stats.toughness >= 8 && stats.speed >= 8;
 
         public static bool TryParseRequirements(string expression, List<Requirement> output, out string error)
         {
