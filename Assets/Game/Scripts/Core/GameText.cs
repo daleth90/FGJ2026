@@ -81,6 +81,21 @@ namespace GrassRun
             return sb.Length == 0 ? "數值沒有變化" : sb.ToString();
         }
 
+        /// <summary>結算畫面的死因，例如「死因：你乾死了」。特殊結局顯示該結局選項的結果描述。</summary>
+        public static string DeathCause(RunEndReason reason, string endingResultText)
+        {
+            string cause;
+            switch (reason)
+            {
+                case RunEndReason.NoAvailableOption: cause = "無路可走"; break;
+                case RunEndReason.MoistureDepleted: cause = "你乾死了"; break;
+                case RunEndReason.MoistureSaturated: cause = "你淹死了"; break;
+                case RunEndReason.SpecialEnding: cause = endingResultText ?? string.Empty; break;
+                default: cause = string.Empty; break;
+            }
+            return $"死因：{cause}";
+        }
+
         public static string EndTitle(RunEndReason reason) => "目前沒有可選的行動";
 
         public static string EndBody(RunEndReason reason, EventDefinition lastEvent)

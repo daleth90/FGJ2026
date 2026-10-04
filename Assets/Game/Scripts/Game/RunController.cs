@@ -37,6 +37,7 @@ namespace GrassRun
         EventDefinition[] library;
         RunEngine engine;
         int resultShownFrame;
+        string endingResultText;   // 選到結局選項時，該選項的結果描述（結算畫面的死因用）
         Phase phase;
         float eventTimer;
         bool fastForward;
@@ -73,6 +74,7 @@ namespace GrassRun
             engine = new RunEngine(balance, library, rng);
             phase = Phase.Running;
             eventTimer = 0f;
+            endingResultText = null;
             journal.Clear();
 
             eventPanel.Hide();
@@ -176,6 +178,7 @@ namespace GrassRun
             if (stage != null) stage.SetCharacterAppearance(characterAppearance);
             eventPanel.Hide();
             AddJournal(result.option.resultText);
+            if (result.endingTitleId != 0) endingResultText = result.option.resultText;
 
             phase = Phase.Result;
             resultShownFrame = Time.frameCount;
@@ -209,7 +212,9 @@ namespace GrassRun
             var title = engine.EndingTitleId != 0
                 ? RunRules.FindTitleById(titleTable.specialEndingTitles, engine.EndingTitleId)
                 : RunRules.ResolveTitle(titleTable.titles, engine.Stats);
-            gameOver.Show(title != null ? title.titleName : GameText.EndTitle(engine.EndReason), StartRun);
+            gameOver.Show(title != null ? title.titleName : GameText.EndTitle(engine.EndReason),
+                title != null ? title.description : string.Empty,
+                GameText.DeathCause(engine.EndReason, endingResultText), StartRun);
             RunEnded?.Invoke(engine.EndReason);
         }
 
