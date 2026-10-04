@@ -213,6 +213,7 @@ namespace GrassRun
                 ? RunRules.FindTitleById(titleTable.specialEndingTitles, engine.EndingTitleId)
                 : RunRules.ResolveTitle(titleTable.titles, engine.Stats);
             gameOver.Show(title != null ? title.titleName : GameText.EndTitle(engine.EndReason),
+                title != null ? title.image : null,
                 title != null ? title.description : string.Empty,
                 GameText.DeathCause(engine.EndReason, endingResultText), StartRun);
             RunEnded?.Invoke(engine.EndReason);

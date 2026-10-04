@@ -101,7 +101,7 @@ namespace GrassRun.Tests
             {
                 Assert.AreEqual(i, titleTable.titles[i].titleId);
                 Assert.IsFalse(string.IsNullOrWhiteSpace(titleTable.titles[i].titleName));
-                Assert.AreEqual($"title_{i}", titleTable.titles[i].imageId);
+                AssertTitleSprite(titleTable.titles[i], i);
                 Assert.IsFalse(string.IsNullOrWhiteSpace(titleTable.titles[i].description));
                 Assert.IsFalse(string.IsNullOrWhiteSpace(titleTable.titles[i].conditionDescription));
                 Assert.IsTrue(RunRules.TryParseRequirements(titleTable.titles[i].requirement,
@@ -135,10 +135,17 @@ namespace GrassRun.Tests
                 var title = titleTable.specialEndingTitles[i];
                 Assert.AreEqual(expectedIds[i], title.titleId);
                 Assert.IsFalse(string.IsNullOrWhiteSpace(title.titleName));
-                Assert.AreEqual($"title_{expectedIds[i]}", title.imageId);
+                AssertTitleSprite(title, expectedIds[i]);
                 Assert.IsFalse(string.IsNullOrWhiteSpace(title.description));
                 Assert.IsFalse(string.IsNullOrWhiteSpace(title.conditionDescription));
             }
+        }
+
+        static void AssertTitleSprite(TitleDefinition title, int expectedTitleId)
+        {
+            Assert.IsNotNull(title.image, $"稱號 {expectedTitleId} 沒有圖片");
+            Assert.AreEqual($"Assets/Image/稱號圖/title_{expectedTitleId}.png",
+                AssetDatabase.GetAssetPath(title.image));
         }
 
         [Test]
