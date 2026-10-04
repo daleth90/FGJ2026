@@ -29,9 +29,9 @@ namespace GrassRun.Tests
         }
 
         [Test]
-        public void EventLibrary_MatchesV2TableAndHasNoValidationIssues()
+        public void EventLibrary_MatchesV3TableAndHasNoValidationIssues()
         {
-            Assert.AreEqual(40, library.Length, "v2 表格應匯入 40 個事件");
+            Assert.AreEqual(40, library.Length, "v3 表格應匯入 40 個事件");
             var issues = EventValidation.ValidateLibrary(library, balance);
             Assert.IsEmpty(issues, string.Join("\n", issues));
         }
@@ -52,6 +52,49 @@ namespace GrassRun.Tests
             Assert.AreEqual(10, stage1);
             Assert.AreEqual(10, stage2);
             Assert.AreEqual(20, stage3);
+        }
+
+        [Test]
+        public void EventPrerequisitesMatchTheV3MainlineTable()
+        {
+            var expected = new Dictionary<int, (int eventId, string choice)>
+            {
+                { 2007, (1009, "a") },
+                { 3006, (1005, "b") },
+                { 3015, (2005, "b") },
+            };
+            var found = new HashSet<int>();
+
+            foreach (var e in library)
+            {
+                if (expected.TryGetValue(e.eventId, out var prerequisite))
+                {
+                    Assert.AreEqual(prerequisite.eventId, e.prerequisiteEventId, e.name);
+                    Assert.AreEqual(prerequisite.choice, e.prerequisiteChoice, e.name);
+                    found.Add(e.eventId);
+                }
+                else
+                {
+                    Assert.AreEqual(0, e.prerequisiteEventId, $"{e.name} 不應有前置任務");
+                    Assert.IsTrue(string.IsNullOrEmpty(e.prerequisiteChoice), $"{e.name} 不應有前置選項");
+                }
+            }
+
+            CollectionAssert.AreEquivalent(expected.Keys, found);
+        }
+
+        [TestCase(1009, 0, 2007)]
+        [TestCase(1005, 1, 3006)]
+        [TestCase(2005, 1, 3015)]
+        public void V3MainlineChoice_GuaranteesItsConfiguredNextEvent(
+            int previousEventId, int previousOptionIndex, int expectedEventId)
+        {
+            var deck = new EventDeck(library, new System.Random(7));
+
+            var next = deck.Draw(0, previousEventId, previousOptionIndex);
+
+            Assert.IsNotNull(next);
+            Assert.AreEqual(expectedEventId, next.eventId);
         }
 
         [Test]

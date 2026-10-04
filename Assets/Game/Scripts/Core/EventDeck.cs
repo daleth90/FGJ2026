@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace GrassRun
 {
     /// <summary>
-    /// 依已經歷事件數選出目前最高的已解鎖批次，並盡量避開最近四次事件。
+    /// 指定接續優先；一般事件依目前最高的已解鎖批次抽選，並盡量避開最近四次。
     /// </summary>
     public sealed class EventDeck
     {
@@ -25,18 +25,21 @@ namespace GrassRun
 
         public IReadOnlyList<EventDefinition> Library => library;
 
-        public EventDefinition Draw(int eventsResolved)
+        public EventDefinition Draw(int eventsResolved, int previousEventId = 0, int previousOptionIndex = -1)
         {
+            var followUp = FindFollowUp(previousEventId, previousOptionIndex);
+            if (followUp != null) return Remember(followUp);
+
             int activeUnlock = -1;
             foreach (var e in library)
-                if (e.unlockEventCount <= eventsResolved && e.unlockEventCount > activeUnlock)
+                if (!e.HasPrerequisite && e.unlockEventCount <= eventsResolved && e.unlockEventCount > activeUnlock)
                     activeUnlock = e.unlockEventCount;
 
             if (activeUnlock < 0) return null;
 
             candidates.Clear();
             foreach (var e in library)
-                if (e.unlockEventCount == activeUnlock) candidates.Add(e);
+                if (!e.HasPrerequisite && e.unlockEventCount == activeUnlock) candidates.Add(e);
             if (candidates.Count == 0) return null;
 
             int window = Math.Min(RecentWindow, candidates.Count - 1);
@@ -45,7 +48,29 @@ namespace GrassRun
                 if (candidates.Remove(recent[i])) window--;
             }
 
-            var picked = candidates[rng.Next(candidates.Count)];
+            return Remember(candidates[rng.Next(candidates.Count)]);
+        }
+
+        EventDefinition FindFollowUp(int previousEventId, int previousOptionIndex)
+        {
+            if (previousEventId <= 0 || previousOptionIndex < 0 || previousOptionIndex >= EventDefinition.OptionCount)
+                return null;
+
+            string choice = ((char)('a' + previousOptionIndex)).ToString();
+            EventDefinition matched = null;
+            foreach (var e in library)
+            {
+                if (e.prerequisiteEventId != previousEventId ||
+                    !string.Equals(e.prerequisiteChoice, choice, StringComparison.OrdinalIgnoreCase)) continue;
+                if (matched != null)
+                    throw new InvalidOperationException($"事件 {previousEventId} 選項 {choice} 指定了多個後續事件。");
+                matched = e;
+            }
+            return matched;
+        }
+
+        EventDefinition Remember(EventDefinition picked)
+        {
             recent.Add(picked);
             if (recent.Count > RecentWindow) recent.RemoveAt(0);
             return picked;

@@ -19,6 +19,13 @@ namespace GrassRun
         [Min(0)]
         public int unlockEventCount;
 
+        [Tooltip("前置事件 ID；與前置選項一起填寫。符合時下一次必定出現，本事件不參與一般隨機抽選。0 代表沒有前置。")]
+        [Min(0)]
+        public int prerequisiteEventId;
+
+        [Tooltip("前置事件必須選擇的選項：a、b 或 c；沒有前置時留空。")]
+        public string prerequisiteChoice;
+
         [Tooltip("可選的事件標題；空白時畫面會顯示事件 ID。")]
         public string title;
 
@@ -31,6 +38,7 @@ namespace GrassRun
         [Tooltip("固定三個選項。")]
         public EventOption[] options = { new EventOption(), new EventOption(), new EventOption() };
 
+        public bool HasPrerequisite => prerequisiteEventId != 0 || !string.IsNullOrEmpty(prerequisiteChoice);
         public string DisplayTitle => string.IsNullOrWhiteSpace(title) ? $"事件 {eventId}" : title;
     }
 }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace GrassRun
 {
-    /// <summary>依 v2 事件表格式檢查單一事件與整個事件池。</summary>
+    /// <summary>依 v3 事件表格式檢查單一事件與整個事件池。</summary>
     public static class EventValidation
     {
         public static List<string> Validate(EventDefinition e)
@@ -17,6 +17,14 @@ namespace GrassRun
             string name = e.name;
             if (e.eventId <= 0) issues.Add($"{name}：事件 ID 必須大於 0。");
             if (e.unlockEventCount < 0) issues.Add($"{name}：解鎖事件數不可為負數。");
+            bool hasPrerequisiteId = e.prerequisiteEventId != 0;
+            bool hasPrerequisiteChoice = !string.IsNullOrEmpty(e.prerequisiteChoice);
+            if (hasPrerequisiteId != hasPrerequisiteChoice)
+                issues.Add($"{name}：前置任務 ID 與前置選項必須同時填寫或同時留空。");
+            if (hasPrerequisiteId && e.prerequisiteEventId <= 0)
+                issues.Add($"{name}：前置任務 ID 必須大於 0。");
+            if (hasPrerequisiteChoice && !IsPrerequisiteChoice(e.prerequisiteChoice))
+                issues.Add($"{name}：前置選項必須是 a、b 或 c（不分大小寫）。");
             if (string.IsNullOrWhiteSpace(e.description)) issues.Add($"{name}：沒有事件敘述。");
             string expectedEventImage = $"event_{e.eventId}";
             if (e.image == null)
@@ -98,7 +106,29 @@ namespace GrassRun
 
             foreach (int required in new[] { 0, 3, 6 })
                 if (!unlocks.Contains(required)) issues.Add($"缺少解鎖事件數為 {required} 的事件批次。");
+
+            var followUps = new Dictionary<string, int>();
+            foreach (var e in library)
+            {
+                if (e == null || e.prerequisiteEventId <= 0) continue;
+                if (!ids.Contains(e.prerequisiteEventId))
+                    issues.Add($"{e.name}：找不到前置任務 ID {e.prerequisiteEventId}。");
+                if (!IsPrerequisiteChoice(e.prerequisiteChoice)) continue;
+
+                string key = $"{e.prerequisiteEventId}/{e.prerequisiteChoice.ToLowerInvariant()}";
+                if (followUps.TryGetValue(key, out int existingId))
+                    issues.Add($"前置任務／選項 {key} 同時指定後續事件 {existingId} 與 {e.eventId}。");
+                else
+                    followUps.Add(key, e.eventId);
+            }
             return issues;
+        }
+
+        static bool IsPrerequisiteChoice(string choice)
+        {
+            if (string.IsNullOrEmpty(choice) || choice.Length != 1) return false;
+            char value = char.ToLowerInvariant(choice[0]);
+            return value >= 'a' && value <= 'c';
         }
 
         static bool HasNegativeMoisture(List<StatChange> changes)

@@ -12,13 +12,15 @@ namespace GrassRun
     }
 
     /// <summary>
-    /// 一局的事件狀態。每次依已經歷事件數抽目前階段的事件，再判定三個選項。
-    /// 特殊結局 ID 只隨結果回傳；濕度抵達邊界時結束本局。
+    /// 一局的事件狀態。優先接續上次選擇指定的事件，否則抽目前階段的事件。
+    /// 特殊結局或濕度抵達邊界時結束本局。
     /// </summary>
     public sealed class RunEngine
     {
         readonly EventDeck deck;
         StatBlock stats;
+        int previousEventId;
+        int previousOptionIndex = -1;
 
         public RunEngine(GameBalance balance, IEnumerable<EventDefinition> library, Random rng)
         {
@@ -41,7 +43,9 @@ namespace GrassRun
         {
             if (IsEnded) return false;
 
-            var drawn = deck.Draw(EventsResolved);
+            var drawn = deck.Draw(EventsResolved, previousEventId, previousOptionIndex);
+            previousEventId = 0;
+            previousOptionIndex = -1;
             if (drawn == null || drawn.options == null || drawn.options.Length == 0)
             {
                 CurrentEvent = null;
@@ -82,6 +86,8 @@ namespace GrassRun
             else if (stats.moisture <= 0) EndReason = RunEndReason.MoistureDepleted;
             else if (stats.moisture >= Balance.maxMoisture) EndReason = RunEndReason.MoistureSaturated;
 
+            previousEventId = IsEnded ? 0 : source.eventId;
+            previousOptionIndex = IsEnded ? -1 : optionIndex;
             CurrentEvent = null;
             CurrentChecks = null;
             EventsResolved++;
