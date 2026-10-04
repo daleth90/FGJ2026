@@ -4,11 +4,13 @@ namespace GrassRun
 {
     /// <summary>
     /// 把 RunController 的流程訊號轉成音樂與音效。只訂閱，不改遊戲狀態。
+    /// 放在遊戲場景裡；音樂用跨場景常駐的 MusicPlayer（通常從 Start 場景帶過來）。
     /// </summary>
     public class GameAudio : MonoBehaviour
     {
         [SerializeField] RunController controller;
-        [SerializeField] MusicPlayer music;
+        [Tooltip("直接從這個場景開始（沒經過 Start 場景）時，用這個 prefab 建立常駐的 MusicPlayer。")]
+        [SerializeField] MusicPlayer musicPlayerPrefab;
 
         [Header("音效（留空就不播）")]
         [SerializeField] AudioClip eventOpenedSfx;
@@ -19,9 +21,13 @@ namespace GrassRun
         [SerializeField, Range(0f, 1f)] float sfxVolume = 1f;
 
         AudioSource sfx;
+        MusicPlayer music;
 
         void Awake()
         {
+            music = MusicPlayer.Instance;
+            if (music == null && musicPlayerPrefab != null) music = Instantiate(musicPlayerPrefab);
+
             sfx = gameObject.AddComponent<AudioSource>();
             sfx.playOnAwake = false;
             sfx.spatialBlend = 0f;
