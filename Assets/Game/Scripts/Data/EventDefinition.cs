@@ -25,8 +25,8 @@ namespace GrassRun
         [TextArea(2, 5)]
         public string description;
 
-        [Tooltip("事件發生時顯示的圖片 ID，不含副檔名。")]
-        public string imageId;
+        [Tooltip("事件發生時顯示的圖片。")]
+        public Sprite image;
 
         [Tooltip("固定三個選項。")]
         public EventOption[] options = { new EventOption(), new EventOption(), new EventOption() };

@@ -19,8 +19,10 @@ namespace GrassRun
             if (e.unlockEventCount < 0) issues.Add($"{name}：解鎖事件數不可為負數。");
             if (string.IsNullOrWhiteSpace(e.description)) issues.Add($"{name}：沒有事件敘述。");
             string expectedEventImage = $"event_{e.eventId}";
-            if (e.imageId != expectedEventImage)
-                issues.Add($"{name}：事件圖片 ID 應為 {expectedEventImage}。");
+            if (e.image == null)
+                issues.Add($"{name}：沒有指定事件圖片 {expectedEventImage}。");
+            else if (e.image.name != expectedEventImage)
+                issues.Add($"{name}：事件圖片應為 {expectedEventImage}。");
 
             int stage = e.eventId / 1000;
             int expectedUnlock = stage == 1 ? 0 : stage == 2 ? 3 : stage == 3 ? 6 : -1;

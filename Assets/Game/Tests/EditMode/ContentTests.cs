@@ -67,11 +67,12 @@ namespace GrassRun.Tests
         }
 
         [Test]
-        public void ImageIdsAndOptionLengthsMatchTheLatestTableFormat()
+        public void EventSpritesAndOptionLengthsMatchTheLatestTableFormat()
         {
             foreach (var e in library)
             {
-                Assert.AreEqual($"event_{e.eventId}", e.imageId);
+                Assert.IsNotNull(e.image, $"{e.name} 沒有事件圖片");
+                Assert.AreEqual($"event_{e.eventId}", e.image.name);
                 for (int i = 0; i < e.options.Length; i++)
                 {
                     Assert.LessOrEqual(e.options[i].description.Length, EventDefinition.MaxOptionTextLength,

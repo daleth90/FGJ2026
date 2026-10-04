@@ -16,7 +16,7 @@ MonoBehaviour:
   unlockEventCount: 6
   title: 
   description: "\u4E00\u4F4D\u723A\u723A\u63D0\u8457\u7AF9\u7C43\uFF0C\u5728\u8DEF\u908A\u63A1\u9752\u8349\u3002"
-  imageId: event_3018
+  image: {fileID: 21300000, guid: bfb916916f202194b9d364e49d32b926, type: 3}
   options:
   - description: "\u8DF3\u9032\u7AF9\u7C43"
     requirement: 
