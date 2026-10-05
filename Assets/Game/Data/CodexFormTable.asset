@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8941a6b810dd77e4984e6cf307a00877, type: 3}
+  m_Name: CodexFormTable
+  m_EditorClassIdentifier: GrassRun::GrassRun.CodexFormTable
+  forms:
+  - appearance: 0
+    displayName: 
+    description: 
+    conditionDescription: "\u5176\u4ED6\u578B\u614B\u689D\u4EF6\u90FD\u4E0D\u6210\u7ACB"
+  - appearance: 1
+    displayName: 
+    description: 
+    conditionDescription: "\u6FD5\u5EA6 > 25 \u4E14 \u97CC\u6027 \u2265 8"
+  - appearance: 2
+    displayName: 
+    description: 
+    conditionDescription: "\u6FD5\u5EA6 > 25 \u4E14 \u901F\u5EA6 \u2265 8"
+  - appearance: 3
+    displayName: 
+    description: 
+    conditionDescription: "\u6FD5\u5EA6 > 60 \u4E14 \u901F\u5EA6 < 8 \u4E14 \u97CC\u6027
+      < 8"
+  - appearance: 4
+    displayName: 
+    description: 
+    conditionDescription: "\u6FD5\u5EA6 \u2264 25"
+  - appearance: 5
+    displayName: 
+    description: 
+    conditionDescription: "\u6FD5\u5EA6 \u2264 25 \u4E14 \u901F\u5EA6 \u2265 8"
+  - appearance: 6
+    displayName: 
+    description: 
+    conditionDescription: "\u6FD5\u5EA6 > 60 \u4E14 \u97CC\u6027 \u2265 8"
+  - appearance: 7
+    displayName: 
+    description: 
+    conditionDescription: "\u6FD5\u5EA6 > 60 \u4E14 \u97CC\u6027 \u2265 8 \u4E14
+      \u901F\u5EA6 \u2265 8"
+  - appearance: 8
+    displayName: 
+    description: 
+    conditionDescription: "\u6FD5\u5EA6 \u2264 25 \u4E14 \u97CC\u6027 \u2265 8 \u4E14
+      \u901F\u5EA6 \u2265 8"
+  - appearance: 9
+    displayName: 
+    description: 
+    conditionDescription: "\u6FD5\u5EA6 \u2264 25 \u4E14 \u97CC\u6027 \u2265 8 \u4E14
+      \u901F\u5EA6 < 8"
+  - appearance: 10
+    displayName: 
+    description: 
+    conditionDescription: "\u6FD5\u5EA6 26\uFF5E60 \u4E14 \u97CC\u6027 \u2265 8 \u4E14
+      \u901F\u5EA6 \u2265 8"

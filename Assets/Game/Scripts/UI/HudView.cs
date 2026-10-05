@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using TMPro;
@@ -35,6 +36,11 @@ namespace GrassRun
         [Tooltip("只在奔跑時顯示的東西（旅程紀錄、操作說明）。事件面板開著時會被蓋住，所以直接藏起來。")]
         [SerializeField] GameObject runningRoot;
         [SerializeField] TMP_Text journalLabel;
+        [Tooltip("開啟圖鑑的按鈕（Illustrated Guide）；點擊時發出 GuideRequested。")]
+        [SerializeField] Button guideButton;
+
+        /// <summary>玩家點了圖鑑按鈕。</summary>
+        public event Action GuideRequested;
 
         const float PunchDecay = 4f;
         const float PunchScale = 0.3f;
@@ -43,6 +49,11 @@ namespace GrassRun
         readonly List<string> journal = new List<string>();
         StatBlock shown;
         bool hasShown;
+
+        void Awake()
+        {
+            if (guideButton != null) guideButton.onClick.AddListener(() => GuideRequested?.Invoke());
+        }
 
         void Update()
         {

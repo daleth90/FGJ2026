@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace GrassRun
 {
@@ -26,6 +27,8 @@ namespace GrassRun
         [SerializeField] ResultPanelView resultPanel;
         [SerializeField] GameOverView gameOver;
         [SerializeField] StageView stage;
+        [Tooltip("HUD 的圖鑑按鈕會打開這個圖鑑。")]
+        [SerializeField] CodexController codex;
 
         [Header("除錯")]
         [SerializeField] int seed;
@@ -65,7 +68,18 @@ namespace GrassRun
 
             library = Resources.LoadAll<EventDefinition>(eventsResourcePath);
             if (library.Length == 0) Debug.LogError($"Resources/{eventsResourcePath} 底下沒有任何事件。");
+            hud.GuideRequested += OpenCodex;
             StartRun();
+        }
+
+        void OnDestroy()
+        {
+            if (hud != null) hud.GuideRequested -= OpenCodex;
+        }
+
+        void OpenCodex()
+        {
+            if (codex != null) codex.Open();
         }
 
         public void StartRun()
@@ -84,16 +98,21 @@ namespace GrassRun
             hud.SetJournal(journal);
             ClearSelection();
             characterAppearance = RunRules.ResolveCharacterAppearance(engine.Stats);
+            var decoration = RunRules.ResolveMoralityDecoration(engine.Stats);
             if (stage != null)
             {
                 stage.SetCharacterAppearance(characterAppearance);
-                stage.SetMoralityDecoration(RunRules.ResolveMoralityDecoration(engine.Stats));
+                stage.SetMoralityDecoration(decoration);
             }
+            CodexStorage.UnlockForm(CodexRules.FormEntryId(characterAppearance, decoration));
             RunStarted?.Invoke();
         }
 
         void Update()
         {
+            // 圖鑑開著時整局暫停：不吃輸入、不計時（Time.timeScale 也是 0）。
+            if (CodexController.IsOpen) return;
+
             HandleKeys();
 
             if (phase == Phase.Running)
@@ -115,9 +134,11 @@ namespace GrassRun
         void HandleKeys()
         {
             // 結果畫面：點滑鼠（或觸控）任一處也能繼續。跳過選選項那一下所在的幀，免得同一下點擊直接跳過結果。
+            // 點在 UI 按鈕上（例如 HUD 的圖鑑按鈕）不算繼續，交給按鈕自己處理。
             var pointer = Pointer.current;
             if (phase == Phase.Result && Time.frameCount > resultShownFrame &&
-                pointer != null && pointer.press.wasPressedThisFrame)
+                pointer != null && pointer.press.wasPressedThisFrame &&
+                !IsOverButton(pointer.position.ReadValue()))
             {
                 Continue();
                 return;
@@ -178,11 +199,13 @@ namespace GrassRun
 
             var result = engine.Choose(index);
             characterAppearance = RunRules.ResolveCharacterAppearance(engine.Stats);
+            var decoration = RunRules.ResolveMoralityDecoration(engine.Stats);
             if (stage != null)
             {
                 stage.SetCharacterAppearance(characterAppearance);
-                stage.SetMoralityDecoration(RunRules.ResolveMoralityDecoration(engine.Stats));
+                stage.SetMoralityDecoration(decoration);
             }
+            CodexStorage.UnlockForm(CodexRules.FormEntryId(characterAppearance, decoration));
             eventPanel.Hide();
             AddJournal(result.option.resultText);
             if (result.endingTitleId != 0) endingResultText = result.option.resultText;
@@ -219,6 +242,7 @@ namespace GrassRun
             var title = engine.EndingTitleId != 0
                 ? RunRules.FindTitleById(titleTable.specialEndingTitles, engine.EndingTitleId)
                 : RunRules.ResolveTitle(titleTable.titles, engine.Stats);
+            if (title != null) CodexStorage.UnlockTitle(title.titleId);
             gameOver.Show(title != null ? title.titleName : GameText.EndTitle(engine.EndReason),
                 title != null ? title.image : null,
                 title != null ? title.description : string.Empty,
@@ -238,6 +262,22 @@ namespace GrassRun
         {
             hud.Render(engine.Stats);
             hud.SetRunningVisible(phase == Phase.Running);
+        }
+
+        static readonly List<RaycastResult> uiHits = new List<RaycastResult>();
+
+        /// <summary>這個畫面位置最上層的 UI 是不是可點的按鈕（或在按鈕底下）。</summary>
+        static bool IsOverButton(Vector2 screenPosition)
+        {
+            var eventSystem = EventSystem.current;
+            if (eventSystem == null) return false;
+
+            uiHits.Clear();
+            eventSystem.RaycastAll(new PointerEventData(eventSystem) { position = screenPosition }, uiHits);
+            if (uiHits.Count == 0) return false;
+
+            var selectable = uiHits[0].gameObject.GetComponentInParent<Selectable>();
+            return selectable != null && selectable.IsInteractable();
         }
 
         static void ClearSelection()
