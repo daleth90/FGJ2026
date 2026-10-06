@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GrassRun
 {
@@ -35,6 +36,10 @@ namespace GrassRun
         [SerializeField, Min(1)] int slotsPerPage = 9;
         [SerializeField] CodexDetailView detail;
 
+        [Header("翻頁按鈕（第一頁不顯示左鈕、最後一頁不顯示右鈕）")]
+        [SerializeField] Button leftButton;
+        [SerializeField] Button rightButton;
+
         [Header("文字（可留空）")]
         [SerializeField] TMP_Text sectionLabel;
         [SerializeField] TMP_Text pageLabel;
@@ -58,6 +63,8 @@ namespace GrassRun
             BuildEntries();
             for (int i = 0; i < slotsPerPage; i++)
                 slots.Add(Instantiate(slotPrefab, slotContainer));
+            if (leftButton != null) leftButton.onClick.AddListener(() => TurnPage(-1));
+            if (rightButton != null) rightButton.onClick.AddListener(() => TurnPage(1));
         }
 
         public void Show()
@@ -101,6 +108,9 @@ namespace GrassRun
                     : progress.IsFormUnlocked(entry.id);
                 slots[i].Setup(entry, unlocked, () => ShowDetail(entry));
             }
+
+            if (leftButton != null) leftButton.gameObject.SetActive(page > 0);
+            if (rightButton != null) rightButton.gameObject.SetActive(page < PageCount - 1);
 
             if (sectionLabel != null) sectionLabel.text = titles ? "稱號圖鑑" : "型態圖鑑";
             if (pageLabel != null)
