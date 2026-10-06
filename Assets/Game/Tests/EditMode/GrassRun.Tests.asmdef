@@ -3,6 +3,7 @@
     "rootNamespace": "GrassRun.Tests",
     "references": [
         "GrassRun",
+        "GrassRun.Editor",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

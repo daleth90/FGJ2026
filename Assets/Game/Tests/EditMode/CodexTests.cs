@@ -43,8 +43,8 @@ namespace GrassRun.Tests
         public void CodexFormName_AddsVersionSuffixOnlyForAngelAndDevil()
         {
             Assert.AreEqual("敏捷", GameText.CodexFormName("敏捷", MoralityDecoration.None));
-            Assert.AreEqual("敏捷 天使 ver", GameText.CodexFormName("敏捷", MoralityDecoration.Angel));
-            Assert.AreEqual("敏捷 惡魔 ver", GameText.CodexFormName("敏捷", MoralityDecoration.Devil));
+            Assert.AreEqual("敏捷 " + GameText.AngelVersionSuffix, GameText.CodexFormName("敏捷", MoralityDecoration.Angel));
+            Assert.AreEqual("敏捷 " + GameText.DevilVersionSuffix, GameText.CodexFormName("敏捷", MoralityDecoration.Devil));
         }
 
         [Test]
