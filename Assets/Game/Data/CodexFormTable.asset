@@ -62,3 +62,8 @@ MonoBehaviour:
     description: 
     conditionDescription: "\u6FD5\u5EA6 26\uFF5E60 \u4E14 \u97CC\u6027 \u2265 8 \u4E14
       \u901F\u5EA6 \u2265 8"
+  - appearance: 11
+    displayName: "\u5FEB\u901F\u7684\u6FD5\u6F64\u5C0F\u8349"
+    description: 
+    conditionDescription: "\u6FD5\u5EA6 \u2265 70 \u4E14 \u901F\u5EA6 > 10 \u4E14
+      \u97CC\u6027 < 8"

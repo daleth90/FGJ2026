@@ -146,7 +146,7 @@ namespace GrassRun
         /// <summary>
         /// 主角外觀只看當下數值：取目前成立的條件中優先順序最高的，都不成立就是 Default。
         /// 優先順序：Dry_Toughness_Speed > Dry_Speed > Dry_Toughness > Dry > Wet_Toughness_Speed
-        /// > Wet_Toughness > Wet > Toughness_Speed > Speed > Toughness。
+        /// > Wet_Toughness > Wet_Speed > Wet > Toughness_Speed > Speed > Toughness。
         /// </summary>
         public static CharacterAppearance ResolveCharacterAppearance(StatBlock stats)
         {
@@ -161,6 +161,7 @@ namespace GrassRun
             CharacterAppearance.Speed,
             CharacterAppearance.ToughnessSpeed,
             CharacterAppearance.Wet,
+            CharacterAppearance.WetSpeed,
             CharacterAppearance.WetToughness,
             CharacterAppearance.WetToughnessSpeed,
             CharacterAppearance.Dry,
@@ -183,6 +184,7 @@ namespace GrassRun
                 case CharacterAppearance.DryToughnessSpeed: return IsDryToughnessSpeedAppearance(stats);
                 case CharacterAppearance.DryToughness: return IsDryToughnessAppearance(stats);
                 case CharacterAppearance.ToughnessSpeed: return IsToughnessSpeedAppearance(stats);
+                case CharacterAppearance.WetSpeed: return IsWetSpeedAppearance(stats);
                 default: return false;
             }
         }
@@ -215,6 +217,10 @@ namespace GrassRun
 
         static bool IsToughnessSpeedAppearance(StatBlock stats) =>
             stats.moisture > 25 && stats.moisture <= 60 && stats.toughness >= 8 && stats.speed >= 8;
+
+        // 門檻和其他型態不同：速度要超過 10、濕度至少 70。
+        static bool IsWetSpeedAppearance(StatBlock stats) =>
+            stats.speed > 10 && stats.moisture >= 70 && stats.toughness < 8;
 
         public static bool TryParseRequirements(string expression, List<Requirement> output, out string error)
         {

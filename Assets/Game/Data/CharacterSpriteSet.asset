@@ -77,3 +77,8 @@ MonoBehaviour:
   - {fileID: -1648425716469785394, guid: 45e7043e1db204d43a8ac0ca556dce2a, type: 3}
   - {fileID: -246055742887745440, guid: 78d3a9f2cc537b1498aed828fa857d27, type: 3}
   - {fileID: -8408976370575171168, guid: 62956e9f279b00c4aa8b8cb33c01e961, type: 3}
+  wetSpeedFrames:
+  - {fileID: -4328116513811437537, guid: 0acf3ae25474c8040b5b6338e2da735c, type: 3}
+  - {fileID: 4449964283756416640, guid: 2eae9b78ea88700459709310150b6183, type: 3}
+  - {fileID: 832148038885104402, guid: afed87f70a81f78428fd92534479233e, type: 3}
+  - {fileID: -3739447658544770733, guid: 47fcad4db113ecf4cb9e1f36b9240976, type: 3}

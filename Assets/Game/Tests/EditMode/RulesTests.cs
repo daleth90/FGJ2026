@@ -205,6 +205,18 @@ namespace GrassRun.Tests
         }
 
         [Test]
+        public void CharacterAppearance_WetSpeedWhenFastVeryWetAndNotTough()
+        {
+            Assert.AreEqual(CharacterAppearance.WetSpeed, RunRules.ResolveCharacterAppearance(new StatBlock(0, 70, 11, 0)));
+            Assert.AreEqual(CharacterAppearance.WetSpeed, RunRules.ResolveCharacterAppearance(new StatBlock(0, 100, 20, 7)));
+            // 邊界：速度剛好 10、濕度 69 都不算
+            Assert.AreEqual(CharacterAppearance.Speed, RunRules.ResolveCharacterAppearance(new StatBlock(0, 70, 10, 0)));
+            Assert.AreEqual(CharacterAppearance.Speed, RunRules.ResolveCharacterAppearance(new StatBlock(0, 69, 11, 0)));
+            // 韌性 ≥ 8 時是 Wet_Toughness_Speed
+            Assert.AreEqual(CharacterAppearance.WetToughnessSpeed, RunRules.ResolveCharacterAppearance(new StatBlock(0, 70, 11, 8)));
+        }
+
+        [Test]
         public void CharacterAppearance_FallsBackWhenCurrentConditionNoLongerHolds()
         {
             // Dry_Speed 之後濕度回到 > 25、速度仍 ≥ 8：Speed。

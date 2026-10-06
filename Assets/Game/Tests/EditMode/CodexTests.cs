@@ -26,7 +26,7 @@ namespace GrassRun.Tests
         public void FormEntries_AreDefaultPlusThreeVersionsOfEachOtherAppearance()
         {
             var entries = CodexRules.FormEntries();
-            Assert.AreEqual(31, entries.Count);
+            Assert.AreEqual(34, entries.Count);
             Assert.AreEqual(0, entries[0].id);
 
             var ids = new HashSet<int>();
