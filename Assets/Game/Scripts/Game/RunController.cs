@@ -112,6 +112,14 @@ namespace GrassRun
         {
             // 圖鑑開著時整局暫停：不吃輸入、不計時（Time.timeScale 也是 0）。
             if (CodexController.IsOpen) return;
+#if UNITY_EDITOR
+            // 作弊面板開著時也暫停，只更新 HUD 讓調整後的數值馬上顯示。
+            if (StatsCheat.IsOpen)
+            {
+                RefreshHud();
+                return;
+            }
+#endif
 
             HandleKeys();
 

@@ -23,6 +23,23 @@ namespace GrassRun.Tests
             created.Clear();
         }
 
+        [Test]
+        public void DebugSetStats_ClampsToStatRanges()
+        {
+            balance.maxMoisture = 100;
+            var engine = new RunEngine(balance, new EventDefinition[0], new System.Random(1));
+
+            engine.DebugSetStats(new StatBlock(-50, 150, -3, 12));
+
+            Assert.AreEqual(-50, engine.Stats.morality);
+            Assert.AreEqual(100, engine.Stats.moisture);
+            Assert.AreEqual(0, engine.Stats.speed);
+            Assert.AreEqual(12, engine.Stats.toughness);
+
+            engine.DebugSetStats(new StatBlock(30, -5, 8, 0));
+            Assert.AreEqual(new StatBlock(30, 0, 8, 0).ToString(), engine.Stats.ToString());
+        }
+
         EventDefinition MakeEvent(int id, int unlock, params EventOption[] options)
         {
             var e = ScriptableObject.CreateInstance<EventDefinition>();

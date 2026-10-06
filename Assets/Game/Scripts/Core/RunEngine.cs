@@ -39,6 +39,16 @@ namespace GrassRun
         public int EndingTitleId { get; private set; }
         public bool IsEnded => EndReason != RunEndReason.None;
 
+        /// <summary>
+        /// 除錯用：直接設定目前數值（依屬性範圍裁切）。不重新判定任何東西——
+        /// 已經開著的事件選項維持原本的可選狀態，外觀、結束條件等都等下一次 Choose 才算。
+        /// </summary>
+        public void DebugSetStats(StatBlock value)
+        {
+            RunRules.ClampStats(ref value, Balance.maxMoisture);
+            stats = value;
+        }
+
         public bool BeginNextEvent()
         {
             if (IsEnded) return false;

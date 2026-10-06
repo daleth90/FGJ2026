@@ -107,15 +107,21 @@ namespace GrassRun
             var before = stats;
             foreach (var change in changes) stats[change.stat] += change.amount;
 
-            stats.moisture = Mathf.Clamp(stats.moisture, 0, Mathf.Max(1, maxMoisture));
-            stats.speed = Mathf.Max(0, stats.speed);
-            stats.toughness = Mathf.Max(0, stats.toughness);
+            ClampStats(ref stats, maxMoisture);
 
             return new StatBlock(
                 stats.morality - before.morality,
                 stats.moisture - before.moisture,
                 stats.speed - before.speed,
                 stats.toughness - before.toughness);
+        }
+
+        /// <summary>依各屬性範圍裁切：善良不限；溼度 0～上限；速度與韌度最低為 0。</summary>
+        public static void ClampStats(ref StatBlock stats, int maxMoisture)
+        {
+            stats.moisture = Mathf.Clamp(stats.moisture, 0, Mathf.Max(1, maxMoisture));
+            stats.speed = Mathf.Max(0, stats.speed);
+            stats.toughness = Mathf.Max(0, stats.toughness);
         }
 
         public static StatBlock Preview(EventOption option, StatBlock stats, int maxMoisture)
