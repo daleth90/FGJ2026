@@ -14,51 +14,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: GrassRun::GrassRun.CodexFormTable
   forms:
   - appearance: 0
-    displayName: 
+    displayName: "\u4E00\u822C\u5C0F\u8349"
     description: 
     conditionDescription: "\u5176\u4ED6\u578B\u614B\u689D\u4EF6\u90FD\u4E0D\u6210\u7ACB"
   - appearance: 1
-    displayName: 
+    displayName: "\u5F37\u58EF\u7684\u5C0F\u8349"
     description: 
     conditionDescription: "\u6FD5\u5EA6 > 25 \u4E14 \u97CC\u6027 \u2265 8"
   - appearance: 2
-    displayName: 
+    displayName: "\u5FEB\u901F\u7684\u5C0F\u8349"
     description: 
     conditionDescription: "\u6FD5\u5EA6 > 25 \u4E14 \u901F\u5EA6 \u2265 8"
   - appearance: 3
-    displayName: 
+    displayName: "\u6FD5\u6F64\u5C0F\u8349"
     description: 
     conditionDescription: "\u6FD5\u5EA6 > 60 \u4E14 \u901F\u5EA6 < 8 \u4E14 \u97CC\u6027
       < 8"
   - appearance: 4
-    displayName: 
+    displayName: "\u67AF\u840E\u5C0F\u8349"
     description: 
     conditionDescription: "\u6FD5\u5EA6 \u2264 25"
   - appearance: 5
-    displayName: 
+    displayName: "\u5FEB\u901F\u7684\u67AF\u840E\u5C0F\u8349"
     description: 
     conditionDescription: "\u6FD5\u5EA6 \u2264 25 \u4E14 \u901F\u5EA6 \u2265 8"
   - appearance: 6
-    displayName: 
+    displayName: "\u5F37\u58EF\u7684\u6FD5\u6F64\u5C0F\u8349"
     description: 
     conditionDescription: "\u6FD5\u5EA6 > 60 \u4E14 \u97CC\u6027 \u2265 8"
   - appearance: 7
-    displayName: 
+    displayName: "\u5F37\u58EF\u4E14\u5FEB\u901F\u7684\u6FD5\u6F64\u5C0F\u8349"
     description: 
     conditionDescription: "\u6FD5\u5EA6 > 60 \u4E14 \u97CC\u6027 \u2265 8 \u4E14
       \u901F\u5EA6 \u2265 8"
   - appearance: 8
-    displayName: 
+    displayName: "\u5F37\u58EF\u4E14\u5FEB\u901F\u7684\u67AF\u840E\u5C0F\u8349"
     description: 
     conditionDescription: "\u6FD5\u5EA6 \u2264 25 \u4E14 \u97CC\u6027 \u2265 8 \u4E14
       \u901F\u5EA6 \u2265 8"
   - appearance: 9
-    displayName: 
+    displayName: "\u5F37\u58EF\u7684\u67AF\u840E\u5C0F\u8349"
     description: 
     conditionDescription: "\u6FD5\u5EA6 \u2264 25 \u4E14 \u97CC\u6027 \u2265 8 \u4E14
       \u901F\u5EA6 < 8"
   - appearance: 10
-    displayName: 
+    displayName: "\u5F37\u58EF\u4E14\u5FEB\u901F\u7684\u5C0F\u8349"
     description: 
     conditionDescription: "\u6FD5\u5EA6 26\uFF5E60 \u4E14 \u97CC\u6027 \u2265 8 \u4E14
       \u901F\u5EA6 \u2265 8"

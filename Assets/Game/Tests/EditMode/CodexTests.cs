@@ -40,6 +40,14 @@ namespace GrassRun.Tests
         }
 
         [Test]
+        public void CodexFormName_AddsVersionSuffixOnlyForAngelAndDevil()
+        {
+            Assert.AreEqual("敏捷", GameText.CodexFormName("敏捷", MoralityDecoration.None));
+            Assert.AreEqual("敏捷 天使 ver", GameText.CodexFormName("敏捷", MoralityDecoration.Angel));
+            Assert.AreEqual("敏捷 惡魔 ver", GameText.CodexFormName("敏捷", MoralityDecoration.Devil));
+        }
+
+        [Test]
         public void Progress_DefaultFormIsUnlockedFromTheStart()
         {
             var progress = new CodexProgress();

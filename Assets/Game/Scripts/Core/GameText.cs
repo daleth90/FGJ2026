@@ -96,6 +96,20 @@ namespace GrassRun
             return $"{cause}";
         }
 
+        public const string AngelVersionSuffix = "天使 ver.";
+        public const string DevilVersionSuffix = "惡魔 ver.";
+
+        /// <summary>圖鑑的型態名稱：天使版、惡魔版在原名稱後面加上「天使 ver」「惡魔 ver」，一般版不變。</summary>
+        public static string CodexFormName(string baseName, MoralityDecoration decoration)
+        {
+            switch (decoration)
+            {
+                case MoralityDecoration.Angel: return $"{baseName} {AngelVersionSuffix}";
+                case MoralityDecoration.Devil: return $"{baseName} {DevilVersionSuffix}";
+                default: return baseName;
+            }
+        }
+
         public static string EndTitle(RunEndReason reason) => "目前沒有可選的行動";
 
         public static string EndBody(RunEndReason reason, EventDefinition lastEvent)

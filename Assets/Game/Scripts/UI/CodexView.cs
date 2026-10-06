@@ -145,7 +145,9 @@ namespace GrassRun
                     id = form.id,
                     image = FirstFrame(characterSprites != null ? characterSprites.GetFrames(form.appearance) : null),
                     overlay = DecorationFrame(form.decoration),
-                    name = info != null && !string.IsNullOrEmpty(info.displayName) ? info.displayName : form.appearance.ToString(),
+                    name = GameText.CodexFormName(
+                        info != null && !string.IsNullOrEmpty(info.displayName) ? info.displayName : form.appearance.ToString(),
+                        form.decoration),
                     description = info != null ? info.description : string.Empty,
                     condition = WithDecorationCondition(info != null ? info.conditionDescription : string.Empty, form.decoration),
                 });
