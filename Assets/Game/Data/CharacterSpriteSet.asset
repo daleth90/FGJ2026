@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: CharacterSpriteSet
   m_EditorClassIdentifier: GrassRun::GrassRun.CharacterSpriteSet
   defaultFrames:
-  - {fileID: 21300000, guid: 8d22bc9f4b64b8544a04331dc4ed976d, type: 3}
-  - {fileID: 21300000, guid: a907fdb298f60f94aa2f9e526a2d8e08, type: 3}
   - {fileID: 21300000, guid: 226cd4e0082c49b4f837aac19a19fd3d, type: 3}
+  - {fileID: 21300000, guid: a907fdb298f60f94aa2f9e526a2d8e08, type: 3}
+  - {fileID: 21300000, guid: 8d22bc9f4b64b8544a04331dc4ed976d, type: 3}
   - {fileID: 21300000, guid: 7bc89221ee7cf034897f832817ceb788, type: 3}
   angelFrames:
   - {fileID: -1524771386762262704, guid: a5b014f392e7b6d42832f6bbbfcde13f, type: 3}
